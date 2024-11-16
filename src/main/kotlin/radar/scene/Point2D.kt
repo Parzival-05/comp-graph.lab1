@@ -17,4 +17,3 @@ data class Offset2D(val x: Int, val y: Int) : BaseOffset<Point2D> {
         coordinates.y += this.y
     }
 }
-
