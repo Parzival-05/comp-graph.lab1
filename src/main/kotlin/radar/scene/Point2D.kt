@@ -5,9 +5,9 @@ import GRID_SIZE_Y
 import core.base.BaseOffset
 import core.base.BasePoint
 
-data class Point2D(var x: Int, var y: Int) : BasePoint<Offset2D> {
+data class Point2D(var x: Float, var y: Float) : BasePoint<Offset2D> {
     override fun isInScene(): Boolean {
-        return (x in 0..GRID_SIZE_X) && (y in 0..GRID_SIZE_Y)
+        return (x in 0.0..GRID_SIZE_X.toDouble()) && (y in 0.0..GRID_SIZE_Y.toDouble())
     }
 }
 
