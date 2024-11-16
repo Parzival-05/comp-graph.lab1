@@ -17,6 +17,7 @@ class CatScene(
     private var catEmitter: BaseEmitter<CatParticle, Point2D, Offset2D> = CatEmitter(particleGenerator = CatGenerator())
 ) : BaseScene<CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator>(particles) {
     private val lastCollisions = mutableSetOf<CatCollision>()
+
     init {
         this.findAndReactCollisions()
     }

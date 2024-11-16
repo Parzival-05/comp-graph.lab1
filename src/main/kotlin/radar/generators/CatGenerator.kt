@@ -12,7 +12,11 @@ import kotlin.random.Random
 
 class CatGenerator : BaseParticleGenerator<CatParticle, Point2D, Offset2D> {
     override fun generate(): CatParticle {
-        val coordinates = Point2D(Random.nextInt(GRID_SIZE_X), Random.nextInt(GRID_SIZE_Y))
+        val coordinates =
+            Point2D(
+                Random.nextDouble(GRID_SIZE_X.toDouble()).toFloat(),
+                Random.nextDouble(GRID_SIZE_Y.toDouble()).toFloat()
+            )
         return generate(coordinates)
     }
 
