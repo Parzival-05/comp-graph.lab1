@@ -23,7 +23,6 @@ class CatEmitter(
                 particleGenerator.generate(particleCoordinates)
             )
         }
-//        println(particles)
         return particles.toSet()
     }
 }
