@@ -33,8 +33,8 @@ class MoveGenerator(private val sceneConfig: SceneConfig) : BaseOffsetGenerator<
 
         fun generateBySide(side: Side?): Int {
             return when (side) {
-                Side.LEFT -> Random.nextInt(-1, sceneConfig.maxParticleSpeed)
-                Side.RIGHT -> Random.nextInt(-sceneConfig.maxParticleSpeed, 1)
+                Side.LEFT -> Random.nextInt(-sceneConfig.maxParticleSpeed*1/2, sceneConfig.maxParticleSpeed)
+                Side.RIGHT -> Random.nextInt(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed*1/2)
                 null -> Random.nextInt(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed)
             }
         }
