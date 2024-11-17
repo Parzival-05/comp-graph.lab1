@@ -21,6 +21,7 @@ import radar.generators.MoveGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
+import kotlin.system.measureTimeMillis
 
 //data class CatMutable(
 //    var coordinatesMutable: MutableState<Point2D>,
@@ -42,7 +43,9 @@ fun catSimulationScreen(scene: CatScene, moveGenerator: MoveGenerator) {
     LaunchedEffect(null) {
         while (true) {
             // TODO: efficient recomposition
-            scene.updateScene(moveGenerator)
+            val time = measureTimeMillis { scene.updateScene(moveGenerator) }
+            println(time)
+            delay(TAU - time)
             val mutableCatsValues = mutableCats.map { it.cat.value }.toHashSet()
             val newCats = mutableSetOf<CatParticle>()
             scene.particles.forEach {
@@ -61,7 +64,6 @@ fun catSimulationScreen(scene: CatScene, moveGenerator: MoveGenerator) {
             }
 //          toRemove.forEach { mutableCats.remove(it) } TODO: removing leads to teleportation of cats
             newCats.forEach { mutableCats.add(CatMutable(mutableStateOf(it))) }
-            delay(TAU)
         }
     }
 
