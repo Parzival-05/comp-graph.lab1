@@ -3,6 +3,7 @@ package drawing
 import GRID_SIZE_X
 import GRID_SIZE_Y
 import FRAMES_PER_TAU
+import CAT_RADIUS
 import TAU
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -97,7 +98,7 @@ fun drawCat(cat: CatMutable) {
         val catOffset = androidx.compose.ui.geometry.Offset(
             animatedX.dp.toPx(), animatedY.dp.toPx()
         )
-        drawCircle(color = currentColor, center = catOffset, radius = cat.cat.value.radius.dp.toPx())
+        drawCircle(color = currentColor, center = catOffset, radius = CAT_RADIUS.dp.toPx())
     }
 }
 

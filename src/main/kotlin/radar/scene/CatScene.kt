@@ -1,5 +1,6 @@
 package radar.scene
 
+import CAT_RADIUS
 import PARTICLE_COUNT
 import core.base.BaseEmitter
 import core.base.BaseScene
@@ -81,7 +82,7 @@ class CatScene(
             SceneConfig.Companion.MetricType.MANHATTAN -> manhattan(cat1.coordinates, cat2.coordinates)
             else -> TODO("other metrics")
         }
-        return dist - (cat1.radius + cat2.radius)
+        return dist - 2 * CAT_RADIUS
     }
 
     private fun calcNewState(dist: Float): CatStates {
