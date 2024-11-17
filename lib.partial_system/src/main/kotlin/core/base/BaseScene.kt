@@ -21,7 +21,7 @@ abstract class BaseScene<P : BaseParticle<T, O>, T : BasePoint<O>, O : BaseOffse
             val offset = offsetGenerator.generate(it)
             offset.move(it.coordinates)
         }
-        this.particles = ArrayList(particles.filter { it.isInScene() })
+        particles.removeIf { !it.isInScene() }
     }
 
     protected abstract fun findCollisions(): Array<C>
