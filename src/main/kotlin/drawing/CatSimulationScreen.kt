@@ -23,10 +23,6 @@ import radar.scene.CatScene
 import radar.scene.CatStates
 import kotlin.system.measureTimeMillis
 
-//data class CatMutable(
-//    var coordinatesMutable: MutableState<Point2D>,
-//    var stateMutable: MutableState<CatStates>
-//)
 
 data class CatMutable(
     var cat: MutableState<CatParticle>,
