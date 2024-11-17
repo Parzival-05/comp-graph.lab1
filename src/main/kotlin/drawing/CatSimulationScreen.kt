@@ -43,22 +43,13 @@ fun catSimulationScreen(scene: CatScene, moveGenerator: MoveGenerator) {
             println(time)
             delay(TAU - time)
             val mutableCatsValues = mutableCats.map { it.cat.value }.toHashSet()
-            val newCats = mutableSetOf<CatParticle>()
-            scene.particles.forEach {
-                if (it !in mutableCatsValues) {
-                    newCats.add(it)
+            val newCats = mutableSetOf<CatParticle>().apply {
+                scene.particles.forEach {
+                    if (it !in mutableCatsValues) {
+                        add(it)
+                    }
                 }
             }
-            val toRemove = mutableListOf<CatMutable>()
-            mutableCats.forEachIndexed { index, mutableCat -> // force recomposition
-                val cat = mutableCat.cat.value
-                if (cat in scene.particles) {
-                    mutableCats[index] = mutableCats[index].copy(cat = mutableStateOf(cat))
-                } else {
-                    toRemove.add(mutableCat)
-                }
-            }
-//          toRemove.forEach { mutableCats.remove(it) } TODO: removing leads to teleportation of cats
             newCats.forEach { mutableCats.add(CatMutable(mutableStateOf(it))) }
         }
     }
