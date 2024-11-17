@@ -4,6 +4,7 @@ import CatSimulation.Companion.PARTICLE_COUNT
 import core.base.BaseEmitter
 import core.base.BaseScene
 import radar.collisionDetection.KDTreeCollisionDetection
+import log
 import radar.generators.CatGenerator
 import radar.generators.MoveGenerator
 import radar.metrics.euclidean
@@ -86,8 +87,10 @@ class CatScene(
 
     override fun reactCollisions(collisions: Array<CatCollision>) {
         for (collision in collisions) {
+            val newState = calcNewState(collision.dist)
+            log(collision, newState)
             arrayOf(collision.particle1, collision.particle2).forEach {
-                it.setCatState(collision.catState)
+                it.setCatState(newState)
             }
             lastCollisions.add(collision)
         }
