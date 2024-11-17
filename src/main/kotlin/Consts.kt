@@ -5,6 +5,7 @@ class CatSimulation {
         const val CAT_RADIUS = 1
         const val TAU = 500L
         const val PARTICLE_COUNT = 50000
+        const val MAX_INTERACTIONS_DISPLAYED = 50
     }
 }
 
