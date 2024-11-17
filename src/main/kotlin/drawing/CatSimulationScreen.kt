@@ -4,6 +4,7 @@ import CatSimulation.Companion.CAT_RADIUS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import classes.UIStates
+import DraggableLogWithButton
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -72,6 +73,8 @@ fun drawScene(
             }
             mutableCats.forEach { drawCat(it) }
             state.value = UIStates.MODELING
+
+            DraggableLogWithButton()
         }
     }
 }
