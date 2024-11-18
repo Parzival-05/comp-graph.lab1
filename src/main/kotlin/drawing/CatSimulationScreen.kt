@@ -28,43 +28,28 @@ import radar.scene.CatStates
 import kotlin.math.sqrt
 import kotlin.system.measureTimeMillis
 
-
-data class CatMutable(
-    var cat: MutableState<CatParticle>
-)
-
-
 @Composable
 fun updateScene(
     catScene: CatScene,
-    mutableCats: SnapshotStateList<CatMutable>,
-    state: AtomicRef<UIStates>,
-    timeUpdateData: AtomicLong,
-    cont: suspend (() -> Unit)
+    state: MutableState<UIStates>,
+    onSceneUpdated: (List<CatParticle>) -> Unit
 ) {
     LaunchedEffect(Unit) {
         while (true) {
             if (state.value == UIStates.UPDATE_DATA) {
-                timeUpdateData.value = measureTimeMillis {
-                    catScene.particles.forEachIndexed { index, cat ->
-                        mutableCats.add(index, CatMutable(mutableStateOf(cat)))
-                    }
-                    if (catScene.particles.size < mutableCats.size) {
-                        mutableCats.removeRange(catScene.particles.size, mutableCats.size - 1)
-                    }
-                }
-                println("updateData = ${timeUpdateData.value} ms.")
+                val newCats = catScene.particles.map { it }
+                onSceneUpdated(newCats) // Передача нового списка
                 state.value = UIStates.DRAWING
             }
             delay(3)
-            cont()
         }
     }
 }
 
 @Composable
 fun drawScene(
-    mutableCats: MutableList<CatMutable>, state: AtomicRef<UIStates>
+    cats: List<CatParticle>, // Передача неизменяемого списка
+    state: MutableState<UIStates>
 ) {
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
         Box(modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
@@ -75,11 +60,11 @@ fun drawScene(
                 }
             }
             Canvas(modifier = Modifier.fillMaxSize()) {
-                mutableCats.forEach { cat ->
-                    val currentColor = getColorForState(cat.cat.value.state)
+                cats.forEach { cat ->
+                    val currentColor = getColorForState(cat.state)
                     val catOffset = Offset(
-                        (cat.cat.value.coordinates.x - CAT_RADIUS / 2).dp.toPx(),
-                        (cat.cat.value.coordinates.y - CAT_RADIUS / 2).dp.toPx()
+                        (cat.coordinates.x - CAT_RADIUS / 2).dp.toPx(),
+                        (cat.coordinates.y - CAT_RADIUS / 2).dp.toPx()
                     )
                     val catSize = (50.0 / sqrt(PARTICLE_COUNT.toFloat())).coerceAtLeast(1.0)
                     drawCircle(
@@ -91,31 +76,6 @@ fun drawScene(
 
             DraggableLogWithButton()
         }
-    }
-}
-
-@Composable
-fun drawCat(cat: CatMutable) {
-    var animatedX by remember { mutableStateOf(cat.cat.value.coordinates.x) }
-    var animatedY by remember { mutableStateOf(cat.cat.value.coordinates.y) }
-    var currentColor by remember { mutableStateOf(getColorForState(cat.cat.value.state)) }
-
-    LaunchedEffect(
-        cat
-    ) {
-        animatedX = cat.cat.value.coordinates.x
-        animatedY = cat.cat.value.coordinates.y
-        currentColor = getColorForState(cat.cat.value.state)
-    }
-
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val catOffset = androidx.compose.ui.geometry.Offset(
-            (animatedX - CAT_RADIUS / 2).dp.toPx(), (animatedY - CAT_RADIUS / 2).dp.toPx()
-        )
-        val catSize = Size((CAT_RADIUS * 2).toFloat(), (CAT_RADIUS * 2).toFloat())
-        drawRect(
-            color = currentColor, topLeft = catOffset, size = catSize
-        )
     }
 }
 
