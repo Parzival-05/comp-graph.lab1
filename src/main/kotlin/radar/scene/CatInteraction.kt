@@ -1,10 +1,10 @@
-package core.base
+package radar.scene
 
 import java.sql.Timestamp
 
-data class BaseInteraction<T>(
+data class CatInteraction(
     val time: Timestamp,
     val particleId1: Int,
     val particleId2: Int,
-    val type: T
+    val type: CatStates
 )
