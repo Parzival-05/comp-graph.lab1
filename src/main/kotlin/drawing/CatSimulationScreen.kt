@@ -74,14 +74,16 @@ fun drawScene(
                     delay(3)
                 }
             }
-            Canvas(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
-                val pointRadius = (50.0 / sqrt(PARTICLE_COUNT.toFloat())).coerceAtLeast(1.0)
+            Canvas(modifier = Modifier.fillMaxSize()) {
                 mutableCats.forEach { cat ->
-                    val color = getColorForState(cat.cat.value.state)
+                    val currentColor = getColorForState(cat.cat.value.state)
+                    val catOffset = Offset(
+                        (cat.cat.value.coordinates.x - CAT_RADIUS / 2).dp.toPx(),
+                        (cat.cat.value.coordinates.y - CAT_RADIUS / 2).dp.toPx()
+                    )
+                    val catSize = (50.0 / sqrt(PARTICLE_COUNT.toFloat())).coerceAtLeast(1.0)
                     drawCircle(
-                        color = color,
-                        center = Offset((cat.cat.value.coordinates.x - CAT_RADIUS / 2).dp.toPx(), (cat.cat.value.coordinates.y - CAT_RADIUS / 2).dp.toPx()),
-                        radius = pointRadius.toFloat()
+                        color = currentColor, center = catOffset, radius = catSize.toFloat()
                     )
                 }
             }
