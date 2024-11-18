@@ -14,9 +14,3 @@ class CollisionDetection {
         const val BATCH_SIZE = 5
     }
 }
-
-class CollisionDetection {
-    companion object {
-        const val BATCH_SIZE = 5
-    }
-}
