@@ -11,34 +11,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.atomicfu.AtomicLong
-import kotlinx.atomicfu.AtomicRef
 import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
 import kotlin.math.sqrt
-import kotlin.system.measureTimeMillis
 
 @Composable
 fun updateScene(
     catScene: CatScene,
     state: MutableState<UIStates>,
-    onSceneUpdated: (List<CatParticle>) -> Unit
+    onSceneUpdated: (Array<CatParticle>) -> Unit
 ) {
     LaunchedEffect(Unit) {
         while (true) {
             if (state.value == UIStates.UPDATE_DATA) {
-                val newCats = catScene.particles.map { it }
-                onSceneUpdated(newCats) // Передача нового списка
+                onSceneUpdated(catScene.particles.map { it }.toTypedArray()) // Передача нового списка
                 state.value = UIStates.DRAWING
             }
             delay(3)
@@ -48,7 +42,7 @@ fun updateScene(
 
 @Composable
 fun drawScene(
-    cats: List<CatParticle>, // Передача неизменяемого списка
+    cats: Array<CatParticle>, // Передача неизменяемого списка
     state: MutableState<UIStates>
 ) {
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
