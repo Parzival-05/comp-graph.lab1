@@ -1,6 +1,6 @@
 import CatSimulation.Companion.MAX_INTERACTIONS_DISPLAYED
 import androidx.compose.runtime.mutableStateListOf
-import core.base.BaseInteraction
+import radar.scene.CatInteraction
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +37,7 @@ import radar.scene.CatStates
 import java.sql.Timestamp
 import kotlin.math.roundToInt
 
-val GlobalInteractionLog = mutableStateListOf<BaseInteraction<CatStates>>()
+val GlobalInteractionLog = mutableStateListOf<CatInteraction>()
 @Composable
 fun DraggableLogWithButton() {
     var isLogVisible by remember { mutableStateOf(true) }
@@ -81,7 +81,7 @@ fun DraggableLogWithButton() {
 }
 
 @Composable
-fun InteractionLog(interactions: List<BaseInteraction<CatStates>>) {
+fun InteractionLog(interactions: List<CatInteraction>) {
     val interactionsToDisplay = interactions.takeLast(MAX_INTERACTIONS_DISPLAYED).asReversed()
 
     LazyColumn(
@@ -123,5 +123,5 @@ fun log(collision: CatCollision, newState: CatStates) {
     val time = Timestamp(System.currentTimeMillis())
     val cat1Id = collision.particle1.id
     val cat2Id = collision.particle2.id
-    GlobalInteractionLog.add(BaseInteraction(time, cat1Id, cat2Id, newState))
+    GlobalInteractionLog.add(CatInteraction(time, cat1Id, cat2Id, newState))
 }
