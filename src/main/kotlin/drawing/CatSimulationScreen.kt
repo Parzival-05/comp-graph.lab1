@@ -3,8 +3,8 @@ package drawing
 import CatSimulation.Companion.CAT_RADIUS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
+import radar.logging.GlobalInteractionLog
 import classes.UIStates
-import DraggableLogWithButton
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,12 +17,12 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import drawing.logging.draggableLogWithButton
 import kotlinx.atomicfu.AtomicLong
 import kotlinx.atomicfu.AtomicRef
 import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
-import radar.scene.CatStates
 import kotlin.system.measureTimeMillis
 
 
@@ -73,8 +73,7 @@ fun drawScene(
             }
             mutableCats.forEach { drawCat(it) }
             state.value = UIStates.MODELING
-
-            DraggableLogWithButton()
+            draggableLogWithButton(GlobalInteractionLog)
         }
     }
 }
@@ -104,10 +103,3 @@ fun drawCat(cat: CatMutable) {
     }
 }
 
-fun getColorForState(state: CatStates): Color {
-    return when (state) {
-        CatStates.CALM -> Color.White
-        CatStates.HISS -> Color.Gray
-        CatStates.FIGHT -> Color.Black
-    }
-}
