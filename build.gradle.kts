@@ -17,6 +17,7 @@ repositories {
 dependencies {
     implementation(project(":lib.partial_system"))
     implementation(compose.desktop.currentOs)
+    implementation("org.tinspin:tinspin-indexes:2.1.3")
 }
 
 compose.desktop {

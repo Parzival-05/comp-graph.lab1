@@ -1,9 +1,9 @@
 package radar.scene
 
-import CAT_RADIUS
-import PARTICLE_COUNT
+import CatSimulation.Companion.PARTICLE_COUNT
 import core.base.BaseEmitter
 import core.base.BaseScene
+import radar.collisionDetection.KDTreeCollisionDetection
 import radar.generators.CatGenerator
 import radar.generators.MoveGenerator
 import radar.metrics.euclidean
@@ -13,8 +13,8 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class CatScene(
-    override var particles: ArrayList<CatParticle>, // TODO: use hashset for better search asymptotic (?)
-    private val sceneConfig: SceneConfig,
+    override var particles: ArrayList<CatParticle>,
+    val sceneConfig: SceneConfig,
     private var catEmitter: BaseEmitter<CatParticle, Point2D, Offset2D> = CatEmitter(particleGenerator = CatGenerator())
 ) : BaseScene<CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator>(particles) {
     private val lastCollisions = mutableSetOf<CatCollision>()
@@ -23,11 +23,10 @@ class CatScene(
         this.findAndReactCollisions()
     }
 
-
     override fun updateScene(offsetGenerator: MoveGenerator) {
         // TODO: reuse code
         this.move(offsetGenerator)
-        this.changeStateOfCalmedCats()
+        this.resetStates()
         this.findAndReactCollisions()
     }
 
@@ -43,10 +42,13 @@ class CatScene(
         this.particles.addAll(cats)
     }
 
-    private fun changeStateOfCalmedCats() {
+    private fun resetStates() {
         // inefficient and probably incorrect?
         for (collision in lastCollisions) {
-            if (this.calcNewState(this.calcDistance(collision.particle1, collision.particle2)) == CatStates.CALM) {
+            if (this.calcDistance(
+                    collision.particle1.coordinates, collision.particle2.coordinates
+                ) > sceneConfig.hissDist
+            ) {
                 arrayOf(collision.particle1, collision.particle2).forEach {
                     it.setCatState(CatStates.CALM)
                 }
@@ -56,36 +58,21 @@ class CatScene(
     }
 
     override fun findCollisions(): Array<CatCollision> {
-        // TODO: more efficient collision detection
-        val particlesArray = particles.toTypedArray()
-        val collided = mutableListOf<CatCollision>()
-        for (i in particles.indices) {
-            for (j in (i + 1)..<particles.size) {
-                val dist = calcDistance((particlesArray[i]), (particlesArray[j]))
-                if (dist < sceneConfig.hissDist) {
-                    collided.add(CatCollision(particlesArray[i], particlesArray[j], dist))
-                }
-            }
-        }
-        return collided.toTypedArray()
+        return KDTreeCollisionDetection.findCollisions(this)
     }
 
-    private fun calcDistance(
-        cat1: CatParticle, cat2: CatParticle
+    fun calcDistance(
+        p1: Point2D, p2: Point2D
     ): Float {
-        val dist = when (sceneConfig.metric) {
-            // TODO: how to remove copy-paste?
-            SceneConfig.Companion.MetricType.EUCLIDEAN -> euclidean(
-                cat1.coordinates, cat2.coordinates
-            )
-
-            SceneConfig.Companion.MetricType.MANHATTAN -> manhattan(cat1.coordinates, cat2.coordinates)
+        val distF = when (sceneConfig.metric) {
+            SceneConfig.Companion.MetricType.EUCLIDEAN -> ::euclidean
+            SceneConfig.Companion.MetricType.MANHATTAN -> ::manhattan
             else -> TODO("other metrics")
         }
-        return dist - 2 * CAT_RADIUS
+        return distF(p1, p2)
     }
 
-    private fun calcNewState(dist: Float): CatStates {
+    fun calcNewState(dist: Float): CatStates {
         val newState = if (dist < sceneConfig.fightDist) {
             CatStates.FIGHT
         } else if (dist < sceneConfig.hissDist && Random.nextDouble(1.0) < 1 / (dist.pow(2))) {
@@ -99,13 +86,10 @@ class CatScene(
 
     override fun reactCollisions(collisions: Array<CatCollision>) {
         for (collision in collisions) {
-            val newState = calcNewState(collision.dist)
             arrayOf(collision.particle1, collision.particle2).forEach {
-                it.setCatState(newState)
+                it.setCatState(collision.catState)
             }
-            if (newState != CatStates.CALM) {
-                lastCollisions.add(collision)
-            }
+            lastCollisions.add(collision)
         }
     }
 }

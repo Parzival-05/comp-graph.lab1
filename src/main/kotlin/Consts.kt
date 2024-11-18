@@ -9,3 +9,9 @@ class CatSimulation {
         const val PARTICLE_COUNT = 50000
     }
 }
+
+class CollisionDetection {
+    companion object {
+        const val BATCH_SIZE = 5
+    }
+}
