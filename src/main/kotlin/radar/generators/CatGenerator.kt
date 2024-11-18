@@ -1,7 +1,7 @@
 package radar.generators
 
-import GRID_SIZE_X
-import GRID_SIZE_Y
+import CatSimulation.Companion.GRID_SIZE_X
+import CatSimulation.Companion.GRID_SIZE_Y
 import core.base.generators.BaseParticleGenerator
 import radar.scene.Offset2D
 import radar.scene.Point2D
