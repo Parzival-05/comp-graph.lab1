@@ -15,5 +15,5 @@ fun euclidean(point1: Point2D, point2: Point2D): Float {
 }
 
 fun manhattan(point1: Point2D, point2: Point2D): Float {
-    return (abs(point1.x - point2.x) + abs(point1.y - point2.y))
+    return abs(point1.x - point2.x) + abs(point1.y - point2.y)
 }
