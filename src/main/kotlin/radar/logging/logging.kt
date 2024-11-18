@@ -1,13 +1,12 @@
 package radar.logging
 
 import CatSimulation.Companion.MAX_INTERACTIONS_DISPLAYED
-import androidx.compose.runtime.mutableStateListOf
 import radar.scene.CatInteraction
 import radar.scene.CatCollision
 import radar.scene.CatStates
 import java.sql.Timestamp
 
-val GlobalInteractionLog = mutableStateListOf<CatInteraction>()
+val GlobalInteractionLog = mutableListOf<CatInteraction>()
 
 fun logging(collision: CatCollision, newState: CatStates) {
     val time = Timestamp(System.currentTimeMillis())
