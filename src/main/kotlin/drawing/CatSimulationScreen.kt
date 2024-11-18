@@ -3,6 +3,7 @@ package drawing
 import CatSimulation.Companion.CAT_RADIUS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
+import CatSimulation.Companion.PARTICLE_COUNT
 import classes.UIStates
 import DraggableLogWithButton
 import androidx.compose.foundation.Canvas
@@ -14,6 +15,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
+import kotlin.math.sqrt
 import kotlin.system.measureTimeMillis
 
 
@@ -71,7 +74,17 @@ fun drawScene(
                     delay(3)
                 }
             }
-            mutableCats.forEach { drawCat(it) }
+            Canvas(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
+                val pointRadius = (50.0 / sqrt(PARTICLE_COUNT.toFloat())).coerceAtLeast(1.0)
+                mutableCats.forEach { cat ->
+                    val color = getColorForState(cat.cat.value.state)
+                    drawCircle(
+                        color = color,
+                        center = Offset((cat.cat.value.coordinates.x - CAT_RADIUS / 2).dp.toPx(), (cat.cat.value.coordinates.y - CAT_RADIUS / 2).dp.toPx()),
+                        radius = pointRadius.toFloat()
+                    )
+                }
+            }
             state.value = UIStates.MODELING
 
             DraggableLogWithButton()
