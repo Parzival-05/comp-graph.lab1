@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":lib.partial_system"))
     implementation(compose.desktop.currentOs)
     implementation("org.tinspin:tinspin-indexes:2.1.3")
+    implementation("org.jetbrains.kotlinx:atomicfu:0.26.0")
 }
 
 compose.desktop {
