@@ -4,7 +4,6 @@ import CatSimulation.Companion.CAT_RADIUS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import classes.UIStates
-import DraggableLogWithButton
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +22,7 @@ import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
+import radar.scene.SceneConfig
 import kotlin.system.measureTimeMillis
 
 
@@ -61,7 +61,9 @@ fun updateScene(
 
 @Composable
 fun drawScene(
-    mutableCats: MutableList<CatMutable>, state: AtomicRef<UIStates>
+    mutableCats: MutableList<CatMutable>,
+    state: AtomicRef<UIStates>,
+    config: SceneConfig
 ) {
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
         Box(modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
@@ -71,10 +73,11 @@ fun drawScene(
                     delay(3)
                 }
             }
+
             mutableCats.forEach { drawCat(it) }
             state.value = UIStates.MODELING
 
-            DraggableLogWithButton()
+            DraggableMenuWithLogs(config = config)
         }
     }
 }

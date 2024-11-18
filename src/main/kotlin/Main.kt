@@ -60,7 +60,7 @@ fun main() = application {
         ) {
             delay(TAU - (timeModeling.value + timeUpdateData.value))
         }
-        drawScene(mutableCats, state)
+        drawScene(mutableCats, state, sceneConfig)
     }
     workerPool.shutdown()
 }
