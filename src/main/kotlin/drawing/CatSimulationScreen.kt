@@ -1,10 +1,9 @@
 package drawing
 
-import GRID_SIZE_X
-import GRID_SIZE_Y
-import FRAMES_PER_TAU
-import CAT_RADIUS
-import TAU
+import CatSimulation.Companion.CAT_RADIUS
+import CatSimulation.Companion.GRID_SIZE_X
+import CatSimulation.Companion.GRID_SIZE_Y
+import classes.UIStates
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +13,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.atomicfu.AtomicLong
+import kotlinx.atomicfu.AtomicRef
 import kotlinx.coroutines.delay
-import radar.generators.MoveGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
@@ -25,50 +26,52 @@ import kotlin.system.measureTimeMillis
 
 
 data class CatMutable(
-    var cat: MutableState<CatParticle>,
+    var cat: MutableState<CatParticle>
 )
 
+
 @Composable
-fun catSimulationScreen(scene: CatScene, moveGenerator: MoveGenerator) {
-    val mutableCats = remember {
-        SnapshotStateList<CatMutable>().apply {
-            addAll(scene.particles.map { CatMutable(mutableStateOf(it)) })
-        }
-    }
-
-    LaunchedEffect(null) {
+fun updateScene(
+    catScene: CatScene,
+    mutableCats: SnapshotStateList<CatMutable>,
+    state: AtomicRef<UIStates>,
+    timeUpdateData: AtomicLong,
+    cont: suspend (() -> Unit)
+) {
+    LaunchedEffect(Unit) {
         while (true) {
-            // TODO: efficient recomposition
-            val time = measureTimeMillis { scene.updateScene(moveGenerator) }
-            println(time)
-            delay(TAU - time)
-            val mutableCatsValues = mutableCats.map { it.cat.value }.toHashSet()
-            val newCats = mutableSetOf<CatParticle>()
-            scene.particles.forEach {
-                if (it !in mutableCatsValues) {
-                    newCats.add(it)
+            if (state.value == UIStates.UPDATE_DATA) {
+                timeUpdateData.value = measureTimeMillis {
+                    catScene.particles.forEachIndexed { index, cat ->
+                        mutableCats.add(index, CatMutable(mutableStateOf(cat)))
+                    }
+                    if (catScene.particles.size < mutableCats.size) {
+                        mutableCats.removeRange(catScene.particles.size, mutableCats.size - 1)
+                    }
                 }
+                println("updateData = ${timeUpdateData.value} ms.")
+                state.value = UIStates.DRAWING
             }
-            val toRemove = mutableListOf<CatMutable>()
-            mutableCats.forEachIndexed { index, mutableCat -> // force recomposition
-                val cat = mutableCat.cat.value
-                if (cat in scene.particles) {
-                    mutableCats[index] = mutableCats[index].copy(cat = mutableStateOf(cat))
-                } else {
-                    toRemove.add(mutableCat)
-                }
-            }
-//          toRemove.forEach { mutableCats.remove(it) } TODO: removing leads to teleportation of cats
-            newCats.forEach { mutableCats.add(CatMutable(mutableStateOf(it))) }
+            delay(3)
+            cont()
         }
     }
+}
 
+@Composable
+fun drawScene(
+    mutableCats: MutableList<CatMutable>, state: AtomicRef<UIStates>
+) {
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
         Box(modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
             .drawBehind { drawRect(Color(0xFFb5f096)) }) {
-            mutableCats.forEach { cat ->
-                drawCat(cat)
+            LaunchedEffect(Unit) {
+                while (state.value != UIStates.DRAWING) {
+                    delay(3)
+                }
             }
+            mutableCats.forEach { drawCat(it) }
+            state.value = UIStates.MODELING
         }
     }
 }
@@ -82,21 +85,19 @@ fun drawCat(cat: CatMutable) {
     LaunchedEffect(
         cat
     ) {
-
-        val targetColor = getColorForState(cat.cat.value.state)
-        for (i in 1..FRAMES_PER_TAU) {
-            animatedX += (cat.cat.value.coordinates.x - animatedX) / FRAMES_PER_TAU
-            animatedY += (cat.cat.value.coordinates.y - animatedY) / FRAMES_PER_TAU
-            currentColor = interpolateColor(currentColor, targetColor, 5f / FRAMES_PER_TAU)
-            delay(TAU / FRAMES_PER_TAU)
-        }
+        animatedX = cat.cat.value.coordinates.x
+        animatedY = cat.cat.value.coordinates.y
+        currentColor = getColorForState(cat.cat.value.state)
     }
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         val catOffset = androidx.compose.ui.geometry.Offset(
-            animatedX.dp.toPx(), animatedY.dp.toPx()
+            (animatedX - CAT_RADIUS / 2).dp.toPx(), (animatedY - CAT_RADIUS / 2).dp.toPx()
         )
-        drawCircle(color = currentColor, center = catOffset, radius = CAT_RADIUS.dp.toPx())
+        val catSize = Size((CAT_RADIUS * 2).toFloat(), (CAT_RADIUS * 2).toFloat())
+        drawRect(
+            color = currentColor, topLeft = catOffset, size = catSize
+        )
     }
 }
 
@@ -106,12 +107,4 @@ fun getColorForState(state: CatStates): Color {
         CatStates.HISS -> Color.Gray
         CatStates.FIGHT -> Color.Black
     }
-}
-
-fun interpolateColor(start: Color, end: Color, fraction: Float): Color {
-    val r = start.red + (end.red - start.red) * fraction
-    val g = start.green + (end.green - start.green) * fraction
-    val b = start.blue + (end.blue - start.blue) * fraction
-    val a = start.alpha + (end.alpha - start.alpha) * fraction
-    return Color(r, g, b, a)
 }
