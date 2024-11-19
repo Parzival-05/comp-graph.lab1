@@ -3,7 +3,6 @@ package drawing
 import CatSimulation.Companion.CAT_RADIUS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
-import radar.logging.GlobalInteractionLog
 import classes.UIStates
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -17,12 +16,13 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import drawing.logging.draggableLogWithButton
+import drawing.menu.drawDraggableMenu
 import kotlinx.atomicfu.AtomicLong
 import kotlinx.atomicfu.AtomicRef
 import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
+import radar.scene.SceneConfig
 import kotlin.system.measureTimeMillis
 
 
@@ -61,11 +61,13 @@ fun updateScene(
 
 @Composable
 fun drawScene(
-    mutableCats: MutableList<CatMutable>, state: AtomicRef<UIStates>
+    mutableCats: MutableList<CatMutable>, state: AtomicRef<UIStates>, config: SceneConfig
 ) {
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
-        Box(modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
-            .drawBehind { drawRect(Color(0xFFb5f096)) }) {
+        Box(
+            modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
+                .drawBehind { drawRect(Color(0xFFb5f096)) }) {
+
             LaunchedEffect(Unit) {
                 while (state.value != UIStates.DRAWING) {
                     delay(3)
@@ -73,7 +75,7 @@ fun drawScene(
             }
             mutableCats.forEach { drawCat(it) }
             state.value = UIStates.MODELING
-            draggableLogWithButton(GlobalInteractionLog)
+            drawDraggableMenu(config = config)
         }
     }
 }
