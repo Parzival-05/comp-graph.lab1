@@ -9,7 +9,6 @@ import CatSimulation.Companion.MIN_CAT_SPEED
 import CatSimulation.Companion.MIN_FIGHT_DIST
 import CatSimulation.Companion.MIN_HISS_DIST
 import CatSimulation.Companion.MIN_TAU
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -17,9 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import radar.scene.SceneConfig
@@ -62,11 +59,11 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     Text("-")
                 }
                 Button(onClick = {
-                    config.catRadius++
-                }, modifier = plusMarginModifier) {
                     if (config.catRadius < MAX_CAT_RADIUS) {
-                        Text("+")
+                        config.catRadius++
                     }
+                }, modifier = plusMarginModifier) {
+                    Text("+")
                 }
                 Slider(
                     value = config.catRadius.toFloat(),
@@ -114,11 +111,11 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     Text("-")
                 }
                 Button(onClick = {
-                    config.maxParticleSpeed++
-                }, modifier = plusMarginModifier) {
                     if (config.maxParticleSpeed < MAX_CAT_SPEED) {
-                        Text("+")
+                        config.maxParticleSpeed++
                     }
+                }, modifier = plusMarginModifier) {
+                    Text("+")
                 }
                 Slider(
                     value = config.maxParticleSpeed.toFloat(),
@@ -137,11 +134,11 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     Text("-")
                 }
                 Button(onClick = {
-                    config.fightDist++
-                }, modifier = minusMarginModifier) {
                     if (config.fightDist < MAX_FIGHT_DIST) {
-                        Text("+")
+                        config.fightDist++
                     }
+                }, modifier = minusMarginModifier) {
+                    Text("+")
                 }
                 Slider(
                     value = config.fightDist.toFloat(),
@@ -160,11 +157,11 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     Text("-")
                 }
                 Button(onClick = {
-                    config.hissDist++
-                }, modifier = plusMarginModifier) {
                     if (config.hissDist < MAX_HISS_DIST) {
-                        Text("+")
+                        config.hissDist++
                     }
+                }, modifier = plusMarginModifier) {
+                    Text("+")
                 }
                 Slider(
                     value = config.hissDist.toFloat(),
