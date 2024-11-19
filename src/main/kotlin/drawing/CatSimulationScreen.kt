@@ -1,6 +1,5 @@
 package drawing
 
-import CatSimulation.Companion.CAT_RADIUS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import classes.UIStates
@@ -52,11 +51,13 @@ fun drawScene(
             Canvas(modifier = Modifier.fillMaxSize()) {
                 cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
+                    val catRadius = config.catRadius
                     val catOffset = Offset(
-                        (cat.coordinates.x - CAT_RADIUS / 2).dp.toPx(), (cat.coordinates.y - CAT_RADIUS / 2).dp.toPx()
+                        (cat.coordinates.x).dp.toPx(),
+                        (cat.coordinates.y).dp.toPx()
                     )
                     drawCircle(
-                        color = currentColor, center = catOffset, radius = CAT_RADIUS.toFloat()
+                        color = currentColor, center = catOffset, radius = catRadius.toFloat()
                     )
                 }
             }
