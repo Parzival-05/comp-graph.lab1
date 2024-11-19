@@ -130,27 +130,27 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     if (config.fightDist > MIN_FIGHT_DIST) {
                         config.fightDist--
                     }
-                }, modifier = plusMarginModifier) {
+                }, modifier = minusMarginModifier) {
                     Text("-")
                 }
                 Button(onClick = {
                     if (config.fightDist < MAX_FIGHT_DIST) {
                         config.fightDist++
                     }
-                }, modifier = minusMarginModifier) {
+                }, modifier = plusMarginModifier) {
                     Text("+")
                 }
                 Slider(
                     value = config.fightDist.toFloat(),
                     onValueChange = { config.fightDist = it.toInt() },
-                    valueRange = 1f..(config.hissDist.toFloat() - 1),
+                    valueRange = MIN_HISS_DIST.toFloat()..(config.hissDist.toFloat() - 1),
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
             Text(text = "Hiss Distance: ${config.hissDist}")
             Row {
                 Button(onClick = {
-                    if (config.hissDist > MIN_HISS_DIST) {
+                    if (config.hissDist > MIN_HISS_DIST && config.hissDist > config.fightDist) {
                         config.hissDist--
                     }
                 }, modifier = minusMarginModifier) {
@@ -166,7 +166,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                 Slider(
                     value = config.hissDist.toFloat(),
                     onValueChange = { config.hissDist = it.toInt() },
-                    valueRange = config.fightDist.toFloat()..100f,
+                    valueRange = config.fightDist.toFloat()..MAX_HISS_DIST.toFloat(),
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
