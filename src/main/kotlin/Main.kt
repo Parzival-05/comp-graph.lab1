@@ -1,8 +1,14 @@
 import CatSimulation.Companion.PARTICLE_COUNT
 import CatSimulation.Companion.TAU
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import classes.UIStates
@@ -49,18 +55,27 @@ fun main() = application {
         }
     }
     Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
-        val mutableCats = remember {
-            SnapshotStateList<CatMutable>().apply {
-                addAll(catScene.particles.map { CatMutable(mutableStateOf(it)) })
-            }
-        }
-        val timeUpdateData = atomic(0L) // TODO: remove it from the release ver.
-        updateScene(
-            catScene, mutableCats, state, timeUpdateData
+        Dialog(
+            onDismissRequest = { /* Do something when back button pressed */ },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false
+            )
         ) {
-            delay(TAU - (timeModeling.value + timeUpdateData.value))
+            val mutableCats = remember {
+                SnapshotStateList<CatMutable>().apply {
+                    addAll(catScene.particles.map { CatMutable(mutableStateOf(it)) })
+                }
+            }
+            val timeUpdateData = atomic(0L) // TODO: remove it from the release ver.
+            updateScene(
+                catScene, mutableCats, state, timeUpdateData
+            ) {
+                delay(TAU - (timeModeling.value + timeUpdateData.value))
+            }
+            drawScene(mutableCats, state, catScene.sceneConfig)
         }
-        drawScene(mutableCats, state)
     }
     workerPool.shutdown()
 }
