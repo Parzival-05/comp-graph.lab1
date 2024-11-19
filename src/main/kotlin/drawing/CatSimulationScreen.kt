@@ -3,8 +3,8 @@ package drawing
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import CatSimulation.Companion.PARTICLE_COUNT
+import radar.logging.GlobalInteractionLog
 import classes.UIStates
-import DraggableLogWithButton
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +21,9 @@ import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
 import kotlin.math.sqrt
+import drawing.logging.draggableLogWithButton
+import kotlinx.coroutines.delay
+
 
 @Composable
 fun updateScene(
@@ -66,8 +69,7 @@ fun drawScene(
                 }
             }
             state.value = UIStates.MODELING
-
-            DraggableLogWithButton()
+            draggableLogWithButton(GlobalInteractionLog)
         }
     }
 }
