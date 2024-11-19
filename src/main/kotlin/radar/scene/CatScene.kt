@@ -7,8 +7,6 @@ import radar.collisionDetection.KDTreeCollisionDetection
 import radar.logging.logging
 import radar.generators.CatGenerator
 import radar.generators.MoveGenerator
-import radar.metrics.euclidean
-import radar.metrics.manhattan
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -64,14 +62,8 @@ class CatScene(
 
     fun calcDistance(
         p1: Point2D, p2: Point2D
-    ): Float {
-        val distF = when (sceneConfig.metric) {
-            SceneConfig.Companion.MetricType.EUCLIDEAN -> ::euclidean
-            SceneConfig.Companion.MetricType.MANHATTAN -> ::manhattan
-            else -> TODO("other metrics")
-        }
-        return distF(p1, p2)
-    }
+    ): Float = sceneConfig.metricFunction(p1, p2)
+
 
     fun calcNewState(dist: Float): CatStates {
         val newState = if (dist < sceneConfig.fightDist) {

@@ -3,8 +3,6 @@ package radar.collisionDetection
 import CollisionDetection.Companion.BATCH_SIZE
 import org.tinspin.index.PointDistance
 import org.tinspin.index.kdtree.KDTree
-import radar.metrics.euclidean
-import radar.metrics.manhattan
 import radar.scene.*
 
 
@@ -19,12 +17,9 @@ class KDTreeCollisionDetection {
             }
             val collisions = mutableSetOf<CatCollision>()
             val pd = PointDistance { p1: DoubleArray, p2: DoubleArray ->
-                val distF = when (scene.sceneConfig.metric) {
-                    SceneConfig.Companion.MetricType.EUCLIDEAN -> ::euclidean
-                    SceneConfig.Companion.MetricType.MANHATTAN -> ::manhattan
-                    else -> TODO()
-                }
-                distF(Point2D(p1[0].toFloat(), p1[1].toFloat()), Point2D(p2[0].toFloat(), p2[1].toFloat())).toDouble()
+                scene.sceneConfig.metricFunction(
+                    Point2D(p1[0].toFloat(), p1[1].toFloat()), Point2D(p2[0].toFloat(), p2[1].toFloat())
+                ).toDouble()
             }
             for (cat in cats) {
                 val coordinates = cat.coordinates
