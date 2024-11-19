@@ -31,6 +31,15 @@ This project simulates and visualizes the behavior of cats on a rectangular map,
 | **PARTICLE_COUNT = 50000, TAU = 500L**                                                                  |
 | <img src="./images/50000_500L.gif" width="700" alt="Simulation with PARTICLE_COUNT 50000 and TAU 500L"> |
 
+## Task distribution
+
+| **Name**        | **Tasks**                     |
+|-----------------|-------------------------------|
+| David Akhmedov  | Algorithm + Architecture + CI |
+| Anna Ermolovich | UI + README.md                |
+| Danil Parfenov  | Logging + tests               |
+
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
