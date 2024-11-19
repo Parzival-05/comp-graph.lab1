@@ -42,12 +42,12 @@ class KDTreeCollisionDetection {
                         if (catNeighbour == cat) {
                             continue
                         }
-                        val dist = scene.calcDistance(cat.coordinates, catNeighbour.coordinates)
+                        val dist = neighbourCat.dist().toFloat()
                         if (dist < scene.sceneConfig.hissDist) {
                             val state = scene.calcNewState(dist)
-                            val collision = CatCollision(cat, catNeighbour, dist, state)
-                            collisions.add(collision)
                             if (state != CatStates.CALM) {
+                                val collision = CatCollision(cat, catNeighbour, dist, state)
+                                collisions.add(collision)
                                 break
                             }
                         } else {
