@@ -9,99 +9,61 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import drawing.menu.drawDraggableMenu
-import kotlinx.atomicfu.AtomicLong
-import kotlinx.atomicfu.AtomicRef
 import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.SceneConfig
-import kotlin.system.measureTimeMillis
-
-
-data class CatMutable(
-    var cat: MutableState<CatParticle>
-)
 
 
 @Composable
 fun updateScene(
-    catScene: CatScene,
-    mutableCats: SnapshotStateList<CatMutable>,
-    state: AtomicRef<UIStates>,
-    timeUpdateData: AtomicLong,
-    cont: suspend (() -> Unit)
+    catScene: CatScene, state: MutableState<UIStates>, onSceneUpdated: (Array<CatParticle>) -> Unit
 ) {
     LaunchedEffect(Unit) {
         while (true) {
             if (state.value == UIStates.UPDATE_DATA) {
-                timeUpdateData.value = measureTimeMillis {
-                    catScene.particles.forEachIndexed { index, cat ->
-                        mutableCats.add(index, CatMutable(mutableStateOf(cat)))
-                    }
-                    if (catScene.particles.size < mutableCats.size) {
-                        mutableCats.removeRange(catScene.particles.size, mutableCats.size - 1)
-                    }
-                }
-                println("updateData = ${timeUpdateData.value} ms.")
+                onSceneUpdated(catScene.particles.map { it }.toTypedArray()) // Передача нового списка
                 state.value = UIStates.DRAWING
             }
             delay(3)
-            cont()
         }
     }
 }
 
 @Composable
 fun drawScene(
-    mutableCats: MutableList<CatMutable>, state: AtomicRef<UIStates>, config: SceneConfig
+    cats: Array<CatParticle>, state: MutableState<UIStates>, config: SceneConfig
 ) {
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
-        Box(
-            modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
-                .drawBehind { drawRect(Color(0xFFb5f096)) }) {
-
+        Box(modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
+            .drawBehind { drawRect(Color(0xFFb5f096)) }) {
             LaunchedEffect(Unit) {
                 while (state.value != UIStates.DRAWING) {
                     delay(3)
                 }
             }
-            mutableCats.forEach { drawCat(it) }
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                cats.forEach { cat ->
+                    val currentColor = getColorForState(cat.state)
+                    val catOffset = Offset(
+                        (cat.coordinates.x - CAT_RADIUS / 2).dp.toPx(), (cat.coordinates.y - CAT_RADIUS / 2).dp.toPx()
+                    )
+                    drawCircle(
+                        color = currentColor, center = catOffset, radius = CAT_RADIUS.toFloat()
+                    )
+                }
+            }
             state.value = UIStates.MODELING
             drawDraggableMenu(config = config)
         }
     }
 }
 
-@Composable
-fun drawCat(cat: CatMutable) {
-    var animatedX by remember { mutableStateOf(cat.cat.value.coordinates.x) }
-    var animatedY by remember { mutableStateOf(cat.cat.value.coordinates.y) }
-    var currentColor by remember { mutableStateOf(getColorForState(cat.cat.value.state)) }
-
-    LaunchedEffect(
-        cat
-    ) {
-        animatedX = cat.cat.value.coordinates.x
-        animatedY = cat.cat.value.coordinates.y
-        currentColor = getColorForState(cat.cat.value.state)
-    }
-
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val catOffset = androidx.compose.ui.geometry.Offset(
-            (animatedX - CAT_RADIUS / 2).dp.toPx(), (animatedY - CAT_RADIUS / 2).dp.toPx()
-        )
-        val catSize = Size((CAT_RADIUS * 2).toFloat(), (CAT_RADIUS * 2).toFloat())
-        drawRect(
-            color = currentColor, topLeft = catOffset, size = catSize
-        )
-    }
-}
 

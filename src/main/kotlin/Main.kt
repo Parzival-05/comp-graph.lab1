@@ -1,36 +1,21 @@
 import CatSimulation.Companion.PARTICLE_COUNT
 import CatSimulation.Companion.TAU
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import classes.UIStates
-import drawing.CatMutable
 import drawing.drawScene
 import drawing.updateScene
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.delay
 import radar.generators.CatGenerator
 import radar.generators.MoveGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.SceneConfig
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.SynchronousQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 import kotlin.time.measureTime
 
 
 fun main() = application {
-    val keepAliveTime = 100L
-    val workQueue = SynchronousQueue<Runnable>()
-    val workerPool: ExecutorService = ThreadPoolExecutor(
-        2, 2, keepAliveTime, TimeUnit.SECONDS, workQueue
-    )
     val sceneConfig = SceneConfig()
     val catGenerator = CatGenerator()
     val cats = ArrayList<CatParticle>()
@@ -39,39 +24,28 @@ fun main() = application {
     }
     val catScene = CatScene(cats, sceneConfig)
     val moveGenerator = MoveGenerator(sceneConfig)
-    val state = atomic(UIStates.MODELING)
-    val timeModeling = atomic(0L) // TODO: remove it from the release ver.
-    workerPool.execute {
-        while (true) {
-            if (state.value == UIStates.MODELING) {
-                timeModeling.value = measureTime { catScene.updateScene(moveGenerator) }.inWholeMilliseconds
-                println("modeling = $timeModeling ms.")
-                state.value = UIStates.UPDATE_DATA
-            }
-        }
-    }
+    val state = mutableStateOf(UIStates.MODELING)
+
     Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
-        Dialog(
-            onDismissRequest = { /* Do something when back button pressed */ },
-            properties = DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false
-            )
-        ) {
-            val mutableCats = remember {
-                SnapshotStateList<CatMutable>().apply {
-                    addAll(catScene.particles.map { CatMutable(mutableStateOf(it)) })
+        var currentCats: Array<CatParticle> by remember { mutableStateOf(emptyArray()) }
+        var timeModeling = 0L
+        LaunchedEffect(Unit) {
+            while (true) {
+                if (state.value == UIStates.MODELING) {
+                    timeModeling = measureTime { catScene.updateScene(moveGenerator) }.inWholeMilliseconds
+                    state.value = UIStates.UPDATE_DATA
                 }
+                if (timeModeling < TAU) {
+                    delay(TAU - timeModeling)
+                } else {
+                    delay(3)
+                }
+
             }
-            val timeUpdateData = atomic(0L) // TODO: remove it from the release ver.
-            updateScene(
-                catScene, mutableCats, state, timeUpdateData
-            ) {
-                delay(TAU - (timeModeling.value + timeUpdateData.value))
-            }
-            drawScene(mutableCats, state, catScene.sceneConfig)
         }
+        updateScene(catScene, state) { updatedCats ->
+            currentCats = updatedCats
+        }
+        drawScene(currentCats, state, catScene.sceneConfig)
     }
-    workerPool.shutdown()
 }
