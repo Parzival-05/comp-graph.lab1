@@ -87,10 +87,9 @@ class CatScene(
 
     override fun reactCollisions(collisions: Array<CatCollision>) {
         for (collision in collisions) {
-            val newState = calcNewState(collision.dist)
-            logging(collision, newState)
+            logging(collision)
             arrayOf(collision.particle1, collision.particle2).forEach {
-                it.setCatState(newState)
+                it.setCatState(collision.catState)
             }
             lastCollisions.add(collision)
         }
