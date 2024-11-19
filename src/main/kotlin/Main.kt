@@ -1,4 +1,5 @@
 import CatSimulation.Companion.PARTICLE_COUNT
+import CatSimulation.Companion.TAU
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -11,6 +12,7 @@ import radar.generators.MoveGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.SceneConfig
+import kotlin.time.measureTime
 
 
 fun main() = application {
@@ -26,17 +28,21 @@ fun main() = application {
 
     Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
         var currentCats: Array<CatParticle> by remember { mutableStateOf(emptyArray()) }
-
+        var timeModeling = 0L
         LaunchedEffect(Unit) {
             while (true) {
                 if (state.value == UIStates.MODELING) {
-                    catScene.updateScene(moveGenerator)
+                    timeModeling = measureTime { catScene.updateScene(moveGenerator) }.inWholeMilliseconds
                     state.value = UIStates.UPDATE_DATA
                 }
-                delay(3)
+                if (timeModeling < TAU) {
+                    delay(TAU - timeModeling)
+                } else {
+                    delay(3)
+                }
+
             }
         }
-
         updateScene(catScene, state) { updatedCats ->
             currentCats = updatedCats
         }
