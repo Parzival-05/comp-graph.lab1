@@ -10,7 +10,7 @@ class SceneConfig {
     }
 
     var maxParticleSpeed = 1
-    var metric: MetricType = MetricType.GREAT_CIRCLE
+    var metric: MetricType = MetricType.EUCLIDEAN
     val metricFunction: ((Point2D, Point2D) -> Float)
         get() {
             return when (metric) {
@@ -28,4 +28,7 @@ class SceneConfig {
                 value
             }
         }
+    var catRadius = 1
+    var tau = 500L
+    var isOnPause = false
 }

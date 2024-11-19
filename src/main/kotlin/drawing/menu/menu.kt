@@ -59,6 +59,17 @@ fun drawDraggableMenu(
                 Button(onClick = { showSettings = true }) {
                     Text("Settings")
                 }
+
+                Button(onClick = {
+                    config.isOnPause = !config.isOnPause
+                }) {
+                    val text = if (!config.isOnPause) {
+                        "Pause"
+                    } else {
+                        "Resume"
+                    }
+                    Text(text)
+                }
             }
 
             if (isLogVisible) {
@@ -72,6 +83,7 @@ fun drawDraggableMenu(
             if (showSettings) {
                 sceneSettingsMenu(config = config, onClose = { showSettings = false })
             }
+
         }
     }
 }
