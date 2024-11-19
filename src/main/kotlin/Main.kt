@@ -3,6 +3,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import classes.UIStates
+import drawing.drawModelingTime
 import drawing.drawScene
 import drawing.updateScene
 import kotlinx.coroutines.*
@@ -27,7 +28,7 @@ fun main() = application {
 
     Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
         var currentCats: Array<CatParticle> by remember { mutableStateOf(emptyArray()) }
-        var timeModeling = 0L
+        var timeModeling by remember { mutableStateOf(0L) }
         val cs = rememberCoroutineScope { Dispatchers.Default }
         LaunchedEffect(Unit) {
             cs.launch {
@@ -55,5 +56,6 @@ fun main() = application {
             currentCats = updatedCats
         }
         drawScene(currentCats, state, catScene.sceneConfig)
+        drawModelingTime(timeModeling)
     }
 }
