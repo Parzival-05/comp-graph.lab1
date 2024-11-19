@@ -81,7 +81,9 @@ class CatScene(
         for (collision in collisions) {
             logging(collision)
             arrayOf(collision.particle1, collision.particle2).forEach {
-                it.setCatState(collision.catState)
+                if (it.state != CatStates.FIGHT) {
+                    it.setCatState(collision.catState)
+                }
             }
             lastCollisions.add(collision)
         }
