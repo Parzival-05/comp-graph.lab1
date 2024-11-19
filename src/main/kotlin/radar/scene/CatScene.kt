@@ -36,7 +36,7 @@ class CatScene(
 
     private fun spawnCats() {
         val nMax = PARTICLE_COUNT - particles.size
-        val n = (nMax * Random.nextFloat()).roundToInt()
+        val n = ((nMax - 1) * Random.nextFloat()).roundToInt()
         val cats = catEmitter.emit(n)
         this.particles.addAll(cats)
     }
