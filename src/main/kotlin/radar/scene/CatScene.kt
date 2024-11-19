@@ -23,7 +23,6 @@ class CatScene(
     }
 
     override fun updateScene(offsetGenerator: MoveGenerator) {
-        // TODO: reuse code
         this.move(offsetGenerator)
         this.resetStates()
         this.findAndReactCollisions()
@@ -42,7 +41,6 @@ class CatScene(
     }
 
     private fun resetStates() {
-        // inefficient and probably incorrect?
         for (collision in lastCollisions) {
             if (this.calcDistance(
                     collision.particle1.coordinates, collision.particle2.coordinates
@@ -60,7 +58,7 @@ class CatScene(
         return KDTreeCollisionDetection.findCollisions(this)
     }
 
-    fun calcDistance(
+    private fun calcDistance(
         p1: Point2D, p2: Point2D
     ): Float = sceneConfig.metricFunction(p1, p2)
 

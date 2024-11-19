@@ -1,13 +1,12 @@
 package drawing
 
-import CatSimulation.Companion.CAT_RADIUS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import classes.UIStates
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,11 +51,13 @@ fun drawScene(
             Canvas(modifier = Modifier.fillMaxSize()) {
                 cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
+                    val catRadius = config.catRadius
                     val catOffset = Offset(
-                        (cat.coordinates.x - CAT_RADIUS / 2).dp.toPx(), (cat.coordinates.y - CAT_RADIUS / 2).dp.toPx()
+                        (cat.coordinates.x).dp.toPx(),
+                        (cat.coordinates.y).dp.toPx()
                     )
                     drawCircle(
-                        color = currentColor, center = catOffset, radius = CAT_RADIUS.toFloat()
+                        color = currentColor, center = catOffset, radius = catRadius.toFloat()
                     )
                 }
             }
@@ -66,4 +67,21 @@ fun drawScene(
     }
 }
 
-
+@Composable
+fun drawModelingTime(timeModeling: Long) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomStart
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Modeling time: $timeModeling",
+                style = MaterialTheme.typography.body1
+            )
+        }
+    }
+}
