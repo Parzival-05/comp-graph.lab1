@@ -60,7 +60,7 @@ class CatScene(
         return KDTreeCollisionDetection.findCollisions(this)
     }
 
-    fun calcDistance(
+    private fun calcDistance(
         p1: Point2D, p2: Point2D
     ): Float = sceneConfig.metricFunction(p1, p2)
 
