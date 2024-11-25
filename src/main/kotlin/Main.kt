@@ -42,7 +42,6 @@ fun main() = application {
                             val sleepTimeMSBatch = 5L
                             var totalSleepTime = timeModeling - 3
                             while (totalSleepTime < sceneConfig.tau) {
-                                println(sceneConfig.tau)
                                 delay(sleepTimeMSBatch)
                                 totalSleepTime += sleepTimeMSBatch
                             }
