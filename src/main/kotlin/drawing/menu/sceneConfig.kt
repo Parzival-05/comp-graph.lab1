@@ -134,7 +134,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     Text("-")
                 }
                 Button(onClick = {
-                    if (config.fightDist < MAX_FIGHT_DIST) {
+                    if (config.fightDist < MAX_FIGHT_DIST && config.fightDist < config.hissDist) {
                         config.fightDist++
                     }
                 }, modifier = plusMarginModifier) {
