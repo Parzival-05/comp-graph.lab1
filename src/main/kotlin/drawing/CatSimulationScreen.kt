@@ -42,7 +42,7 @@ fun drawScene(
 ) {
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
         Box(modifier = Modifier.size(GRID_SIZE_X.dp, GRID_SIZE_Y.dp).align(Alignment.Center)
-            .drawBehind { drawRect(Color(0xFFb5f096)) }) {
+            .drawBehind { drawRect(Color(0xFFae99b8)) }) {
             LaunchedEffect(Unit) {
                 while (state.value != UIStates.DRAWING) {
                     delay(3)
@@ -70,17 +70,14 @@ fun drawScene(
 @Composable
 fun drawModelingTime(timeModeling: Long) {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomStart
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
+            println(timeModeling)
             Text(
-                text = "Modeling time: $timeModeling",
-                style = MaterialTheme.typography.body1
+                text = "Modeling time: $timeModeling", style = MaterialTheme.typography.body1
             )
         }
     }
