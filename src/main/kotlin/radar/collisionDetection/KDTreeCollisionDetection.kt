@@ -52,6 +52,7 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
                             if (nearestCats.hasNext()) {
                                 nearestCats.next()
                             } else {
+                                catsAreClose = false
                                 break
                             }
                         }
