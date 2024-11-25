@@ -34,6 +34,7 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
                 Point2D(p1[0], p1[1]), Point2D(p2[0], p2[1])
             )
         }
+        val handledCats = Collections.newSetFromMap(ConcurrentHashMap<Set<Int>, Boolean>())
         val chunkedCats = cats.chunked(cats.size / threadPoolSize)
         val jobs = mutableListOf<Future<*>>()
         for (chunkCat in chunkedCats) {
@@ -61,7 +62,9 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
                                 continue
                             }
                             val dist = neighbourCat.dist()
-                            if (dist < scene.sceneConfig.hissDist) {
+                            val catIds = setOf(cat.id, catNeighbour.id)
+                            if (dist < scene.sceneConfig.hissDist && !handledCats.contains(catIds)) {
+                                handledCats.add(catIds)
                                 val state = scene.calcNewState(dist)
                                 if (state != CatStates.CALM) {
                                     val collision = CatCollision(cat, catNeighbour, dist, state)
