@@ -11,7 +11,7 @@ const val DIMS = 2
 
 class KDTreeCollisionDetection(private val workerPool: ExecutorService, private val threadPoolSize: Int) {
 
-    val kValues = Collections.newSetFromMap(ConcurrentHashMap<Int, Boolean>())
+    private val kValues: MutableSet<Int> = Collections.newSetFromMap(ConcurrentHashMap())
     private val batchSize: Int
         get() {
             return if (kValues.size == 0) {
@@ -63,13 +63,15 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
                             }
                             val dist = neighbourCat.dist()
                             val catIds = setOf(cat.id, catNeighbour.id)
-                            if (dist < scene.sceneConfig.hissDist && !handledCats.contains(catIds)) {
-                                handledCats.add(catIds)
-                                val state = scene.calcNewState(dist)
-                                if (state != CatStates.CALM) {
-                                    val collision = CatCollision(cat, catNeighbour, dist, state)
-                                    collisions.add(collision)
-                                    break
+                            if (dist < scene.sceneConfig.hissDist) {
+                                if (!handledCats.contains(catIds)) {
+                                    handledCats.add(catIds)
+                                    val state = scene.calcNewState(dist)
+                                    if (state != CatStates.CALM) {
+                                        val collision = CatCollision(cat, catNeighbour, dist, state)
+                                        collisions.add(collision)
+                                        break
+                                    }
                                 }
                             } else {
                                 catsAreClose = false
