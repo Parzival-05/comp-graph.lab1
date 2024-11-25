@@ -60,10 +60,10 @@ class CatScene(
 
     private fun calcDistance(
         p1: Point2D, p2: Point2D
-    ): Float = sceneConfig.metricFunction(p1, p2)
+    ): Double = sceneConfig.metricFunction(p1, p2)
 
 
-    fun calcNewState(dist: Float): CatStates {
+    fun calcNewState(dist: Double): CatStates {
         val newState = if (dist < sceneConfig.fightDist) {
             CatStates.FIGHT
         } else if (dist < sceneConfig.hissDist && Random.nextDouble(1.0) < 1 / (dist.pow(2))) {

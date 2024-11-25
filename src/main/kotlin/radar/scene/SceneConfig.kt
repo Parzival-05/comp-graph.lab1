@@ -9,9 +9,9 @@ class SceneConfig {
         enum class MetricType { EUCLIDEAN, MANHATTAN, GREAT_CIRCLE }
     }
 
-    var maxParticleSpeed = 1
+    var maxParticleSpeed = 1.0
     var metric: MetricType = MetricType.EUCLIDEAN
-    val metricFunction: ((Point2D, Point2D) -> Float)
+    val metricFunction: ((Point2D, Point2D) -> Double)
         get() {
             return when (metric) {
                 SceneConfig.Companion.MetricType.EUCLIDEAN -> ::euclidean
