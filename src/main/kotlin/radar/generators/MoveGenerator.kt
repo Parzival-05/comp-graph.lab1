@@ -10,8 +10,8 @@ import kotlin.random.Random
 class MoveGenerator(private val sceneConfig: SceneConfig) : BaseOffsetGenerator<CatParticle, Point2D, Offset2D> {
     override fun generate(particle: CatParticle): Offset2D {
         return Offset2D(
-            Random.nextInt(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed + 1),
-            Random.nextInt(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed + 1)
+            Random.nextDouble(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed),
+            Random.nextDouble(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed)
         )
     }
 }

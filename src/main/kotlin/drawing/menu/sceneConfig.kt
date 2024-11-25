@@ -119,7 +119,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                 }
                 Slider(
                     value = config.maxParticleSpeed.toFloat(),
-                    onValueChange = { config.maxParticleSpeed = it.toInt() },
+                    onValueChange = { config.maxParticleSpeed = it.toDouble() },
                     valueRange = 1f..100f,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )

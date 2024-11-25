@@ -12,8 +12,8 @@ class CatGenerator : BaseParticleGenerator<CatParticle, Point2D, Offset2D> {
     override fun generate(): CatParticle {
         val coordinates =
             Point2D(
-                Random.nextDouble(GRID_SIZE_X.toDouble()).toFloat(),
-                Random.nextDouble(GRID_SIZE_Y.toDouble()).toFloat()
+                Random.nextDouble(GRID_SIZE_X),
+                Random.nextDouble(GRID_SIZE_Y)
             )
         return generate(coordinates)
     }

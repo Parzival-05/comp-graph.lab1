@@ -13,17 +13,17 @@ class KDTreeCollisionDetection {
             val kdTree = KDTree.create<CatParticle>(2)
             for (cat in cats) {
                 val coordinates = cat.coordinates
-                kdTree.insert(doubleArrayOf(coordinates.x.toDouble(), coordinates.y.toDouble()), cat)
+                kdTree.insert(doubleArrayOf(coordinates.x, coordinates.y), cat)
             }
             val collisions = mutableSetOf<CatCollision>()
             val pd = PointDistance { p1: DoubleArray, p2: DoubleArray ->
                 scene.sceneConfig.metricFunction(
-                    Point2D(p1[0].toFloat(), p1[1].toFloat()), Point2D(p2[0].toFloat(), p2[1].toFloat())
-                ).toDouble()
+                    Point2D(p1[0], p1[1]), Point2D(p2[0], p2[1])
+                )
             }
             for (cat in cats) {
                 val coordinates = cat.coordinates
-                val (x, y) = Pair(coordinates.x.toDouble(), coordinates.y.toDouble())
+                val (x, y) = Pair(coordinates.x, coordinates.y)
                 var catsAreClose = true
                 var batch = 0
                 while (catsAreClose) {
@@ -42,7 +42,7 @@ class KDTreeCollisionDetection {
                         if (catNeighbour == cat) {
                             continue
                         }
-                        val dist = neighbourCat.dist().toFloat()
+                        val dist = neighbourCat.dist()
                         if (dist < scene.sceneConfig.hissDist) {
                             val state = scene.calcNewState(dist)
                             if (state != CatStates.CALM) {

@@ -13,11 +13,11 @@ class CatEmitter(
         val particles = mutableSetOf<CatParticle>()
         for (i in 1..n) {
             val particleCoordinates = if (Random.nextInt(0, 2) == 0) {
-                val y = Random.nextInt(GRID_SIZE_Y)
-                Point2D(0.0f, y.toFloat())
+                val y = Random.nextDouble(GRID_SIZE_Y)
+                Point2D(0.0, y)
             } else {
-                val x = Random.nextInt(GRID_SIZE_X)
-                Point2D(x.toFloat(), 0.0f)
+                val x = Random.nextDouble(GRID_SIZE_X)
+                Point2D(x, 0.0)
             }
             particles.add(
                 particleGenerator.generate(particleCoordinates)
