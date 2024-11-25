@@ -18,6 +18,7 @@ class CatSimulation {
 
 class CollisionDetection {
     companion object {
-        const val BATCH_SIZE = 5
+        var INITIAL_BATCH_SIZE = 5
+        const val THREAD_COUNT = 8
     }
 }

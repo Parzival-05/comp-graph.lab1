@@ -1,12 +1,15 @@
 package radar.scene
 
 import CatSimulation.Companion.PARTICLE_COUNT
+import CollisionDetection.Companion.THREAD_COUNT
 import core.base.BaseEmitter
 import core.base.BaseScene
 import radar.collisionDetection.KDTreeCollisionDetection
 import radar.logging.logging
 import radar.generators.CatGenerator
 import radar.generators.MoveGenerator
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -17,6 +20,11 @@ class CatScene(
     private var catEmitter: BaseEmitter<CatParticle, Point2D, Offset2D> = CatEmitter(particleGenerator = CatGenerator())
 ) : BaseScene<CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator>(particles) {
     private val lastCollisions = mutableSetOf<CatCollision>()
+    private val collisionDetection = KDTreeCollisionDetection(workerPool, THREAD_COUNT)
+
+    companion object {
+        val workerPool: ExecutorService = Executors.newFixedThreadPool(THREAD_COUNT)
+    }
 
     init {
         this.findAndReactCollisions()
@@ -42,26 +50,16 @@ class CatScene(
 
     private fun resetStates() {
         for (collision in lastCollisions) {
-            if (this.calcDistance(
-                    collision.particle1.coordinates, collision.particle2.coordinates
-                ) > sceneConfig.hissDist
-            ) {
-                arrayOf(collision.particle1, collision.particle2).forEach {
-                    it.setCatState(CatStates.CALM)
-                }
+            arrayOf(collision.particle1, collision.particle2).forEach {
+                it.setCatState(CatStates.CALM)
             }
         }
         lastCollisions.clear()
     }
 
     override fun findCollisions(): Array<CatCollision> {
-        return KDTreeCollisionDetection.findCollisions(this)
+        return collisionDetection.findCollisions(this)
     }
-
-    private fun calcDistance(
-        p1: Point2D, p2: Point2D
-    ): Double = sceneConfig.metricFunction(p1, p2)
-
 
     fun calcNewState(dist: Double): CatStates {
         val newState = if (dist < sceneConfig.fightDist) {
