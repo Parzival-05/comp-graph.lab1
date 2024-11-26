@@ -58,7 +58,8 @@ class CatScene(
     }
 
     override fun findCollisions(): Array<CatCollision> {
-        return collisionDetection.findCollisions(this)
+           override fun findCollisions(): Array<CatCollision> 
+             = collisionDetection.findCollisions(this)
     }
 
     fun calcNewState(dist: Double): CatStates {
