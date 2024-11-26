@@ -1,16 +1,19 @@
 package radar.collisionDetection
 
 import CollisionDetection.Companion.INITIAL_BATCH_SIZE
+import core.base.BaseCollisionDetection
 import org.tinspin.index.PointDistance
 import org.tinspin.index.kdtree.KDTree
+import radar.generators.MoveGenerator
 import radar.scene.*
 import java.util.*
 import java.util.concurrent.*
+import kotlin.math.max
 
 const val DIMS = 2
 
-class KDTreeCollisionDetection(private val workerPool: ExecutorService, private val threadPoolSize: Int) {
-
+class KDTreeCollisionDetection(private val workerPool: ExecutorService, private val threadPoolSize: Int) :
+    BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> {
     private val kValues: MutableSet<Int> = Collections.newSetFromMap(ConcurrentHashMap())
     private val batchSize: Int
         get() = if (kValues.size == 0) {
@@ -19,7 +22,7 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
             kValues.sum() / kValues.size + 1
         }
 
-    fun findCollisions(scene: CatScene): Array<CatCollision> {
+    override fun findCollisions(scene: CatScene): Array<CatCollision> {
         val cats = scene.particles
         val kdTree = KDTree.create<CatParticle>(DIMS)
         for (cat in cats) {
@@ -33,7 +36,7 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
             )
         }
         val handledCats = Collections.newSetFromMap(ConcurrentHashMap<Set<Int>, Boolean>())
-        val chunkedCats = cats.chunked(cats.size / threadPoolSize)
+        val chunkedCats = cats.chunked(max(cats.size / threadPoolSize, 1))
         val jobs = mutableListOf<Future<*>>()
         for (chunkCat in chunkedCats) {
             val job = workerPool.submit {
@@ -72,13 +75,23 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
                                 catsAreClose = false
                                 kValues.add(n)
                                 break
-                            } else if (!handledCats.contains(catIds)) {
-                                handledCats.add(catIds)
-                                val state = scene.calcNewState(dist)
-                                if (state != CatStates.CALM) {
-                                    val collision = CatCollision(cat, catNeighbour, dist, state)
-                                    collisions.add(collision)
-                                    break
+                            } else {
+                                val isHandled = synchronized(handledCats) {
+                                    if (!handledCats.contains(catIds)) {
+                                        handledCats.add(catIds)
+                                        false
+                                    } else {
+                                        true
+                                    }
+                                }
+                                if (!isHandled) {
+                                    val state = scene.calcNewState(dist)
+                                    if (state != CatStates.CALM) {
+                                        val collision = CatCollision(cat, catNeighbour, dist, state)
+                                        collisions.add(collision)
+                                    } else {
+                                        break
+                                    }
                                 }
                             }
                         }

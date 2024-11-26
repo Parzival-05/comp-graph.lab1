@@ -2,6 +2,7 @@ package radar.scene
 
 import CatSimulation.Companion.PARTICLE_COUNT
 import CollisionDetection.Companion.THREAD_COUNT
+import core.base.BaseCollisionDetection
 import core.base.BaseEmitter
 import core.base.BaseScene
 import radar.collisionDetection.KDTreeCollisionDetection
@@ -17,13 +18,20 @@ import kotlin.random.Random
 class CatScene(
     override var particles: ArrayList<CatParticle>,
     val sceneConfig: SceneConfig,
-    private var catEmitter: BaseEmitter<CatParticle, Point2D, Offset2D> = CatEmitter(particleGenerator = CatGenerator())
+    private var catEmitter: BaseEmitter<CatParticle, Point2D, Offset2D> = CatEmitter(
+        particleGenerator = CatGenerator()
+    ),
+    private val collisionDetection: BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> = KDTreeCollisionDetection(
+        workerPool, THREAD_COUNT
+    )
 ) : BaseScene<CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator>(particles) {
     private val lastCollisions = mutableSetOf<CatCollision>()
-    private val collisionDetection = KDTreeCollisionDetection(workerPool, THREAD_COUNT)
 
     companion object {
-        val workerPool: ExecutorService = Executors.newFixedThreadPool(THREAD_COUNT)
+        val workerPool: ExecutorService by lazy {
+            println("inited")
+            Executors.newFixedThreadPool(THREAD_COUNT)
+        }
     }
 
     init {
@@ -57,7 +65,7 @@ class CatScene(
         lastCollisions.clear()
     }
 
-    override fun findCollisions(): Array<CatCollision> = collisionDetection.findCollisions(this)
+    public override fun findCollisions(): Array<CatCollision> = collisionDetection.findCollisions(this)
 
 
     fun calcNewState(dist: Double): CatStates {
