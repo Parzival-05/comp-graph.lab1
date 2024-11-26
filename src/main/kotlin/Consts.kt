@@ -2,7 +2,8 @@ class CatSimulation {
     companion object {
         const val GRID_SIZE_X = 1920.0
         const val GRID_SIZE_Y = 1080.0
-        const val PARTICLE_COUNT = 50000
+        const val MIN_PARTICLE_COUNT = 100
+        const val MAX_PARTICLE_COUNT = 50000
         const val MAX_INTERACTIONS_DISPLAYED = 50
         const val MIN_TAU = 500L
         const val MIN_CAT_RADIUS = 1

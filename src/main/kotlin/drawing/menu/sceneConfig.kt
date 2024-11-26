@@ -4,10 +4,12 @@ import CatSimulation.Companion.MAX_CAT_RADIUS
 import CatSimulation.Companion.MAX_CAT_SPEED
 import CatSimulation.Companion.MAX_FIGHT_DIST
 import CatSimulation.Companion.MAX_HISS_DIST
+import CatSimulation.Companion.MAX_PARTICLE_COUNT
 import CatSimulation.Companion.MIN_CAT_RADIUS
 import CatSimulation.Companion.MIN_CAT_SPEED
 import CatSimulation.Companion.MIN_FIGHT_DIST
 import CatSimulation.Companion.MIN_HISS_DIST
+import CatSimulation.Companion.MIN_PARTICLE_COUNT
 import CatSimulation.Companion.MIN_TAU
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -46,10 +48,51 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
     showTauErrorAlert {
         showTauErrorAlert = false
     }
+    var particleCountTextState by remember { mutableStateOf(config.particleCount.toString()) }
     val minusMarginModifier = Modifier.padding(5.dp) // margin
     val plusMarginModifier = Modifier.padding(5.dp) // margin
     AlertDialog(onDismissRequest = onClose, title = { Text(text = "Settings") }, text = {
         Column {
+            Text(text = "Particle Count: ${config.particleCount}")
+            OutlinedTextField(
+                value = particleCountTextState,
+                onValueChange = {
+                    particleCountTextState = it
+                    val newValue = it.toIntOrNull()
+                    if (newValue != null && newValue in MIN_PARTICLE_COUNT..MAX_PARTICLE_COUNT) {
+                        config.particleCount = newValue
+                    }
+                },
+                label = { Text("Particle Count") },
+                modifier = Modifier.padding(vertical = 8.dp),
+                singleLine = true,
+                isError = particleCountTextState.toIntOrNull() == null || particleCountTextState.toInt() < 1
+            )
+            Row {
+                Button(onClick = {
+                    if (config.particleCount > 1) {
+                        config.particleCount--
+                        particleCountTextState = config.particleCount.toString()
+                    }
+                }, modifier = Modifier.padding(5.dp)) {
+                    Text("-")
+                }
+                Button(onClick = {
+                    config.particleCount++
+                    particleCountTextState = config.particleCount.toString()
+                }, modifier = Modifier.padding(5.dp)) {
+                    Text("+")
+                }
+            }
+            Slider(
+                value = config.particleCount.toFloat(),
+                onValueChange = {
+                    config.particleCount = it.toInt()
+                    particleCountTextState = config.particleCount.toString()
+                },
+                valueRange = 100f..50000f,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
             Text(text = "Cat size: ${config.catRadius}")
             Row {
                 Button(onClick = {

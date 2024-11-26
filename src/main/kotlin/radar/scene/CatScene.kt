@@ -1,6 +1,5 @@
 package radar.scene
 
-import CatSimulation.Companion.PARTICLE_COUNT
 import CollisionDetection.Companion.THREAD_COUNT
 import core.base.BaseCollisionDetection
 import core.base.BaseEmitter
@@ -12,7 +11,6 @@ import radar.generators.MoveGenerator
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class CatScene(
@@ -50,9 +48,13 @@ class CatScene(
     }
 
     private fun spawnCats() {
-        val nMax = PARTICLE_COUNT - particles.size
-        val n = ((nMax - 1) * Random.nextFloat()).roundToInt()
-        val cats = catEmitter.emit(n)
+        val nMax = sceneConfig.particleCount - particles.size
+        if (nMax <= 0) return
+
+        val n = Random.nextInt(1, nMax + 1)
+        val cats = (1..n).map {
+            CatGenerator().generate()
+        }
         this.particles.addAll(cats)
     }
 
