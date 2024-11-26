@@ -1,4 +1,3 @@
-import CatSimulation.Companion.PARTICLE_COUNT
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -19,7 +18,7 @@ fun main() = application {
     val sceneConfig = SceneConfig()
     val catGenerator = CatGenerator()
     val cats = ArrayList<CatParticle>()
-    for (i in 1..PARTICLE_COUNT) {
+    for (i in 1..sceneConfig.particleCount) {
         cats.add(catGenerator.generate())
     }
     val catScene = CatScene(cats, sceneConfig)
@@ -30,6 +29,17 @@ fun main() = application {
         var currentCats: Array<CatParticle> by remember { mutableStateOf(emptyArray()) }
         var timeModeling by remember { mutableStateOf(0L) }
         val cs = rememberCoroutineScope { Dispatchers.Default }
+
+        LaunchedEffect(sceneConfig.particleCount) {
+            while (cats.size < sceneConfig.particleCount) {
+                cats.add(catGenerator.generate())
+            }
+            while (cats.size > sceneConfig.particleCount) {
+                cats.removeLast()
+            }
+            currentCats = cats.toTypedArray()
+        }
+
         LaunchedEffect(Unit) {
             cs.launch {
                 while (true) {

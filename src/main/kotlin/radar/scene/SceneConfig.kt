@@ -1,5 +1,7 @@
 package radar.scene
 
+import CatSimulation.Companion.MAX_PARTICLE_COUNT
+import CatSimulation.Companion.MIN_PARTICLE_COUNT
 import radar.metrics.euclidean
 import radar.metrics.greatCircle
 import radar.metrics.manhattan
@@ -31,4 +33,8 @@ class SceneConfig {
     var catRadius = 1
     var tau = 500L
     var isOnPause = false
+    var particleCount: Int = MIN_PARTICLE_COUNT
+        set(value) {
+            field = value.coerceIn(MIN_PARTICLE_COUNT, MAX_PARTICLE_COUNT)
+        }
 }
