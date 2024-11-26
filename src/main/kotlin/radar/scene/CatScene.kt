@@ -57,10 +57,8 @@ class CatScene(
         lastCollisions.clear()
     }
 
-    override fun findCollisions(): Array<CatCollision> {
-           override fun findCollisions(): Array<CatCollision> 
-             = collisionDetection.findCollisions(this)
-    }
+    override fun findCollisions(): Array<CatCollision> = collisionDetection.findCollisions(this)
+
 
     fun calcNewState(dist: Double): CatStates {
         val newState = if (dist < sceneConfig.fightDist) {

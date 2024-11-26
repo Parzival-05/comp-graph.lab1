@@ -13,12 +13,10 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
 
     private val kValues: MutableSet<Int> = Collections.newSetFromMap(ConcurrentHashMap())
     private val batchSize: Int
-        get() {
-            return if (kValues.size == 0) {
-                INITIAL_BATCH_SIZE
-            } else {
-                kValues.sum() / kValues.size + 1
-            }
+        get() = if (kValues.size == 0) {
+            INITIAL_BATCH_SIZE
+        } else {
+            kValues.sum() / kValues.size + 1
         }
 
     fun findCollisions(scene: CatScene): Array<CatCollision> {
@@ -45,9 +43,15 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
                     var batch = 0
                     var n = 0
                     while (catsAreClose) {
+                        // catsAreClose indicates that there are still cats nearby, so we have to keep checking
+                        // the cat's neighbors.
                         val currentBatchSize = batchSize
                         batch += currentBatchSize
-                        val nearestCats = kdTree.queryKnn(doubleArrayOf(point.x, point.y), 1 + batch, pd)
+                        val nearestCats = kdTree.queryKnn(
+                            doubleArrayOf(point.x, point.y),
+                            1 + batch,
+                            pd
+                        )
                         for (i in 1..1 + (batch - currentBatchSize)) {
                             if (nearestCats.hasNext()) {
                                 nearestCats.next()
@@ -64,20 +68,18 @@ class KDTreeCollisionDetection(private val workerPool: ExecutorService, private 
                             }
                             val dist = neighbourCat.dist()
                             val catIds = setOf(cat.id, catNeighbour.id)
-                            if (dist < scene.sceneConfig.hissDist) {
-                                if (!handledCats.contains(catIds)) {
-                                    handledCats.add(catIds)
-                                    val state = scene.calcNewState(dist)
-                                    if (state != CatStates.CALM) {
-                                        val collision = CatCollision(cat, catNeighbour, dist, state)
-                                        collisions.add(collision)
-                                        break
-                                    }
-                                }
-                            } else {
+                            if (dist >= scene.sceneConfig.hissDist) {
                                 catsAreClose = false
                                 kValues.add(n)
                                 break
+                            } else if (!handledCats.contains(catIds)) {
+                                handledCats.add(catIds)
+                                val state = scene.calcNewState(dist)
+                                if (state != CatStates.CALM) {
+                                    val collision = CatCollision(cat, catNeighbour, dist, state)
+                                    collisions.add(collision)
+                                    break
+                                }
                             }
                         }
                     }
