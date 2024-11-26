@@ -20,7 +20,13 @@ import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.SceneConfig
 
-
+/**
+ * Updates the scene by checking the current UI state and passing updated particle data to the UI.
+ *
+ * @param catScene The current scene containing all cat particles.
+ * @param state A mutable state representing the current UI state.
+ * @param onSceneUpdated A callback function to receive the updated array of CatParticles.
+ */
 @Composable
 fun updateScene(
     catScene: CatScene, state: MutableState<UIStates>, onSceneUpdated: (Array<CatParticle>) -> Unit
@@ -36,6 +42,14 @@ fun updateScene(
     }
 }
 
+
+/**
+ * Draws the scene by rendering cat particles, adjusting UI state accordingly.
+ *
+ * @param cats An array of CatParticles to be drawn.
+ * @param state A mutable state representing the current UI state.
+ * @param config The scene configuration containing visual parameters.
+ */
 @Composable
 fun drawScene(
     cats: Array<CatParticle>, state: MutableState<UIStates>, config: SceneConfig
@@ -67,6 +81,11 @@ fun drawScene(
     }
 }
 
+/**
+ * Displays the modeling time in the bottom-left corner of the screen.
+ *
+ * @param timeModeling The time taken for modeling, in milliseconds.
+ */
 @Composable
 fun drawModelingTime(timeModeling: Long) {
     Box(

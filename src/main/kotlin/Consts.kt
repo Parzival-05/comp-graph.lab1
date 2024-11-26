@@ -1,7 +1,18 @@
+/**
+ * Contains constants and configurations for the `CatSimulation`.
+ */
 class CatSimulation {
     companion object {
+        /**
+         * The width of the simulation grid.
+         */
         const val GRID_SIZE_X = 1920.0
+
+        /**
+         * The height of the simulation grid.
+         */
         const val GRID_SIZE_Y = 1080.0
+
         const val MIN_PARTICLE_COUNT = 100
         const val MAX_PARTICLE_COUNT = 50000
         const val MAX_INTERACTIONS_DISPLAYED = 50
@@ -17,9 +28,19 @@ class CatSimulation {
     }
 }
 
+/**
+ * Configuration class for collision detection algorithm.
+ */
 class CollisionDetection {
     companion object {
+        /**
+         * The initial batch size for collision detection.
+         */
         var INITIAL_BATCH_SIZE = 5
+
+        /**
+         * Number of threads to use for collision detection.
+         */
         const val THREAD_COUNT = 8
     }
 }
