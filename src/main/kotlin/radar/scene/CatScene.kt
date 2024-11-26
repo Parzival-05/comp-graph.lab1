@@ -52,9 +52,7 @@ class CatScene(
         if (nMax <= 0) return
 
         val n = Random.nextInt(1, nMax + 1)
-        val cats = (1..n).map {
-            CatGenerator().generate()
-        }
+        val cats = catEmitter.emit(n)
         this.particles.addAll(cats)
     }
 
