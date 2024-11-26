@@ -6,7 +6,7 @@ import core.base.BaseEmitter
 import radar.generators.CatGenerator
 import kotlin.random.Random
 
-class CatEmitter(
+open class CatEmitter(
     private val particleGenerator: CatGenerator
 ) : BaseEmitter<CatParticle, Point2D, Offset2D> {
     override fun emit(n: Int): Set<CatParticle> {
