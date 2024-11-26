@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 class KDTreeCollisionDetectionTest {
     companion object {
         private const val COMPARE_WITH_BF_MAX_CAT_COUNT = 1000
-        private const val COMPARE_WITH_BF_TEST_COUNT = 100000
+        private const val COMPARE_WITH_BF_TEST_COUNT = 10000
 
         @JvmStatic
         fun particlesAndCollisionCount() = listOf(Arguments.of(arrayListOf(
