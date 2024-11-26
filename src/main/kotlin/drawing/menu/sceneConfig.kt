@@ -25,6 +25,7 @@ import radar.scene.SceneConfig
 import kotlin.math.min
 
 var showTauErrorAlert by mutableStateOf(false)
+var showCountErrorAlert by mutableStateOf(false)
 
 @Composable
 private fun showTauErrorAlert(onClose: () -> Unit) {
@@ -43,12 +44,31 @@ private fun showTauErrorAlert(onClose: () -> Unit) {
 }
 
 @Composable
+private fun showCountErrorAlert(onClose: () -> Unit) {
+    if (showCountErrorAlert) AlertDialog(onDismissRequest = onClose,
+        title = { Text(text = "Недопустимое значение Particle Count") },
+        text = {
+            Column {
+                Text(text = "Введите целое положительное число в диапазоне: [$MIN_PARTICLE_COUNT, $MAX_PARTICLE_COUNT]")
+            }
+        },
+        confirmButton = {
+            Button(onClick = onClose) {
+                Text("Close")
+            }
+        })
+}
+
+@Composable
 fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
     var tauTextState by remember { mutableStateOf(config.tau.toString()) }
     showTauErrorAlert {
         showTauErrorAlert = false
     }
     var particleCountTextState by remember { mutableStateOf(config.particleCount.toString()) }
+    showCountErrorAlert {
+        showCountErrorAlert = false
+    }
     val minusMarginModifier = Modifier.padding(5.dp) // margin
     val plusMarginModifier = Modifier.padding(5.dp) // margin
     AlertDialog(onDismissRequest = onClose, title = { Text(text = "Settings") }, text = {
@@ -61,6 +81,9 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     val newValue = it.toIntOrNull()
                     if (newValue != null && newValue in MIN_PARTICLE_COUNT..MAX_PARTICLE_COUNT) {
                         config.particleCount = newValue
+                        showCountErrorAlert = false // Reset error state
+                    } else {
+                        showCountErrorAlert = true // Show error alert if the value is invalid.
                     }
                 },
                 label = { Text("Particle Count") },
@@ -90,7 +113,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     config.particleCount = it.toInt()
                     particleCountTextState = config.particleCount.toString()
                 },
-                valueRange = 100f..50000f,
+                valueRange = MIN_PARTICLE_COUNT.toFloat()..MAX_PARTICLE_COUNT.toFloat(),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
             Text(text = "Cat size: ${config.catRadius}")
@@ -116,7 +139,6 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
-
             Text(text = "Tau (ms)")
             OutlinedTextField(
                 value = tauTextState,
