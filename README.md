@@ -3,10 +3,10 @@ This project simulates and visualizes the behavior of cats on a rectangular map,
 - During the time TAU, the cat moves to a random point in the neighborhood of the previous position
 - If two cats are at a distance not exceeding _r₀_, they try to start a **fight** with a probability of _1_
 - If two cats are at a distance _R₀ > r₀_, they begin to **hiss** with a probability inversely proportional to the square of the distance between them
-- If there are no rivals around the cat, it remains **calm**
+- Otherwise, the cat remains **calm**
 
-## For start project:
-
+## Usage:
+To run the application, clone this repository and run the command below:
 ```
 ./gradlew run
 ```
@@ -19,16 +19,16 @@ This project simulates and visualizes the behavior of cats on a rectangular map,
 
 | Parameter           | Code Name        | Restrictions                            |
 |---------------------|------------------|-----------------------------------------|
-| Cat Count           | `PARTICLE_COUNT` | < 5*10^4                                |
+| Cat Count           | `PARTICLE_COUNT` | < 5*10^5                                |
 | Tau Update Interval | `TAU`            | \> 500 ms                               |
 | Metric              | `metric`         | `euclidean`, `greatCircle`, `manhattan` |
 
 ## Demonstration
-| Visualization                                                                                           |
-|---------------------------------------------------------------------------------------------------------|
-| **PARTICLE_COUNT = 50, TAU = 100L**                                                                     |
-| <img src="./images/50_100L.gif" width="700" alt="Simulation with PARTICLE_COUNT 50 and TAU 100L">       |
-| **PARTICLE_COUNT = 50000, TAU = 500L**                                                                  |
+| Visualization                                                                                         |
+|-------------------------------------------------------------------------------------------------------|
+| **PARTICLE_COUNT = 50, TAU = 100**                                                                    |
+| <img src="./images/50_100L.gif" width="700" alt="Simulation with PARTICLE_COUNT 50 and TAU 100L">     |
+| **PARTICLE_COUNT = 50000, TAU = 500**                                                                 |
 | <img src="./images/50000_500L.gif" width="700" alt="Simulation with PARTICLE_COUNT 50000 and TAU 500L"> |
 
 ## Task distribution
