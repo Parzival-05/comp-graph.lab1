@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import radar.scene.SceneConfig
+import kotlin.math.min
 
 var showTauErrorAlert by mutableStateOf(false)
 
@@ -98,7 +99,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
             Slider(
                 value = config.tau.toFloat(),
                 onValueChange = { config.tau = it.toLong() },
-                valueRange = 500f..3600000f,
+                valueRange = MIN_TAU.toFloat()..3600000f,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
             Text(text = "Max Particle Speed: ${config.maxParticleSpeed}")
@@ -120,7 +121,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                 Slider(
                     value = config.maxParticleSpeed.toFloat(),
                     onValueChange = { config.maxParticleSpeed = it.toDouble() },
-                    valueRange = 1f..100f,
+                    valueRange = MIN_CAT_SPEED.toFloat()..MAX_CAT_SPEED.toFloat(),
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
