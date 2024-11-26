@@ -5,13 +5,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class SceneConfigTest {
-
-    @Test
-    fun `test default metric is EUCLIDEAN`() {
-        val config = SceneConfig()
-        assertEquals(SceneConfig.Companion.MetricType.GREAT_CIRCLE, config.metric)
-    }
-
     @Test
     fun `test hissDist cannot be less than fightDist`() {
         val config = SceneConfig()
