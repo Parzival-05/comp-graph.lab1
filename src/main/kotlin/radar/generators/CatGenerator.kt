@@ -3,9 +3,9 @@ package radar.generators
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import core.base.generators.BaseParticleGenerator
+import radar.scene.CatParticle
 import radar.scene.Offset2D
 import radar.scene.Point2D
-import radar.scene.CatParticle
 import kotlin.random.Random
 
 /**
@@ -21,7 +21,7 @@ class CatGenerator : BaseParticleGenerator<CatParticle, Point2D, Offset2D> {
         val coordinates =
             Point2D(
                 Random.nextDouble(GRID_SIZE_X),
-                Random.nextDouble(GRID_SIZE_Y)
+                Random.nextDouble(GRID_SIZE_Y),
             )
         return generate(coordinates)
     }
@@ -32,7 +32,5 @@ class CatGenerator : BaseParticleGenerator<CatParticle, Point2D, Offset2D> {
      * @param coordinates The coordinates where the `CatParticle` will be placed.
      * @return A new `CatParticle` at the given coordinates.
      */
-    fun generate(coordinates: Point2D): CatParticle {
-        return CatParticle(coordinates)
-    }
+    fun generate(coordinates: Point2D): CatParticle = CatParticle(coordinates)
 }

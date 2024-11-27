@@ -12,8 +12,14 @@ import core.base.generators.BaseOffsetGenerator
  * @param C The type of collisions detected and handled within the scene, extending.
  * @param OG The type of offset generator used to create offsets for moving particles.
  */
-interface BaseCollisionDetection<S : BaseScene<P, T, O, C, OG>, P : BaseParticle<T, O>, T : BasePoint<O>, O : BaseOffset<T>, C : BaseCollision<P, T, O>, OG : BaseOffsetGenerator<P, T, O>> {
-
+interface BaseCollisionDetection<
+    S : BaseScene<P, T, O, C, OG>,
+    P : BaseParticle<T, O>,
+    T : BasePoint<O>,
+    O : BaseOffset<T>,
+    C : BaseCollision<P, T, O>,
+    OG : BaseOffsetGenerator<P, T, O>,
+    > {
     /**
      * Finds all collisions within the given scene.
      *
