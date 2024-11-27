@@ -11,15 +11,27 @@ import CatSimulation.Companion.MIN_FIGHT_DIST
 import CatSimulation.Companion.MIN_HISS_DIST
 import CatSimulation.Companion.MIN_PARTICLE_COUNT
 import CatSimulation.Companion.MIN_TAU
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Slider
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.dp
 import radar.scene.SceneConfig
 import kotlin.math.min
@@ -29,38 +41,49 @@ var showCountErrorAlert by mutableStateOf(false)
 
 @Composable
 private fun showTauErrorAlert(onClose: () -> Unit) {
-    if (showTauErrorAlert) AlertDialog(onDismissRequest = onClose,
-        title = { Text(text = "Недопустимое значение аттритбута Tau") },
-        text = {
-            Column {
-                Text(text = "Введите целое положительное число большее, чем $MIN_TAU")
-            }
-        },
-        confirmButton = {
-            Button(onClick = onClose) {
-                Text("Close")
-            }
-        })
+    if (showTauErrorAlert) {
+        AlertDialog(
+            onDismissRequest = onClose,
+            title = { Text(text = "Недопустимое значение аттритбута Tau") },
+            text = {
+                Column {
+                    Text(text = "Введите целое положительное число большее, чем $MIN_TAU")
+                }
+            },
+            confirmButton = {
+                Button(onClick = onClose) {
+                    Text("Close")
+                }
+            },
+        )
+    }
 }
 
 @Composable
 private fun showCountErrorAlert(onClose: () -> Unit) {
-    if (showCountErrorAlert) AlertDialog(onDismissRequest = onClose,
-        title = { Text(text = "Недопустимое значение Particle Count") },
-        text = {
-            Column {
-                Text(text = "Введите целое положительное число в диапазоне: [$MIN_PARTICLE_COUNT, $MAX_PARTICLE_COUNT]")
-            }
-        },
-        confirmButton = {
-            Button(onClick = onClose) {
-                Text("Close")
-            }
-        })
+    if (showCountErrorAlert) {
+        AlertDialog(
+            onDismissRequest = onClose,
+            title = { Text(text = "Недопустимое значение Particle Count") },
+            text = {
+                Column {
+                    Text(text = "Введите целое положительное число в диапазоне: [$MIN_PARTICLE_COUNT, $MAX_PARTICLE_COUNT]")
+                }
+            },
+            confirmButton = {
+                Button(onClick = onClose) {
+                    Text("Close")
+                }
+            },
+        )
+    }
 }
 
 @Composable
-fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
+fun sceneSettingsMenu(
+    config: SceneConfig,
+    onClose: () -> Unit,
+) {
     var tauTextState by remember { mutableStateOf(config.tau.toString()) }
     showTauErrorAlert {
         showTauErrorAlert = false
@@ -89,7 +112,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                 label = { Text("Particle Count") },
                 modifier = Modifier.padding(vertical = 8.dp),
                 singleLine = true,
-                isError = particleCountTextState.toIntOrNull() == null || particleCountTextState.toInt() < 1
+                isError = particleCountTextState.toIntOrNull() == null || particleCountTextState.toInt() < 1,
             )
             Row {
                 Button(onClick = {
@@ -114,7 +137,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     particleCountTextState = config.particleCount.toString()
                 },
                 valueRange = MIN_PARTICLE_COUNT.toFloat()..MAX_PARTICLE_COUNT.toFloat(),
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp),
             )
             Text(text = "Cat size: ${config.catRadius}")
             Row {
@@ -136,7 +159,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     value = config.catRadius.toFloat(),
                     onValueChange = { config.catRadius = it.toInt() },
                     valueRange = MIN_CAT_RADIUS.toFloat()..MAX_CAT_RADIUS.toFloat(),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp),
                 )
             }
             Text(text = "Tau (ms)")
@@ -145,27 +168,28 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                 onValueChange = {
                     tauTextState = it
                 },
-                modifier = Modifier.padding(vertical = 8.dp).onPreviewKeyEvent {
-                    if (it.key == Key.Enter) {
-                        val newValue = tauTextState.toLongOrNull()
-                        if (newValue != null && newValue >= MIN_TAU) {
-                            config.tau = newValue
-                            showTauErrorAlert = false // Reset error state
+                modifier =
+                    Modifier.padding(vertical = 8.dp).onPreviewKeyEvent {
+                        if (it.key == Key.Enter) {
+                            val newValue = tauTextState.toLongOrNull()
+                            if (newValue != null && newValue >= MIN_TAU) {
+                                config.tau = newValue
+                                showTauErrorAlert = false // Reset error state
+                            } else {
+                                showTauErrorAlert = true // Show error alert if the value is invalid.
+                            }
+                            true // Indicate that the key event has been handled
                         } else {
-                            showTauErrorAlert = true // Show error alert if the value is invalid.
+                            false // Allow other key events to be processed normally
                         }
-                        true // Indicate that the key event has been handled
-                    } else {
-                        false // Allow other key events to be processed normally
-                    }
-                },
+                    },
                 singleLine = true,
             )
             Slider(
                 value = config.tau.toFloat(),
                 onValueChange = { config.tau = it.toLong() },
                 valueRange = MIN_TAU.toFloat()..3600000f,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp),
             )
             Text(text = "Max Particle Speed: ${config.maxParticleSpeed}")
             Row {
@@ -187,7 +211,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     value = config.maxParticleSpeed.toFloat(),
                     onValueChange = { config.maxParticleSpeed = it.toDouble() },
                     valueRange = MIN_CAT_SPEED.toFloat()..MAX_CAT_SPEED.toFloat(),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp),
                 )
             }
             Text(text = "Fight Distance: ${config.fightDist}")
@@ -210,7 +234,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     value = config.fightDist.toFloat(),
                     onValueChange = { config.fightDist = it.toInt() },
                     valueRange = MIN_HISS_DIST.toFloat()..(config.hissDist.toFloat() - 1),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp),
                 )
             }
             Text(text = "Hiss Distance: ${config.hissDist}")
@@ -233,7 +257,7 @@ fun sceneSettingsMenu(config: SceneConfig, onClose: () -> Unit) {
                     value = config.hissDist.toFloat(),
                     onValueChange = { config.hissDist = it.toInt() },
                     valueRange = config.fightDist.toFloat()..MAX_HISS_DIST.toFloat(),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp),
                 )
             }
 

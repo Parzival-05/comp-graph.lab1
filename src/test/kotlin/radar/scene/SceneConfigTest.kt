@@ -1,6 +1,6 @@
 package radar.scene
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -9,9 +9,10 @@ class SceneConfigTest {
     fun `test hissDist cannot be less than fightDist`() {
         val config = SceneConfig()
         config.fightDist = 2
-        val exception = assertThrows<RuntimeException> {
-            config.hissDist = 1
-        }
+        val exception =
+            assertThrows<RuntimeException> {
+                config.hissDist = 1
+            }
         assertEquals("Hiss distance can't be less than fight distance.", exception.message)
     }
 
