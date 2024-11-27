@@ -14,5 +14,5 @@ data class CatInteraction(
     val time: Timestamp,
     val particleId1: Int,
     val particleId2: Int,
-    val type: CatStates
+    val type: CatStates,
 )

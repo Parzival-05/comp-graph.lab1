@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import radar.generators.CatGenerator
 
 class CatEmitterTest {
-
     @Test
     fun `test emit generates correct number of particles`() {
         val generator = CatGenerator()

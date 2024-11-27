@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class Offset2DTest {
-
     @Test
     fun `test move with positive offset`() {
         val point = Point2D(x = 10.0, y = 20.0)
