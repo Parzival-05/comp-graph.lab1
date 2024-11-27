@@ -20,19 +20,21 @@ class KDTreeCollisionDetectionTest {
         private const val COMPARE_WITH_BF_TEST_COUNT = 10000
 
         @JvmStatic
-        fun particlesAndCollisionCount() = listOf(Arguments.of(arrayListOf(
-            CatParticle(Point2D(0.0, 0.0)), CatParticle(Point2D(1.0, 1.0)), CatParticle(Point2D(4.0, 4.0))
-        ), 1, 2, SceneConfig().apply {
-            fightDist = 2
-            hissDist = 5
-            metric = SceneConfig.Companion.MetricType.EUCLIDEAN
-        }), Arguments.of(arrayListOf(
-            CatParticle(Point2D(0.0, 0.0)), CatParticle(Point2D(1.0, 1.0)), CatParticle(Point2D(4.0, 4.0))
-        ), 1, 1, SceneConfig().apply {
-            fightDist = 3
-            hissDist = 5
-            metric = SceneConfig.Companion.MetricType.MANHATTAN
-        }))
+        fun particlesAndCollisionCount() = listOf(
+            Arguments.of(arrayListOf(
+                CatParticle(Point2D(0.0, 0.0)), CatParticle(Point2D(1.0, 1.0)), CatParticle(Point2D(4.0, 4.0))
+            ), 1, 2, SceneConfig().apply {
+                fightDist = 2
+                hissDist = 5
+                metric = SceneConfig.Companion.MetricType.EUCLIDEAN
+            }), Arguments.of(arrayListOf(
+                CatParticle(Point2D(0.0, 0.0)), CatParticle(Point2D(1.0, 1.0)), CatParticle(Point2D(4.0, 4.0))
+            ), 1, 1, SceneConfig().apply {
+                fightDist = 3
+                hissDist = 5
+                metric = SceneConfig.Companion.MetricType.MANHATTAN
+            })
+        )
 
         @JvmStatic
         fun randomParticles(): List<Arguments> {
@@ -47,7 +49,9 @@ class KDTreeCollisionDetectionTest {
             }
 
             fun generateCats(n: Int): ArrayList<CatParticle> {
-                return arrayListOf(*catEmitter.emit(n).toTypedArray())
+                val catsList = ArrayList<CatParticle>(n)
+                catsList.addAll(catEmitter.emit(n))
+                return catsList
             }
 
             return mutableListOf<Arguments>().apply {
