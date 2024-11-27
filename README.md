@@ -23,16 +23,8 @@ To run the application, clone this repository and run the command below:
 ## Features
 
 1. [x] Logs
-2. [x] Metrics
+2. [x] [Metrics](src/main/kotlin/radar/metrics/metrics.kt): Euclidean, Manhattan, Great Circle
 3. [x] Cats can leave the map and spawn on the border.
-
-## Parameters
-
-| Parameter           | Code Name        | Restrictions                            |
-|---------------------|------------------|-----------------------------------------|
-| Cat Count           | `PARTICLE_COUNT` | < 5\*10^5                               |
-| Tau Update Interval | `TAU`            | \> 500 ms                               |
-| Metric              | `metric`         | `euclidean`, `greatCircle`, `manhattan` |
 
 ## Demonstration
 
