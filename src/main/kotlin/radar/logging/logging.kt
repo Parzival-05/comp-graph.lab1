@@ -1,8 +1,8 @@
 package radar.logging
 
 import CatSimulation.Companion.MAX_INTERACTIONS_DISPLAYED
-import radar.scene.CatInteraction
 import radar.scene.CatCollision
+import radar.scene.CatInteraction
 import java.sql.Timestamp
 
 val GlobalInteractionLog = mutableListOf<CatInteraction>()

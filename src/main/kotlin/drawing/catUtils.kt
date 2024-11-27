@@ -9,10 +9,9 @@ import radar.scene.CatStates
  * @param state The state of the cat (CALM, HISS, FIGHT).
  * @return The color corresponding to the given state.
  */
-fun getColorForState(state: CatStates): Color {
-    return when (state) {
+fun getColorForState(state: CatStates): Color =
+    when (state) {
         CatStates.CALM -> Color.White
         CatStates.HISS -> Color.Gray
         CatStates.FIGHT -> Color.Black
     }
-}

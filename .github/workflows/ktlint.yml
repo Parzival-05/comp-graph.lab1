@@ -1,0 +1,26 @@
+name: ktlint
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ktlint.yml
+      - '**.kt'
+      - '**.kts'
+
+jobs:
+  ktlint:
+    name: Check Code Quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: ktlint
+        uses: ScaCap/action-ktlint@master
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review

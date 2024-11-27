@@ -2,10 +2,14 @@ package radar.collisionDetection
 
 import core.base.BaseCollisionDetection
 import radar.generators.MoveGenerator
-import radar.scene.*
+import radar.scene.CatCollision
+import radar.scene.CatParticle
+import radar.scene.CatScene
+import radar.scene.CatStates
+import radar.scene.Offset2D
+import radar.scene.Point2D
 
-class BruteForceCollisionDetection :
-    BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> {
+class BruteForceCollisionDetection : BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> {
     override fun findCollisions(scene: CatScene): Array<CatCollision> {
         val cats = scene.particles
         val collisions = mutableListOf<CatCollision>()

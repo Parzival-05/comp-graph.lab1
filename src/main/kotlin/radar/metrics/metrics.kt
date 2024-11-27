@@ -3,23 +3,38 @@ package radar.metrics
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import radar.scene.Point2D
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.asin
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
-fun euclidean(point1: Point2D, point2: Point2D): Double {
+fun euclidean(
+    point1: Point2D,
+    point2: Point2D,
+): Double {
     return sqrt(
         (point1.x - point2.x)
-            .pow(2) + (point1.y - point2.y)
-            .pow(2)
+            .pow(2) +
+            (point1.y - point2.y)
+                .pow(2),
     )
     // extracting the square root in our task is redundant, and should be avoided due to inefficiency
 }
 
-fun manhattan(point1: Point2D, point2: Point2D): Double {
-    return abs(point1.x - point2.x) + abs(point1.y - point2.y)
-}
+fun manhattan(
+    point1: Point2D,
+    point2: Point2D,
+): Double = abs(point1.x - point2.x) + abs(point1.y - point2.y)
 
-const val radius = GRID_SIZE_X * 12f
-fun greatCircle(point1: Point2D, point2: Point2D): Double {
+const val RADIUS = GRID_SIZE_X * 12f
+
+fun greatCircle(
+    point1: Point2D,
+    point2: Point2D,
+): Double {
     // Converting x coordinates to longitude (in radians)
     // [0; GRID_SIZE_X] -> [-180°; 180°] -> [-π; π]
     val lon1 = (point1.x / GRID_SIZE_X * 360 - 180) * PI.toFloat() / 180
@@ -39,5 +54,5 @@ fun greatCircle(point1: Point2D, point2: Point2D): Double {
     val a = sin(diffLat / 2).pow(2.0) + sin(diffLon / 2).pow(2.0) * cos(radiusStartLat) * cos(radiusEndLat)
     val c = 2 * asin(sqrt(a))
 
-    return radius * c
+    return RADIUS * c
 }

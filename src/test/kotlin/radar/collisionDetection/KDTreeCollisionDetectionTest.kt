@@ -7,12 +7,18 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import radar.generators.CatGenerator
 import radar.generators.MoveGenerator
-import radar.scene.*
+import radar.scene.CatCollision
+import radar.scene.CatEmitter
+import radar.scene.CatParticle
+import radar.scene.CatScene
+import radar.scene.CatStates
+import radar.scene.Offset2D
+import radar.scene.Point2D
+import radar.scene.SceneConfig
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.random.Random
 import kotlin.test.assertTrue
-
 
 class KDTreeCollisionDetectionTest {
     companion object {
@@ -20,21 +26,37 @@ class KDTreeCollisionDetectionTest {
         private const val COMPARE_WITH_BF_TEST_COUNT = 10000
 
         @JvmStatic
-        fun particlesAndCollisionCount() = listOf(
-            Arguments.of(arrayListOf(
-                CatParticle(Point2D(0.0, 0.0)), CatParticle(Point2D(1.0, 1.0)), CatParticle(Point2D(4.0, 4.0))
-            ), 1, 2, SceneConfig().apply {
-                fightDist = 2
-                hissDist = 5
-                metric = SceneConfig.Companion.MetricType.EUCLIDEAN
-            }), Arguments.of(arrayListOf(
-                CatParticle(Point2D(0.0, 0.0)), CatParticle(Point2D(1.0, 1.0)), CatParticle(Point2D(4.0, 4.0))
-            ), 1, 1, SceneConfig().apply {
-                fightDist = 3
-                hissDist = 5
-                metric = SceneConfig.Companion.MetricType.MANHATTAN
-            })
-        )
+        fun particlesAndCollisionCount() =
+            listOf(
+                Arguments.of(
+                    arrayListOf(
+                        CatParticle(Point2D(0.0, 0.0)),
+                        CatParticle(Point2D(1.0, 1.0)),
+                        CatParticle(Point2D(4.0, 4.0)),
+                    ),
+                    1,
+                    2,
+                    SceneConfig().apply {
+                        fightDist = 2
+                        hissDist = 5
+                        metric = SceneConfig.Companion.MetricType.EUCLIDEAN
+                    },
+                ),
+                Arguments.of(
+                    arrayListOf(
+                        CatParticle(Point2D(0.0, 0.0)),
+                        CatParticle(Point2D(1.0, 1.0)),
+                        CatParticle(Point2D(4.0, 4.0)),
+                    ),
+                    1,
+                    1,
+                    SceneConfig().apply {
+                        fightDist = 3
+                        hissDist = 5
+                        metric = SceneConfig.Companion.MetricType.MANHATTAN
+                    },
+                ),
+            )
 
         @JvmStatic
         fun randomParticles(): List<Arguments> {
@@ -42,11 +64,12 @@ class KDTreeCollisionDetectionTest {
             val workerPool: ExecutorService = Executors.newFixedThreadPool(THREAD_COUNT)
             val kdTreeCollisionDetection = KDTreeCollisionDetection(workerPool, THREAD_COUNT)
             val catEmitter = CatEmitter(CatGenerator())
-            val config = SceneConfig().apply {
-                fightDist = 3
-                hissDist = 5
-                metric = SceneConfig.Companion.MetricType.EUCLIDEAN
-            }
+            val config =
+                SceneConfig().apply {
+                    fightDist = 3
+                    hissDist = 5
+                    metric = SceneConfig.Companion.MetricType.EUCLIDEAN
+                }
 
             fun generateCats(n: Int): ArrayList<CatParticle> {
                 val catsList = ArrayList<CatParticle>(n)
@@ -61,8 +84,8 @@ class KDTreeCollisionDetectionTest {
                             generateCats(Random.nextInt(COMPARE_WITH_BF_MAX_CAT_COUNT)),
                             config,
                             bruteForceCollisionDetection,
-                            kdTreeCollisionDetection
-                        )
+                            kdTreeCollisionDetection,
+                        ),
                     )
                 }
             }
@@ -72,15 +95,23 @@ class KDTreeCollisionDetectionTest {
     @ParameterizedTest
     @MethodSource("particlesAndCollisionCount")
     fun `test findCollisions detects correct number of collisions`(
-        particles: ArrayList<CatParticle>, minCollisionCount: Int, maxCollisionCount: Int, config: SceneConfig
+        particles: ArrayList<CatParticle>,
+        minCollisionCount: Int,
+        maxCollisionCount: Int,
+        config: SceneConfig,
     ) {
-        val scene = CatScene(particles, config, object : CatEmitter(
-            CatGenerator()
-        ) {
-            override fun emit(n: Int): Set<CatParticle> {
-                return setOf() // don't let cats spawn
-            }
-        })
+        val scene =
+            CatScene(
+                particles,
+                config,
+                object : CatEmitter(
+                    CatGenerator(),
+                ) {
+                    override fun emit(n: Int): Set<CatParticle> {
+                        return setOf() // don't let cats spawn
+                    }
+                },
+            )
         val collisions = scene.findCollisions()
         assertTrue {
             collisions.size in minCollisionCount..maxCollisionCount
@@ -93,29 +124,39 @@ class KDTreeCollisionDetectionTest {
         particles: ArrayList<CatParticle>,
         config: SceneConfig,
         bfCD: BruteForceCollisionDetection,
-        kdTreeCD: KDTreeCollisionDetection
+        kdTreeCD: KDTreeCollisionDetection,
     ) {
-        fun getCollisions(cd: BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator>): Array<CatCollision> {
-            val scene = CatScene(particles, config, object : CatEmitter(
-                CatGenerator()
-            ) {
-                override fun emit(n: Int): Set<CatParticle> {
-                    return setOf()
-                }
-            }, cd)
+        fun getCollisions(
+            cd: BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator>,
+        ): Array<CatCollision> {
+            val scene =
+                CatScene(
+                    particles,
+                    config,
+                    object : CatEmitter(
+                        CatGenerator(),
+                    ) {
+                        override fun emit(n: Int): Set<CatParticle> = setOf()
+                    },
+                    cd,
+                )
             return scene.findCollisions()
         }
 
-        fun Array<CatCollision>.onlyFightCollisions(): List<CatCollision> = this.filter {
-            it.catState == CatStates.FIGHT
-        }
+        fun Array<CatCollision>.onlyFightCollisions(): List<CatCollision> =
+            this.filter {
+                it.catState == CatStates.FIGHT
+            }
 
         val bfFightCollisions = getCollisions(bfCD).onlyFightCollisions()
         val kdTreeFightCollisions = getCollisions(kdTreeCD).onlyFightCollisions()
         assertTrue {
             bfFightCollisions.all { bfCollision ->
                 kdTreeFightCollisions.count { kdTreeCollision ->
-                    kdTreeCollision.particle1 == bfCollision.particle1 && kdTreeCollision.particle2 == bfCollision.particle2 || kdTreeCollision.particle2 == bfCollision.particle1 && kdTreeCollision.particle1 == bfCollision.particle2
+                    kdTreeCollision.particle1 == bfCollision.particle1 &&
+                        kdTreeCollision.particle2 == bfCollision.particle2 ||
+                        kdTreeCollision.particle2 == bfCollision.particle1 &&
+                        kdTreeCollision.particle1 == bfCollision.particle2
                 } == 1
             }
         }
