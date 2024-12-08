@@ -36,8 +36,10 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
 
     val setStateToFight = ActionNode { cat ->
         cat.setCatState(CatStates.FIGHT)
-        cat.nearbyCats.forEach { otherCat ->
-            otherCat.setCatState(CatStates.FIGHT)
+        val deathProbability = 0.2;
+        if (Random.nextDouble() < deathProbability) {
+            cat.setCatState(CatStates.DEAD)
+            BehaviorStatus.FAILURE
         }
         BehaviorStatus.SUCCESS
     }
