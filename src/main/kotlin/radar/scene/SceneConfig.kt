@@ -6,13 +6,11 @@ import radar.metrics.euclidean
 import radar.metrics.greatCircle
 import radar.metrics.manhattan
 
-/** Configuration class containing parameters for the simulation scene. */
-class SceneConfig {
-    companion object {
-        /** Enum representing the types of metrics used for distance calculations. */
-        enum class MetricType { EUCLIDEAN, MANHATTAN, GREAT_CIRCLE }
-    }
+/** Enum representing the types of metrics used for distance calculations. */
+enum class MetricType { EUCLIDEAN, MANHATTAN, GREAT_CIRCLE }
 
+/** Configuration class containing parameters for the simulation scene. */
+object SceneConfig {
     /** Maximum speed of particles. */
     var maxParticleSpeed = 1.0
 
@@ -23,9 +21,9 @@ class SceneConfig {
     val metricFunction: ((Point2D, Point2D) -> Double)
         get() {
             return when (metric) {
-                SceneConfig.Companion.MetricType.EUCLIDEAN -> ::euclidean
-                SceneConfig.Companion.MetricType.MANHATTAN -> ::manhattan
-                SceneConfig.Companion.MetricType.GREAT_CIRCLE -> ::greatCircle
+                MetricType.EUCLIDEAN -> ::euclidean
+                MetricType.MANHATTAN -> ::manhattan
+                MetricType.GREAT_CIRCLE -> ::greatCircle
             }
         }
 

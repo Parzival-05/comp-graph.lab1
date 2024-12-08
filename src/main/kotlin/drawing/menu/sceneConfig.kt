@@ -33,6 +33,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.dp
+import radar.scene.MetricType
 import radar.scene.SceneConfig
 import kotlin.math.min
 
@@ -270,7 +271,7 @@ fun sceneSettingsMenu(
                     Text("Select Metric Type")
                 }
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    SceneConfig.Companion.MetricType.entries.forEach { metricType ->
+                    MetricType.entries.forEach { metricType ->
                         DropdownMenuItem(onClick = {
                             config.metric = metricType
                             expanded = false

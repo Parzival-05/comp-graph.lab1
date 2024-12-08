@@ -10,4 +10,7 @@ enum class CatStates {
 
     /** State indicating the cat is fighting. */
     FIGHT,
+
+    /** State indicating the cat is sleeping. */
+    SLEEPING
 }

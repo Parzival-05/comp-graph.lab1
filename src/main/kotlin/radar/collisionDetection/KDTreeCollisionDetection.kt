@@ -1,9 +1,9 @@
 package radar.collisionDetection
 
+import CollisionDetection
 import core.base.BaseCollisionDetection
 import org.tinspin.index.PointDistance
 import org.tinspin.index.kdtree.KDTree
-import radar.generators.MoveGenerator
 import radar.scene.CatCollision
 import radar.scene.CatParticle
 import radar.scene.CatScene
@@ -21,7 +21,7 @@ const val DIMS = 2
 class KDTreeCollisionDetection(
     private val workerPool: ExecutorService,
     private val threadPoolSize: Int,
-) : BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> {
+) : BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision> {
     private val kValues: MutableSet<Int> = Collections.newSetFromMap(ConcurrentHashMap())
     private val batchSize: Int
         get() =

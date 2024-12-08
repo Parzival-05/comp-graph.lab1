@@ -14,4 +14,5 @@ fun getColorForState(state: CatStates): Color =
         CatStates.CALM -> Color.White
         CatStates.HISS -> Color.Gray
         CatStates.FIGHT -> Color.Black
+        CatStates.SLEEPING -> Color.Blue
     }
