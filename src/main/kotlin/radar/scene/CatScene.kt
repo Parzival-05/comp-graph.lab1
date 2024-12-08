@@ -7,6 +7,7 @@ import core.base.BaseScene
 import radar.collisionDetection.KDTreeCollisionDetection
 import radar.generators.CatGenerator
 import radar.logging.logging
+import radar.scene.SceneConfig.particleCount
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.pow
@@ -62,7 +63,6 @@ class CatScene(
     }
 
     private fun updateEnvironmentContext() {
-        spawnCats()
         particles.forEach { it.nearbyCats.clear() }
 
         val collisions = collisionDetection.findCollisions(this)
@@ -89,11 +89,7 @@ class CatScene(
      * count.
      */
     private fun spawnCats() {
-        val nMax = sceneConfig.particleCount - particles.size
-        if (nMax <= 0) return
-
-        val n = Random.nextInt(1, nMax + 1)
-        val cats = catEmitter.emit(n)
+        val cats = catEmitter.emit(particleCount)
         this.particles.addAll(cats)
     }
 

@@ -4,6 +4,7 @@ import behavior.BehaviorNode
 import behavior.BehaviorStatus
 import behavior.leaf.ActionNode
 import behavior.leaf.ConditionNode
+import drawing.wrapPosition
 import radar.generators.GENERATORS
 import radar.generators.MovementGeneratorFactory
 import radar.scene.CatParticle
@@ -54,6 +55,9 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
     val moveRandomList = ActionNode { cat ->
         val offset = random.generate(cat)
         offset.move(cat.coordinates)
+
+        // todo: move out of here
+        cat.coordinates = wrapPosition(cat.coordinates)
         BehaviorStatus.SUCCESS
     }
 

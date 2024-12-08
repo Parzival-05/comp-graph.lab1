@@ -28,7 +28,7 @@ abstract class BaseScene<
             particle.tick()
         }
 
-        particles.removeIf { !it.isInScene() }
+        // particles.removeIf { !it.isInScene() }
     }
 
 
