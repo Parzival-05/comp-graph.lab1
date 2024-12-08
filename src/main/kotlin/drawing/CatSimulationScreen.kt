@@ -24,6 +24,7 @@ import drawing.menu.drawDraggableMenu
 import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
+import radar.scene.CatStates
 import radar.scene.SceneConfig
 
 /**
@@ -85,11 +86,34 @@ fun drawScene(
                             (cat.coordinates.x).dp.toPx(),
                             (cat.coordinates.y).dp.toPx(),
                         )
-                    drawCircle(
-                        color = currentColor,
-                        center = catOffset,
-                        radius = catRadius.toFloat(),
-                    )
+                    if (cat.state == CatStates.DEAD) {
+                        val lineLength = catRadius * 2.0f
+                        val topLeft = Offset(catOffset.x - lineLength / 2, catOffset.y - lineLength / 2)
+                        val topRight = Offset(catOffset.x + lineLength / 2, catOffset.y - lineLength / 2)
+                        val bottomLeft = Offset(catOffset.x - lineLength / 2, catOffset.y + lineLength / 2)
+                        val bottomRight = Offset(catOffset.x + lineLength / 2, catOffset.y + lineLength / 2)
+
+                        drawLine(
+                            color = currentColor,
+                            start = topLeft,
+                            end = bottomRight,
+                            strokeWidth = 4f
+                        )
+
+                        drawLine(
+                            color = currentColor,
+                            start = topRight,
+                            end = bottomLeft,
+                            strokeWidth = 4f
+                        )
+
+                    } else {
+                        drawCircle(
+                            color = currentColor,
+                            center = catOffset,
+                            radius = catRadius.toFloat(),
+                        )
+                    }
                 }
             }
             state.value = UIStates.MODELING

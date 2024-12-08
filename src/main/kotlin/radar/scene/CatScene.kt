@@ -6,8 +6,8 @@ import core.base.BaseEmitter
 import core.base.BaseScene
 import radar.collisionDetection.KDTreeCollisionDetection
 import radar.generators.CatGenerator
-import radar.generators.MoveGenerator
 import radar.logging.logging
+import radar.scene.SceneConfig.particleCount
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.pow
@@ -31,12 +31,12 @@ class CatScene(
         CatEmitter(
             particleGenerator = CatGenerator(),
         ),
-    private val collisionDetection: BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> =
+    private val collisionDetection: BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision> =
         KDTreeCollisionDetection(
             workerPool,
             THREAD_COUNT,
         ),
-) : BaseScene<CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator>(particles) {
+) : BaseScene<CatParticle, Point2D, Offset2D, CatCollision>(particles) {
     /** Stores collisions from the last update for state resetting purposes. */
     private val lastCollisions = mutableSetOf<CatCollision>()
 
@@ -47,21 +47,32 @@ class CatScene(
         }
     }
 
-    /** Initializes the scene by finding and reacting to initial collisions. */
+    /** Initializes the scene by spawning cats. */
     init {
-        this.findAndReactCollisions()
+        this.spawnCats()
     }
 
     /**
      * Updates the scene by moving particles, resetting states, and processing
      * collisions.
      *
-     * @param offsetGenerator The generator for particle movement offsets.
      */
-    override fun updateScene(offsetGenerator: MoveGenerator) {
-        this.move(offsetGenerator)
-        this.resetStates()
-        this.findAndReactCollisions()
+    override fun updateScene() {
+        updateEnvironmentContext()
+        super.updateScene()
+    }
+
+    private fun updateEnvironmentContext() {
+        particles.forEach { it.nearbyCats.clear() }
+
+        val collisions = collisionDetection.findCollisions(this)
+
+        for (collision in collisions) {
+            logging(collision)
+            collision.particle1.nearbyCats += collision.particle2
+            collision.particle2.nearbyCats += collision.particle1
+            lastCollisions.add(collision)
+        }
     }
 
     /**
@@ -78,25 +89,8 @@ class CatScene(
      * count.
      */
     private fun spawnCats() {
-        val nMax = sceneConfig.particleCount - particles.size
-        if (nMax <= 0) return
-
-        val n = Random.nextInt(1, nMax + 1)
-        val cats = catEmitter.emit(n)
+        val cats = catEmitter.emit(particleCount)
         this.particles.addAll(cats)
-    }
-
-    /**
-     * Resets the states of particles involved in the last collisions back to
-     * `CALM`.
-     */
-    private fun resetStates() {
-        for (collision in lastCollisions) {
-            arrayOf(collision.particle1, collision.particle2).forEach {
-                it.setCatState(CatStates.CALM)
-            }
-        }
-        lastCollisions.clear()
     }
 
     /**

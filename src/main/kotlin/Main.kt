@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import radar.generators.CatGenerator
-import radar.generators.MoveGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.SceneConfig
@@ -22,14 +21,13 @@ import kotlin.time.measureTime
 
 fun main() =
     application {
-        val sceneConfig = SceneConfig()
+        val sceneConfig = SceneConfig
         val catGenerator = CatGenerator()
         val cats = ArrayList<CatParticle>()
         for (i in 1..sceneConfig.particleCount) {
             cats.add(catGenerator.generate())
         }
         val catScene = CatScene(cats, sceneConfig)
-        val moveGenerator = MoveGenerator(sceneConfig)
         val state = mutableStateOf(UIStates.MODELING)
 
         Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
@@ -52,7 +50,7 @@ fun main() =
                     while (true) {
                         if (!sceneConfig.isOnPause) {
                             if (state.value == UIStates.MODELING) {
-                                timeModeling = measureTime { catScene.updateScene(moveGenerator) }.inWholeMilliseconds
+                                timeModeling = measureTime(catScene::updateScene).inWholeMilliseconds
                                 state.value = UIStates.UPDATE_DATA
                             }
                             if (timeModeling < sceneConfig.tau) {
