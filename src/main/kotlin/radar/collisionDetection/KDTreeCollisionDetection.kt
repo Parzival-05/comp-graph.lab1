@@ -100,7 +100,8 @@ class KDTreeCollisionDetection(
                                         }
                                     if (!isHandled) {
                                         val state = scene.calcNewState(dist)
-                                        if (state != CatStates.CALM) {
+                                        if (state != CatStates.CALM && (cat.state != CatStates.DEAD && catNeighbour
+                                            .state != CatStates.DEAD)) {
                                             val collision = CatCollision(cat, catNeighbour, dist, state)
                                             collisions.add(collision)
                                         } else {

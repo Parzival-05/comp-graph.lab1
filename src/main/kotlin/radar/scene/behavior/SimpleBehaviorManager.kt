@@ -5,6 +5,7 @@ import behavior.BehaviorStatus
 import behavior.flow.SelectorNode
 import behavior.flow.SequenceNode
 import behavior.leaf.ActionNode
+import behavior.leaf.ConditionDecoratorNode
 import behavior.leaf.ConditionNode
 import radar.scene.CatParticle
 import radar.scene.CatStates
@@ -24,7 +25,7 @@ class SimpleBehaviorManager(private val cat: CatParticle): CatBehaviorManager(ca
     override val behaviorTree: BehaviorNode = createBehaviorTree()
 
     override fun createBehaviorTree(): BehaviorNode {
-        return SequenceNode(listOf(
+        val behavior = SequenceNode(listOf(
             SequenceNode(listOf(
                 moveRandomList,
                 setStateToCalm
@@ -45,5 +46,10 @@ class SimpleBehaviorManager(private val cat: CatParticle): CatBehaviorManager(ca
                 )),
             ))
         ))
+
+        return ConditionDecoratorNode(
+            condition = { cat -> cat.state != CatStates.DEAD },
+            child = behavior
+        )
     }
 }

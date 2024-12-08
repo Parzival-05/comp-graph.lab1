@@ -12,5 +12,8 @@ enum class CatStates {
     FIGHT,
 
     /** State indicating the cat is sleeping. */
-    SLEEPING
+    SLEEPING,
+
+    /** ЛИКВИДИРОВАН 💀💀💀 */
+    DEAD
 }

@@ -18,6 +18,7 @@ fun getColorForState(state: CatStates): Color =
         CatStates.HISS -> Color.Gray
         CatStates.FIGHT -> Color.Black
         CatStates.SLEEPING -> Color.Blue
+        CatStates.DEAD -> Color.Red
     }
 
 fun wrapPosition(position: Point2D): Point2D {
