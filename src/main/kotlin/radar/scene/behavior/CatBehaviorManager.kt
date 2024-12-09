@@ -34,7 +34,7 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
     val shouldFight = ActionNode { cat ->
         val closestCat = cat.nearbyCats.find { otherCat ->
             val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
-            distance < SceneConfig.fightDist
+            distance < SceneConfig.fightDist && otherCat.state != CatStates.SLEEPING
         }
         if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
         cat.setCatState(CatStates.FIGHT)
@@ -61,24 +61,6 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
         cat.coordinates = wrapPosition(cat.coordinates)
         BehaviorStatus.SUCCESS
     }
-
-    val sleepAction = ActionNode { cat ->
-        if (cat.sleepTicksRemaining <= 0) {
-            cat.sleepTicksRemaining = Random.nextInt(20, 50)
-            BehaviorStatus.RUNNING
-        } else if (cat.sleepTicksRemaining > 0) {
-            cat.sleepTicksRemaining--
-            if (cat.sleepTicksRemaining == 0) {
-                cat.setCatState(CatStates.CALM)
-                BehaviorStatus.SUCCESS
-            } else {
-                BehaviorStatus.RUNNING
-            }
-        } else {
-            BehaviorStatus.SUCCESS
-        }
-    }
-
 
     // Behavior tree for the cat
     protected abstract val behaviorTree: BehaviorNode

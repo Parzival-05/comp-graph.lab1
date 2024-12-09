@@ -2,6 +2,7 @@ package radar.scene.behavior
 
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
+import behavior.flow.RepeaterNode
 import behavior.flow.SelectorNode
 import behavior.flow.SequenceNode
 import behavior.leaf.ActionNode
@@ -40,7 +41,7 @@ class SimpleBehaviorManager(private val cat: CatParticle): CatBehaviorManager(ca
                 SequenceNode(listOf(
                     shouldSleep,
                     setStateToSleeping,
-                    sleepAction
+                    RepeaterNode(ActionNode{ BehaviorStatus.SUCCESS }, 100)
                 )),
             ))
         ))

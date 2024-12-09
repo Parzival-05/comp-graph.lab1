@@ -21,9 +21,6 @@ data class CatParticle(
     /** Nearby cats that this cat is aware of. */
     var nearbyCats: MutableList<CatParticle> = mutableListOf()
 
-    /** Duration of remaining sleep, if the cat is sleeping. */
-    var sleepTicksRemaining: Int = 0
-
     /** Manages the behavior of this cat. */
     private var behaviorManager = BehaviorManagerFactory.create(role, this)
 
