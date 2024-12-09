@@ -3,10 +3,10 @@ package radar.scene.behavior
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
 import behavior.leaf.ActionNode
-import behavior.leaf.ConditionNode
 import drawing.wrapPosition
 import radar.generators.GENERATORS
 import radar.generators.MovementGeneratorFactory
+import radar.logging.log
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig
@@ -15,15 +15,8 @@ import kotlin.random.Random
 abstract class CatBehaviorManager(private val cat: CatParticle) {
     private val random = MovementGeneratorFactory(generators = GENERATORS).createRandomGenerator()
 
-    val shouldFight = ConditionNode { cat ->
-        cat.nearbyCats.any { otherCat ->
-            val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
-            distance < SceneConfig.fightDist
-        }
-    }
-
-    val shouldHiss = ConditionNode { cat ->
-        cat.nearbyCats.any { otherCat ->
+    val shouldHiss = ActionNode { cat ->
+        val closestCat = cat.nearbyCats.find { otherCat ->
             val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
             if (distance >= SceneConfig.fightDist && distance < SceneConfig.hissDist) {
                 val probability = 1 / (distance * distance)
@@ -32,21 +25,27 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
                 false
             }
         }
+        if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
+        log(cat, closestCat, CatStates.HISS)
+        cat.setCatState(CatStates.HISS)
+        BehaviorStatus.SUCCESS
     }
 
-    val setStateToFight = ActionNode { cat ->
+    val shouldFight = ActionNode { cat ->
+        val closestCat = cat.nearbyCats.find { otherCat ->
+            val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
+            distance < SceneConfig.fightDist
+        }
+        if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
         cat.setCatState(CatStates.FIGHT)
-        val deathProbability = 0.2;
+        val deathProbability = 0.2
+        log(cat, closestCat, CatStates.FIGHT)
         if (Random.nextDouble() < deathProbability) {
             cat.setCatState(CatStates.DEAD)
             BehaviorStatus.FAILURE
+        } else {
+            BehaviorStatus.SUCCESS
         }
-        BehaviorStatus.SUCCESS
-    }
-
-    val setStateToHiss = ActionNode { cat ->
-        cat.setCatState(CatStates.HISS)
-        BehaviorStatus.SUCCESS
     }
 
     val setStateToCalm = ActionNode { cat ->

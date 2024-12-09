@@ -33,11 +33,9 @@ class SimpleBehaviorManager(private val cat: CatParticle): CatBehaviorManager(ca
             SelectorNode(listOf(
                 SequenceNode(listOf(
                     shouldFight,
-                    setStateToFight
                 )),
                 SequenceNode(listOf(
                     shouldHiss,
-                    setStateToHiss
                 )),
                 SequenceNode(listOf(
                     shouldSleep,
