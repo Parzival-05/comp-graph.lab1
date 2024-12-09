@@ -1,7 +1,8 @@
 package radar.scene
 
 import core.base.BaseParticle
-import radar.scene.behavior.SimpleBehaviorManager
+import radar.scene.behavior.BehaviorManagerFactory
+import radar.scene.behavior.gang.CatRole
 
 /**
  * Represents a cat in the simulation with specific coordinates and state.
@@ -12,6 +13,7 @@ import radar.scene.behavior.SimpleBehaviorManager
 data class CatParticle(
     override var coordinates: Point2D,
     var state: CatStates = CatStates.CALM,
+    var role: CatRole = CatRole.DEFAULT
 ) : BaseParticle<Point2D, Offset2D>() {
     /** Unique identifier for the `CatParticle`. */
     val id = count++
@@ -23,10 +25,15 @@ data class CatParticle(
     var sleepTicksRemaining: Int = 0
 
     /** Manages the behavior of this cat. */
-    private val behaviorManager = SimpleBehaviorManager(this)
+    private var behaviorManager = BehaviorManagerFactory.create(role, this)
 
     override fun tick() =
         behaviorManager.tick()
+
+    fun setCatRole(newRole: CatRole) {
+        role = newRole
+        behaviorManager = BehaviorManagerFactory.create(role, this)
+    }
 
     fun setCatState(state: CatStates) {
         this.state = state
