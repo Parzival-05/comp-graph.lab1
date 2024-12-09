@@ -41,14 +41,23 @@ class SimpleBehaviorManager(private val cat: CatParticle): CatBehaviorManager(ca
                 SequenceNode(listOf(
                     shouldSleep,
                     setStateToSleeping,
-                    RepeaterNode(ActionNode{ BehaviorStatus.SUCCESS }, 100)
+                    // TODO: constant to scene config
+                    RepeaterNode(ActionNode.success, 100)
                 )),
             ))
         ))
 
+        val becomeGhost = SequenceNode(listOf(
+            SequenceNode(listOf(
+                shouldBecomeGhost,
+                setRoleToGhost,
+            )),
+        ))
+
         return ConditionDecoratorNode(
             condition = { cat -> cat.state != CatStates.DEAD },
-            child = behavior
+            trueBranch = behavior,
+            falseBranch = becomeGhost,
         )
     }
 }

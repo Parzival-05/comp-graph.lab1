@@ -7,7 +7,6 @@ import org.tinspin.index.kdtree.KDTree
 import radar.scene.CatCollision
 import radar.scene.CatParticle
 import radar.scene.CatScene
-import radar.scene.CatStates
 import radar.scene.Offset2D
 import radar.scene.Point2D
 import java.util.Collections
@@ -99,14 +98,10 @@ class KDTreeCollisionDetection(
                                             }
                                         }
                                     if (!isHandled) {
-                                        val state = scene.calcNewState(dist)
-                                        if (state != CatStates.CALM && (cat.state != CatStates.DEAD && catNeighbour
-                                            .state != CatStates.DEAD)) {
                                             val collision = CatCollision(cat, catNeighbour, dist)
                                             collisions.add(collision)
-                                        } else {
-                                            break
-                                        }
+                                    } else {
+                                        break
                                     }
                                 }
                             }

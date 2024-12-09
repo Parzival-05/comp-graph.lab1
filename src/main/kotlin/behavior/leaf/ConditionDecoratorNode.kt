@@ -6,13 +6,14 @@ import radar.scene.CatParticle
 
 class ConditionDecoratorNode(
     private val condition: (CatParticle) -> Boolean,
-    private val child: BehaviorNode
+    private val trueBranch: BehaviorNode,
+    private val falseBranch: BehaviorNode
 ) : BehaviorNode() {
     override fun tick(cat: CatParticle): BehaviorStatus {
         return if (condition(cat)) {
-            child.tick(cat)
+            trueBranch.tick(cat)
         } else {
-            BehaviorStatus.FAILURE
+            falseBranch.tick(cat)
         }
     }
 }

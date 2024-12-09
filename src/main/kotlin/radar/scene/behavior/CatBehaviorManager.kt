@@ -3,6 +3,7 @@ package radar.scene.behavior
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
 import behavior.leaf.ActionNode
+import behavior.leaf.ConditionNode
 import drawing.wrapPosition
 import radar.generators.GENERATORS
 import radar.generators.MovementGeneratorFactory
@@ -10,6 +11,7 @@ import radar.logging.log
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig
+import radar.scene.behavior.gang.CatRole
 import kotlin.random.Random
 
 abstract class CatBehaviorManager(private val cat: CatParticle) {
@@ -34,7 +36,9 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
     val shouldFight = ActionNode { cat ->
         val closestCat = cat.nearbyCats.find { otherCat ->
             val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
+            // todo: this is too much
             distance < SceneConfig.fightDist && otherCat.state != CatStates.SLEEPING
+                && otherCat.state != CatStates.DEAD
         }
         if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
         cat.setCatState(CatStates.FIGHT)
@@ -59,6 +63,16 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
 
         // todo: move out of here
         cat.coordinates = wrapPosition(cat.coordinates)
+        BehaviorStatus.SUCCESS
+    }
+
+    val shouldBecomeGhost = ConditionNode { _ ->
+        val ghostProbability = 10e-2
+        Random.nextDouble() < ghostProbability
+    }
+
+    val setRoleToGhost = ActionNode { cat ->
+        cat.setCatRole(CatRole.GHOST)
         BehaviorStatus.SUCCESS
     }
 
