@@ -8,9 +8,8 @@ import kotlin.math.sqrt
 
 class SeekTargetOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
     private val target: Point2D,
-    private val speed: Double
+    private val speed: Double,
 ) : BaseOffsetGenerator<P, Point2D, Offset2D> {
-
     override fun generate(particle: P): Offset2D {
         val dx = target.x - particle.coordinates.x
         val dy = target.y - particle.coordinates.y

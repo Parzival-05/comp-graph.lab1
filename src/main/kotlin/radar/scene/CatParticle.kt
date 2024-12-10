@@ -13,7 +13,7 @@ import radar.scene.behavior.gang.CatRole
 data class CatParticle(
     override var coordinates: Point2D,
     var state: CatStates = CatStates.CALM,
-    var role: CatRole = CatRole.DEFAULT
+    var role: CatRole = CatRole.DEFAULT,
 ) : BaseParticle<Point2D, Offset2D>() {
     /** Unique identifier for the `CatParticle`. */
     val id = count++
@@ -26,8 +26,7 @@ data class CatParticle(
     /** Manages the behavior of this cat. */
     private var behaviorManager = BehaviorManagerFactory.create(role, this)
 
-    override fun tick() =
-        behaviorManager.tick()
+    override fun tick() = behaviorManager.tick()
 
     fun setCatRole(newRole: CatRole) {
         role = newRole

@@ -15,5 +15,5 @@ enum class CatStates {
     SLEEPING,
 
     /** ЛИКВИДИРОВАН 💀💀💀 */
-    DEAD
+    DEAD,
 }
