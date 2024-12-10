@@ -4,6 +4,7 @@ import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
 import radar.scene.SceneConfig
+import radar.scene.behavior.gang.CatRole
 
 /**
  * Updates the scene by checking the current UI state and passing updated particle data to the UI.
@@ -152,13 +154,10 @@ fun drawScene(
     }
 }
 
-/**
- * Displays the modeling time in the bottom-left corner of the screen.
- *
- * @param timeModeling The time taken for modeling, in milliseconds.
- */
+
+// todo: docs
 @Composable
-fun drawModelingTime(timeModeling: Long) {
+fun drawStatistics(timeModeling: Long, cats: ArrayList<CatParticle>) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomStart,
@@ -172,6 +171,31 @@ fun drawModelingTime(timeModeling: Long) {
                 text = "Modeling time: $timeModeling",
                 style = MaterialTheme.typography.body1,
             )
+
+        }
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Alive: ${cats.count { it.state != CatStates.DEAD }}",
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Ghost: ${cats.count { it.role == CatRole.GHOST }}",
+                    style = MaterialTheme.typography.body1,
+                )
+            }
         }
     }
 }

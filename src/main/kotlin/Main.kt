@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import classes.UIStates
-import drawing.drawModelingTime
 import drawing.drawScene
+import drawing.drawStatistics
 import drawing.updateScene
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -70,6 +70,6 @@ fun main() =
                 currentCats = updatedCats
             }
             drawScene(currentCats, state, catScene.sceneConfig)
-            drawModelingTime(timeModeling)
+            drawStatistics(timeModeling, catScene.particles)
         }
     }
