@@ -18,6 +18,8 @@ data class CatParticle(
     /** Unique identifier for the `CatParticle`. */
     val id = count++
 
+    var hp = 100
+
     /** Nearby cats that this cat is aware of. */
     var nearbyCats: MutableList<CatParticle> = mutableListOf()
 

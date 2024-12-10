@@ -16,7 +16,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import classes.UIStates
@@ -112,6 +114,34 @@ fun drawScene(
                             color = currentColor,
                             center = catOffset,
                             radius = catRadius.toFloat(),
+                        )
+                        val barWidth = catRadius * 2.0f
+                        val barHeight = 8.dp.toPx()
+                        val barOffset = Offset(
+                            x = catOffset.x - barWidth / 2,
+                            y = catOffset.y - catRadius - 16.dp.toPx()
+                        )
+
+                        drawRoundRect(
+                            color = Color.Gray,
+                            topLeft = barOffset,
+                            size = Size(barWidth, barHeight),
+                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                        )
+
+                        // todo: scene config !!!
+                        val hpPercentage = cat.hp / 100f
+                        val filledWidth = barWidth * hpPercentage
+                        val color = when {
+                            hpPercentage > 0.67 -> Color.Green
+                            hpPercentage > 0.33 -> Color.Yellow
+                            else -> Color.Red
+                        }
+                        drawRoundRect(
+                            color = color,
+                            topLeft = barOffset,
+                            size = Size(filledWidth, barHeight),
+                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
                         )
                     }
                 }

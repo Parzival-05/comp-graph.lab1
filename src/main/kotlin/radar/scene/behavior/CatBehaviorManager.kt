@@ -42,9 +42,9 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
         }
         if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
         cat.setCatState(CatStates.FIGHT)
-        val deathProbability = 0.2
+        cat.hp -= Random.nextInt(1, 10)
         log(cat, closestCat, CatStates.FIGHT)
-        if (Random.nextDouble() < deathProbability) {
+        if (cat.hp < 0) {
             cat.setCatState(CatStates.DEAD)
             BehaviorStatus.FAILURE
         } else {
