@@ -6,7 +6,6 @@ import core.base.BaseEmitter
 import core.base.BaseScene
 import radar.collisionDetection.KDTreeCollisionDetection
 import radar.generators.CatGenerator
-import radar.logging.logging
 import radar.scene.SceneConfig.particleCount
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -68,7 +67,6 @@ class CatScene(
         val collisions = collisionDetection.findCollisions(this)
 
         for (collision in collisions) {
-            logging(collision)
             collision.particle1.nearbyCats += collision.particle2
             collision.particle2.nearbyCats += collision.particle1
             lastCollisions.add(collision)
@@ -127,14 +125,6 @@ class CatScene(
      * @param collisions An array of collisions to process.
      */
     override fun reactCollisions(collisions: Array<CatCollision>) {
-        for (collision in collisions) {
-            logging(collision)
-            arrayOf(collision.particle1, collision.particle2).forEach {
-                if (it.state != CatStates.FIGHT) {
-                    it.setCatState(collision.catState)
-                }
-            }
-            lastCollisions.add(collision)
-        }
+
     }
 }

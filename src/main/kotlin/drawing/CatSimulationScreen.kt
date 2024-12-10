@@ -4,6 +4,7 @@ import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import classes.UIStates
@@ -26,6 +29,7 @@ import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
 import radar.scene.SceneConfig
+import radar.scene.behavior.gang.CatRole
 
 /**
  * Updates the scene by checking the current UI state and passing updated particle data to the UI.
@@ -109,9 +113,38 @@ fun drawScene(
 
                     } else {
                         drawCircle(
-                            color = currentColor,
+                            // todo: so lazy rn
+                            color = if (cat.role != CatRole.POSSESSED) currentColor else Color.Green,
                             center = catOffset,
                             radius = catRadius.toFloat(),
+                        )
+                        val barWidth = catRadius * 2.0f
+                        val barHeight = 8.dp.toPx()
+                        val barOffset = Offset(
+                            x = catOffset.x - barWidth / 2,
+                            y = catOffset.y - catRadius - 16.dp.toPx()
+                        )
+
+                        drawRoundRect(
+                            color = Color.Gray,
+                            topLeft = barOffset,
+                            size = Size(barWidth, barHeight),
+                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                        )
+
+                        // todo: scene config !!!
+                        val hpPercentage = cat.hp / 100f
+                        val filledWidth = barWidth * hpPercentage
+                        val color = when {
+                            hpPercentage > 0.67 -> Color.Green
+                            hpPercentage > 0.33 -> Color.Yellow
+                            else -> Color.Red
+                        }
+                        drawRoundRect(
+                            color = color,
+                            topLeft = barOffset,
+                            size = Size(filledWidth, barHeight),
+                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
                         )
                     }
                 }
@@ -122,13 +155,10 @@ fun drawScene(
     }
 }
 
-/**
- * Displays the modeling time in the bottom-left corner of the screen.
- *
- * @param timeModeling The time taken for modeling, in milliseconds.
- */
+
+// todo: docs
 @Composable
-fun drawModelingTime(timeModeling: Long) {
+fun drawStatistics(timeModeling: Long, cats: ArrayList<CatParticle>) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomStart,
@@ -142,6 +172,31 @@ fun drawModelingTime(timeModeling: Long) {
                 text = "Modeling time: $timeModeling",
                 style = MaterialTheme.typography.body1,
             )
+
+        }
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Alive: ${cats.count { it.state != CatStates.DEAD }}",
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Ghost: ${cats.count { it.role == CatRole.GHOST }}",
+                    style = MaterialTheme.typography.body1,
+                )
+            }
         }
     }
 }

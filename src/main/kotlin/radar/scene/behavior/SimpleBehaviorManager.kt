@@ -2,6 +2,7 @@ package radar.scene.behavior
 
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
+import behavior.flow.RepeaterNode
 import behavior.flow.SelectorNode
 import behavior.flow.SequenceNode
 import behavior.leaf.ActionNode
@@ -33,23 +34,30 @@ class SimpleBehaviorManager(private val cat: CatParticle): CatBehaviorManager(ca
             SelectorNode(listOf(
                 SequenceNode(listOf(
                     shouldFight,
-                    setStateToFight
                 )),
                 SequenceNode(listOf(
                     shouldHiss,
-                    setStateToHiss
                 )),
                 SequenceNode(listOf(
                     shouldSleep,
                     setStateToSleeping,
-                    sleepAction
+                    // TODO: constant to scene config
+                    RepeaterNode(ActionNode.success, 100)
                 )),
             ))
         ))
 
+        val becomeGhost = SequenceNode(listOf(
+            SequenceNode(listOf(
+                shouldBecomeGhost,
+                setRoleToGhost,
+            )),
+        ))
+
         return ConditionDecoratorNode(
             condition = { cat -> cat.state != CatStates.DEAD },
-            child = behavior
+            trueBranch = behavior,
+            falseBranch = becomeGhost,
         )
     }
 }
