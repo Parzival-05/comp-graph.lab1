@@ -125,6 +125,5 @@ class CatScene(
      * @param collisions An array of collisions to process.
      */
     override fun reactCollisions(collisions: Array<CatCollision>) {
-
     }
 }

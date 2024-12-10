@@ -195,16 +195,18 @@ fun sceneSettingsMenu(
             Text(text = "Max Particle Speed: ${config.maxParticleSpeed}")
             Row {
                 Button(onClick = {
-                    config.maxParticleSpeed = (config.maxParticleSpeed - 0.1)
-                        .coerceAtLeast(MIN_CAT_SPEED.toDouble())
-                        .roundTo()
+                    config.maxParticleSpeed =
+                        (config.maxParticleSpeed - 0.1)
+                            .coerceAtLeast(MIN_CAT_SPEED.toDouble())
+                            .roundTo()
                 }, modifier = minusMarginModifier) {
                     Text("-")
                 }
                 Button(onClick = {
-                    config.maxParticleSpeed = (config.maxParticleSpeed + 0.1)
-                        .coerceAtMost(MAX_CAT_SPEED.toDouble())
-                        .roundTo()
+                    config.maxParticleSpeed =
+                        (config.maxParticleSpeed + 0.1)
+                            .coerceAtMost(MAX_CAT_SPEED.toDouble())
+                            .roundTo()
                 }, modifier = plusMarginModifier) {
                     Text("+")
                 }

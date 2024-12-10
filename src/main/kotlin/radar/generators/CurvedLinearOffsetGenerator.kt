@@ -10,9 +10,8 @@ class CurvedLinearOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
     private val linearVelocityX: Double,
     private val linearVelocityY: Double,
     private val curveFactor: Double = 0.05,
-    private val frequency: Double = 1.0
+    private val frequency: Double = 1.0,
 ) : BaseOffsetGenerator<P, Point2D, Offset2D> {
-
     private var time: Double = 0.0
 
     override fun generate(particle: P): Offset2D {

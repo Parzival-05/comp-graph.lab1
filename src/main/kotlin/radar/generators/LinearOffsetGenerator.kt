@@ -7,9 +7,8 @@ import radar.scene.Point2D
 
 class LinearOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
     private val velocityX: Double,
-    private val velocityY: Double
+    private val velocityY: Double,
 ) : BaseOffsetGenerator<P, Point2D, Offset2D> {
-
     override fun generate(particle: P): Offset2D {
         return Offset2D(velocityX, velocityY)
     }

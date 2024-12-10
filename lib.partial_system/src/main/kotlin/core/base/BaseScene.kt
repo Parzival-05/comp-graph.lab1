@@ -31,7 +31,6 @@ abstract class BaseScene<
         // particles.removeIf { !it.isInScene() }
     }
 
-
     /** Detects all collisions in the scene and reacts to them appropriately. */
     open fun findAndReactCollisions() {
         val collisions = this.findCollisions()

@@ -6,7 +6,7 @@ import radar.scene.CatParticle
 
 class RepeaterNode(
     private val child: BehaviorNode,
-    private val repeatCount: Int = Int.MAX_VALUE
+    private val repeatCount: Int = Int.MAX_VALUE,
 ) : BehaviorNode() {
     private var counter = 0
 

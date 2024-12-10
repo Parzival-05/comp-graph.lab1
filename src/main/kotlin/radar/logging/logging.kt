@@ -8,7 +8,11 @@ import java.sql.Timestamp
 
 val GlobalInteractionLog = mutableListOf<CatInteraction>()
 
-fun log(cat1: CatParticle, cat2: CatParticle, state: CatStates) {
+fun log(
+    cat1: CatParticle,
+    cat2: CatParticle,
+    state: CatStates,
+) {
     val time = Timestamp(System.currentTimeMillis())
     val cat1Id = cat1.id
     val cat2Id = cat2.id

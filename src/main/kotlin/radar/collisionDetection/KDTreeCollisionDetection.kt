@@ -98,8 +98,8 @@ class KDTreeCollisionDetection(
                                             }
                                         }
                                     if (!isHandled) {
-                                            val collision = CatCollision(cat, catNeighbour, dist)
-                                            collisions.add(collision)
+                                        val collision = CatCollision(cat, catNeighbour, dist)
+                                        collisions.add(collision)
                                     } else {
                                         break
                                     }
