@@ -4,6 +4,7 @@ import core.base.BaseParticle
 import core.base.generators.BaseOffsetGenerator
 import radar.scene.Offset2D
 import radar.scene.Point2D
+import kotlin.math.sqrt
 
 class SeekTargetOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
     private val target: Point2D,
@@ -15,7 +16,7 @@ class SeekTargetOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
         val dy = target.y - particle.coordinates.y
 
         // normalize the vector
-        val magnitude = Math.sqrt(dx * dx + dy * dy)
+        val magnitude = sqrt(dx * dx + dy * dy)
         val normalizedX = if (magnitude != 0.0) dx / magnitude else 0.0
         val normalizedY = if (magnitude != 0.0) dy / magnitude else 0.0
 

@@ -113,7 +113,8 @@ fun drawScene(
 
                     } else {
                         drawCircle(
-                            color = currentColor,
+                            // todo: so lazy rn
+                            color = if (cat.role != CatRole.POSSESSED) currentColor else Color.Green,
                             center = catOffset,
                             radius = catRadius.toFloat(),
                         )

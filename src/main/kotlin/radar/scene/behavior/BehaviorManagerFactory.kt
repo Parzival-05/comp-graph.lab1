@@ -8,6 +8,7 @@ object BehaviorManagerFactory {
         return when (role) {
             CatRole.DEFAULT -> SimpleBehaviorManager(cat)
             CatRole.GHOST -> GhostBehaviorManager(cat)
+            CatRole.POSSESSED -> PossessedBehaviorManager(cat)
         }
     }
 }
