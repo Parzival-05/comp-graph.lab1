@@ -8,7 +8,6 @@ import behavior.flow.SequenceNode
 import behavior.leaf.ActionNode
 import radar.generators.SeekTargetOffsetGenerator
 import radar.scene.CatParticle
-import radar.scene.CatStates
 import radar.scene.SceneConfig
 import radar.scene.behavior.gang.CatRole
 
@@ -18,7 +17,8 @@ class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(ca
 
     val moveToClosestCat =
         ActionNode { cat ->
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.state != CatStates.DEAD }
+            // todo: better condition
+            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
             if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
             val offset = moveTo(closestCat).generate(cat)
             offset.move(cat.coordinates)
@@ -26,7 +26,7 @@ class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(ca
         }
     val tryToPossess =
         ActionNode { cat ->
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.state != CatStates.DEAD }
+            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
             if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
             if (SceneConfig.metricFunction(cat.coordinates, closestCat.coordinates) < SceneConfig.fightDist) {
                 BehaviorStatus.SUCCESS
@@ -37,7 +37,7 @@ class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(ca
     val possess =
         ActionNode { cat ->
             // todo: эх вот бы сюда СТЕЙТ МОНАДУ
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.state != CatStates.DEAD }
+            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
             if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
             closestCat.setCatRole(CatRole.POSSESSED)
             BehaviorStatus.SUCCESS

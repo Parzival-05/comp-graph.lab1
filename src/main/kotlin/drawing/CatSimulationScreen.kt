@@ -85,10 +85,11 @@ fun drawScene(
                 cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
                     val catRadius = config.catRadius
-                    val catOffset = Offset(
-                        cat.coordinates.x.dp.toPx(),
-                        cat.coordinates.y.dp.toPx()
-                    )
+                    val catOffset =
+                        Offset(
+                            cat.coordinates.x.dp.toPx(),
+                            cat.coordinates.y.dp.toPx(),
+                        )
 
                     when {
                         cat.role == CatRole.GHOST -> {
@@ -96,7 +97,7 @@ fun drawScene(
                             drawCircle(
                                 color = Color(0x80ff2120), // Полупрозрачный красный
                                 center = catOffset,
-                                radius = catRadius.toFloat()
+                                radius = catRadius.toFloat(),
                             )
                         }
                         cat.state == CatStates.DEAD -> {
@@ -117,7 +118,7 @@ fun drawScene(
                                 color = currentColor,
                                 start = topRight,
                                 end = bottomLeft,
-                                strokeWidth = 4f
+                                strokeWidth = 4f,
                             )
                         } else -> {
                             drawCircle(
@@ -132,31 +133,31 @@ fun drawScene(
                             val barHeight = 8.dp.toPx()
                             val barOffset =
                                 Offset(
-                                x = catOffset.x - barWidth / 2,
-                                y = catOffset.y - catRadius - 16.dp.toPx(),
+                                    x = catOffset.x - barWidth / 2,
+                                    y = catOffset.y - catRadius - 16.dp.toPx(),
+                                )
+
+                            drawRoundRect(
+                                color = Color.Gray,
+                                topLeft = barOffset,
+                                size = Size(barWidth, barHeight),
+                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
                             )
 
-                        drawRoundRect(
-                            color = Color.Gray,
-                            topLeft = barOffset,
-                            size = Size(barWidth, barHeight),
-                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-                        )
-
-                        // todo: scene config !!!
-                        val hpPercentage = cat.hp / 100f
-                        val filledWidth = barWidth * hpPercentage
-                        val color =
-                            when {
-                                hpPercentage > 0.67 -> Color.Green
-                                hpPercentage > 0.33 -> Color.Yellow
-                                else -> Color.Red
-                            }
+                            // todo: scene config !!!
+                            val hpPercentage = cat.hp / 100f
+                            val filledWidth = barWidth * hpPercentage
+                            val color =
+                                when {
+                                    hpPercentage > 0.67 -> Color.Green
+                                    hpPercentage > 0.33 -> Color.Yellow
+                                    else -> Color.Red
+                                }
                             drawRoundRect(
                                 color = color,
                                 topLeft = barOffset,
                                 size = Size(filledWidth, barHeight),
-                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
                             )
                         }
                     }

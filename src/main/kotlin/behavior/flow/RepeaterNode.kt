@@ -13,8 +13,12 @@ class RepeaterNode(
     override fun tick(cat: CatParticle): BehaviorStatus {
         if (counter < repeatCount) {
             val status = child.tick(cat)
-            if (status == BehaviorStatus.SUCCESS || status == BehaviorStatus.FAILURE) {
+            if (status == BehaviorStatus.SUCCESS) {
                 counter++
+            }
+            if (status == BehaviorStatus.FAILURE) {
+                counter = 0
+                return BehaviorStatus.FAILURE
             }
             return BehaviorStatus.RUNNING
         } else {
