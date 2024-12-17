@@ -9,7 +9,7 @@ class CatSimulation {
 
         const val MIN_PARTICLE_COUNT = 100
         const val MAX_PARTICLE_COUNT = 50000
-        const val MAX_INTERACTIONS_DISPLAYED = 50
+        const val MAX_LOGS_DISPLAYED = 50
         const val MIN_TAU = 1L
         const val MIN_CAT_RADIUS = 1
         const val MAX_CAT_RADIUS = 100

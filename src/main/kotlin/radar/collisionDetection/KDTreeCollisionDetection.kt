@@ -1,13 +1,12 @@
 package radar.collisionDetection
 
+import CollisionDetection
 import core.base.BaseCollisionDetection
 import org.tinspin.index.PointDistance
 import org.tinspin.index.kdtree.KDTree
-import radar.generators.MoveGenerator
 import radar.scene.CatCollision
 import radar.scene.CatParticle
 import radar.scene.CatScene
-import radar.scene.CatStates
 import radar.scene.Offset2D
 import radar.scene.Point2D
 import java.util.Collections
@@ -21,7 +20,7 @@ const val DIMS = 2
 class KDTreeCollisionDetection(
     private val workerPool: ExecutorService,
     private val threadPoolSize: Int,
-) : BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> {
+) : BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision> {
     private val kValues: MutableSet<Int> = Collections.newSetFromMap(ConcurrentHashMap())
     private val batchSize: Int
         get() =
@@ -99,13 +98,10 @@ class KDTreeCollisionDetection(
                                             }
                                         }
                                     if (!isHandled) {
-                                        val state = scene.calcNewState(dist)
-                                        if (state != CatStates.CALM) {
-                                            val collision = CatCollision(cat, catNeighbour, dist, state)
-                                            collisions.add(collision)
-                                        } else {
-                                            break
-                                        }
+                                        val collision = CatCollision(cat, catNeighbour, dist)
+                                        collisions.add(collision)
+                                    } else {
+                                        break
                                     }
                                 }
                             }
