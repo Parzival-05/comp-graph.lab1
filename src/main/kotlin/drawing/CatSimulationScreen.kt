@@ -85,42 +85,53 @@ fun drawScene(
                 cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
                     val catRadius = config.catRadius
-                    val catOffset =
-                        Offset(
-                            (cat.coordinates.x).dp.toPx(),
-                            (cat.coordinates.y).dp.toPx(),
-                        )
-                    if (cat.state == CatStates.DEAD) {
-                        val lineLength = catRadius * 2.0f
-                        val topLeft = Offset(catOffset.x - lineLength / 2, catOffset.y - lineLength / 2)
-                        val topRight = Offset(catOffset.x + lineLength / 2, catOffset.y - lineLength / 2)
-                        val bottomLeft = Offset(catOffset.x - lineLength / 2, catOffset.y + lineLength / 2)
-                        val bottomRight = Offset(catOffset.x + lineLength / 2, catOffset.y + lineLength / 2)
+                    val catOffset = Offset(
+                        cat.coordinates.x.dp.toPx(),
+                        cat.coordinates.y.dp.toPx()
+                    )
 
-                        drawLine(
-                            color = currentColor,
-                            start = topLeft,
-                            end = bottomRight,
-                            strokeWidth = 4f,
-                        )
+                    when {
+                        cat.role == CatRole.GHOST -> {
+                            // Призраки рисуются как прозрачные кружки
+                            drawCircle(
+                                color = Color(0x80ff2120), // Полупрозрачный красный
+                                center = catOffset,
+                                radius = catRadius.toFloat()
+                            )
+                        }
+                        cat.state == CatStates.DEAD -> {
+                            // Мертвые коты отображаются как кресты
+                            val lineLength = catRadius * 2.0f
+                            val topLeft = Offset(catOffset.x - lineLength / 2, catOffset.y - lineLength / 2)
+                            val topRight = Offset(catOffset.x + lineLength / 2, catOffset.y - lineLength / 2)
+                            val bottomLeft = Offset(catOffset.x - lineLength / 2, catOffset.y + lineLength / 2)
+                            val bottomRight = Offset(catOffset.x + lineLength / 2, catOffset.y + lineLength / 2)
 
-                        drawLine(
-                            color = currentColor,
-                            start = topRight,
-                            end = bottomLeft,
-                            strokeWidth = 4f,
-                        )
-                    } else {
-                        drawCircle(
-                            // todo: so lazy rn
-                            color = if (cat.role != CatRole.POSSESSED) currentColor else Color.Green,
-                            center = catOffset,
-                            radius = catRadius.toFloat(),
-                        )
-                        val barWidth = catRadius * 2.0f
-                        val barHeight = 8.dp.toPx()
-                        val barOffset =
-                            Offset(
+                            drawLine(
+                                color = currentColor,
+                                start = topLeft,
+                                end = bottomRight,
+                                strokeWidth = 4f,
+                            )
+                            drawLine(
+                                color = currentColor,
+                                start = topRight,
+                                end = bottomLeft,
+                                strokeWidth = 4f
+                            )
+                        } else -> {
+                            drawCircle(
+                                // todo: so lazy rn
+                                color = if (cat.role != CatRole.POSSESSED) currentColor else Color.Green,
+                                center = catOffset,
+                                radius = catRadius.toFloat(),
+                            )
+
+                            // HP-бар
+                            val barWidth = catRadius * 2.0f
+                            val barHeight = 8.dp.toPx()
+                            val barOffset =
+                                Offset(
                                 x = catOffset.x - barWidth / 2,
                                 y = catOffset.y - catRadius - 16.dp.toPx(),
                             )
@@ -141,12 +152,13 @@ fun drawScene(
                                 hpPercentage > 0.33 -> Color.Yellow
                                 else -> Color.Red
                             }
-                        drawRoundRect(
-                            color = color,
-                            topLeft = barOffset,
-                            size = Size(filledWidth, barHeight),
-                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-                        )
+                            drawRoundRect(
+                                color = color,
+                                topLeft = barOffset,
+                                size = Size(filledWidth, barHeight),
+                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                            )
+                        }
                     }
                 }
             }
