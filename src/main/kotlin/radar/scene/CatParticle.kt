@@ -1,6 +1,7 @@
 package radar.scene
 
 import core.base.BaseParticle
+import radar.logging.logStateChange
 import radar.scene.behavior.BehaviorManagerFactory
 import radar.scene.behavior.gang.CatRole
 
@@ -35,6 +36,7 @@ data class CatParticle(
 
     fun setCatState(state: CatStates) {
         this.state = state
+        if (state != CatStates.FIGHT && state != CatStates.HISS && state != CatStates.CALM) logStateChange(this)
     }
 
     companion object {

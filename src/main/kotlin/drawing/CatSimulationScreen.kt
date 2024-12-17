@@ -95,7 +95,8 @@ fun drawScene(
                         cat.role == CatRole.GHOST -> {
                             // Призраки рисуются как прозрачные кружки
                             drawCircle(
-                                color = Color(0x80ff2120), // Полупрозрачный красный
+                                // Полупрозрачный красный
+                                color = Color(0x80ff2120),
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )

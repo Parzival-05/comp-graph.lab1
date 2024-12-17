@@ -7,7 +7,7 @@ import behavior.leaf.ConditionNode
 import drawing.wrapPosition
 import radar.generators.GENERATORS
 import radar.generators.MovementGeneratorFactory
-import radar.logging.log
+import radar.logging.logInteraction
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig
@@ -30,7 +30,7 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
                     }
                 }
             if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
-            log(cat, closestCat, CatStates.HISS)
+            logInteraction(cat, closestCat, CatStates.HISS)
             cat.setCatState(CatStates.HISS)
             BehaviorStatus.SUCCESS
         }
@@ -47,7 +47,7 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
             if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
             cat.setCatState(CatStates.FIGHT)
             cat.hp -= Random.nextInt(1, 10)
-            log(cat, closestCat, CatStates.FIGHT)
+            logInteraction(cat, closestCat, CatStates.FIGHT)
             if (cat.hp < 0) {
                 cat.setCatState(CatStates.DEAD)
                 BehaviorStatus.FAILURE

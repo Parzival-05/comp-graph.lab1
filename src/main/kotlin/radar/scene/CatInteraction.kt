@@ -1,5 +1,6 @@
 package radar.scene
 
+import radar.logging.Loggable
 import java.sql.Timestamp
 
 /**
@@ -11,8 +12,8 @@ import java.sql.Timestamp
  * @property type The type of interaction (e.g., `HISS`, `FIGHT`).
  */
 data class CatInteraction(
-    val time: Timestamp,
+    override val time: Timestamp,
     val particleId1: Int,
     val particleId2: Int,
     val type: CatStates,
-)
+) : Loggable
