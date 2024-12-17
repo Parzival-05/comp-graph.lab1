@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -25,10 +23,7 @@ import androidx.compose.ui.unit.dp
 import classes.UIStates
 import drawing.menu.drawDraggableMenu
 import kotlinx.coroutines.delay
-import radar.scene.CatParticle
-import radar.scene.CatScene
-import radar.scene.CatStates
-import radar.scene.SceneConfig
+import radar.scene.*
 import radar.scene.behavior.gang.CatRole
 
 /**
@@ -47,6 +42,9 @@ fun updateScene(
     LaunchedEffect(Unit) {
         while (true) {
             if (state.value == UIStates.UPDATE_DATA) {
+                catScene.particles.forEach { cat ->
+                    cat.previousCoordinates = cat.coordinates.copy() // Сохраняем предыдущие координаты
+                }
                 onSceneUpdated(catScene.particles.map { it }.toTypedArray()) // Передача нового списка
                 state.value = UIStates.DRAWING
             }
@@ -76,18 +74,53 @@ fun drawScene(
                     .align(Alignment.Center)
                     .drawBehind { drawRect(Color(0xFFae99b8)) },
         ) {
+            val updateFlag = remember { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 while (state.value != UIStates.DRAWING) {
                     delay(3)
                 }
             }
+            LaunchedEffect(cats) {
+                println("cats: $cats")
+                val steps = 30
+
+                repeat(steps) { step ->
+                    println("!1!!")
+                    cats.forEachIndexed { index, cat ->
+                        println("previousCoordinates: ${cat.previousCoordinates}")
+                        println("coordinates: ${cat.coordinates}")
+
+                        // Рассчитываем прогресс для текущего шага
+                        val progress = (step + 1).toDouble() / steps
+
+                        // Интерполяция с учетом текущего прогресса
+                        cat.previousCoordinates = Point2D(
+                            x = cat.previousCoordinates.x + (cat.coordinates.x - cat.previousCoordinates.x) * progress,
+                            y = cat.previousCoordinates.y + (cat.coordinates.y - cat.previousCoordinates.y) * progress
+                        )
+
+                        println("Progress: $progress, new previousCoordinates: ${cat.previousCoordinates}")
+                    }
+                    updateFlag.value = !updateFlag.value
+                    delay(16) // ~16 мс для 60 FPS
+                }
+            }
+
             Canvas(modifier = Modifier.fillMaxSize()) {
-                cats.forEach { cat ->
+                updateFlag.value // Реакция на изменение флага
+                if (updateFlag.value) {
+                    drawRect(
+                        color = Color.Red,
+                        size = Size(100.dp.toPx(), 100.dp.toPx()),
+                        topLeft = Offset(100.dp.toPx(), 100.dp.toPx())
+                    )
+                }
+                    cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
                     val catRadius = config.catRadius
                     val catOffset = Offset(
-                        cat.coordinates.x.dp.toPx(),
-                        cat.coordinates.y.dp.toPx()
+                        cat.previousCoordinates.x.dp.toPx(),
+                        cat.previousCoordinates.y.dp.toPx()
                     )
 
                     when {

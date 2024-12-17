@@ -32,5 +32,5 @@ class CatGenerator : BaseParticleGenerator<CatParticle, Point2D, Offset2D> {
      * @param coordinates The coordinates where the `CatParticle` will be placed.
      * @return A new `CatParticle` at the given coordinates.
      */
-    fun generate(coordinates: Point2D): CatParticle = CatParticle(coordinates)
+    fun generate(coordinates: Point2D): CatParticle = CatParticle(coordinates, coordinates)
 }

@@ -64,6 +64,7 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
 
     val moveRandomList =
         ActionNode { cat ->
+            cat.previousCoordinates = cat.coordinates.copy()
             val offset = random.generate(cat)
             offset.move(cat.coordinates)
 
