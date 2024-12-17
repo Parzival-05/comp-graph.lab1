@@ -19,6 +19,6 @@ class CircularOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
 
         angle = (angle + angularVelocity) % (2 * Math.PI)
 
-        return Offset2D(offsetX, offsetY)
+        return Offset2D(offsetX * SceneConfig.maxParticleSpeed, offsetY * SceneConfig.maxParticleSpeed)
     }
 }

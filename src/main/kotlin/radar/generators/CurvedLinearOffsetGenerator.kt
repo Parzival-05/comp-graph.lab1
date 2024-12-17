@@ -21,6 +21,6 @@ class CurvedLinearOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
         // converting to seconds
         time += SceneConfig.tau / 1000
 
-        return Offset2D(curvedX, curvedY)
+        return Offset2D(curvedX * SceneConfig.maxParticleSpeed, curvedY * SceneConfig.maxParticleSpeed)
     }
 }
