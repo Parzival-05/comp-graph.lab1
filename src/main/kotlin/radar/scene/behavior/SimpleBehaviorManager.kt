@@ -12,6 +12,11 @@ import radar.scene.CatParticle
 import radar.scene.CatStates
 import kotlin.random.Random
 
+/**
+ * Default cat behavior manager.
+ *
+ * @param cat The cat particle.
+ */
 class SimpleBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(cat) {
     val shouldSleep =
         ConditionNode { _ ->

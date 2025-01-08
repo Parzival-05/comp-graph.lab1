@@ -5,8 +5,8 @@ import behavior.BehaviorStatus
 import behavior.leaf.ActionNode
 import behavior.leaf.ConditionNode
 import drawing.wrapPosition
-import radar.generators.GENERATORS
 import radar.generators.MovementGeneratorFactory
+import radar.generators.RANDOM_GENERATORS
 import radar.logging.logInteraction
 import radar.scene.CatParticle
 import radar.scene.CatStates
@@ -14,8 +14,14 @@ import radar.scene.SceneConfig
 import radar.scene.behavior.gang.CatRole
 import kotlin.random.Random
 
+/**
+ * Cat behavior manager implemented using behavior trees. Each action is presented as a node,
+ * e.g. moving and fighting. [CatBehaviorManager] is also responsible for cat state.
+ *
+ * @param cat The cat particle
+ */
 abstract class CatBehaviorManager(private val cat: CatParticle) {
-    private val random = MovementGeneratorFactory(generators = GENERATORS).createRandomGenerator()
+    private val random = MovementGeneratorFactory(generators = RANDOM_GENERATORS).createRandomGenerator()
 
     val shouldHiss =
         ActionNode { cat ->

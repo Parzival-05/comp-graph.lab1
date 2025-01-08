@@ -9,16 +9,14 @@ import radar.generators.CatGenerator
 import radar.scene.SceneConfig.particleCount
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.math.pow
-import kotlin.random.Random
 
 /**
  * Manages the simulation scene, including particles, their interactions,
  * and configurations.
  *
- * @property particles The list of `CatParticles` in the scene.
+ * @property particles The list of [CatParticle] in the scene.
  * @property sceneConfig The configuration settings for the scene.
- * @property catEmitter The emitter used to introduce new `CatParticles`
+ * @property catEmitter The emitter used to introduce new [CatParticle]
  *     into the scene.
  * @property collisionDetection The mechanism for detecting and handling
  *     collisions.
@@ -57,33 +55,14 @@ class CatScene(
      *
      */
     override fun updateScene() {
-        updateEnvironmentContext()
         super.updateScene()
-    }
-
-    private fun updateEnvironmentContext() {
-        particles.forEach { it.nearbyCats.clear() }
-
-        val collisions = collisionDetection.findCollisions(this)
-
-        for (collision in collisions) {
-            collision.particle1.nearbyCats += collision.particle2
-            collision.particle2.nearbyCats += collision.particle1
-            lastCollisions.add(collision)
+        this.particles.forEach { particle ->
+            particle.tick()
         }
     }
 
     /**
-     * Finds collisions and reacts to them, then spawns new `CatParticles` if
-     * needed.
-     */
-    override fun findAndReactCollisions() {
-        super.findAndReactCollisions()
-        this.spawnCats()
-    }
-
-    /**
-     * Adds new `CatParticles` to the scene to maintain the desired particle
+     * Adds new [CatParticle] to the scene to maintain the desired particle
      * count.
      */
     private fun spawnCats() {
@@ -95,35 +74,17 @@ class CatScene(
      * Finds all collisions in the scene using the collision detection
      * algorithm.
      *
-     * @return An array of detected CatCollisions.
+     * @return An array of detected [CatCollision].
      */
     public override fun findCollisions(): Array<CatCollision> = collisionDetection.findCollisions(this)
 
-    /**
-     * Determines the new state for particles based on the distance between
-     * them.
-     *
-     * @param dist The distance between two particles.
-     * @return The new state (`CALM`, `HISS`, or `FIGHT`) for the particles.
-     */
-    fun calcNewState(dist: Double): CatStates {
-        val newState =
-            if (dist < sceneConfig.fightDist) {
-                CatStates.FIGHT
-            } else if (dist < sceneConfig.hissDist && Random.nextDouble(1.0) < 1 / (dist.pow(2))) {
-                CatStates.HISS
-            } else {
-                CatStates.CALM
-            }
-        return newState
-    }
-
-    /**
-     * Reacts to detected collisions by updating particle states and logging
-     * interactions.
-     *
-     * @param collisions An array of collisions to process.
-     */
     override fun reactCollisions(collisions: Array<CatCollision>) {
+        particles.forEach { it.nearbyCats.clear() }
+
+        for (collision in collisions) {
+            collision.particle1.nearbyCats += collision.particle2
+            collision.particle2.nearbyCats += collision.particle1
+            lastCollisions.add(collision)
+        }
     }
 }

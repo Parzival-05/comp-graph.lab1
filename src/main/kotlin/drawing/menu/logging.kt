@@ -45,7 +45,7 @@ fun drawInteractionLog(logs: List<Loggable>) {
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = color)) {
                                 append("${log.type} ")
                             }
-                            append("between Cat ${log.particleId1} and Cat ${log.particleId2}")
+                            append("between Cat ${log.catId1} and Cat ${log.catId2}")
                         },
                         fontSize = 12.sp,
                         color = Color.White,

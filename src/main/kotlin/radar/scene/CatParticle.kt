@@ -8,15 +8,15 @@ import radar.scene.behavior.gang.CatRole
 /**
  * Represents a cat in the simulation with specific coordinates and state.
  *
- * @property coordinates The current coordinates of the `CatParticle`.
- * @property state The current state of the `CatParticle` (default is `CALM`).
+ * @property coordinates The current coordinates of the [CatParticle].
+ * @property state The current state of the [CatParticle] (default is `CALM`).
  */
 data class CatParticle(
     override var coordinates: Point2D,
     var state: CatStates = CatStates.CALM,
     var role: CatRole = CatRole.DEFAULT,
 ) : BaseParticle<Point2D, Offset2D>() {
-    /** Unique identifier for the `CatParticle`. */
+    /** Unique identifier for the [CatParticle]. */
     val id = count++
 
     var hp = 100
@@ -40,7 +40,7 @@ data class CatParticle(
     }
 
     companion object {
-        /** Counter to assign unique IDs to `CatParticles`. */
+        /** Counter to assign unique IDs to [CatParticle]. */
         var count = 0
     }
 }
