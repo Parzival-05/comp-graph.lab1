@@ -1,13 +1,19 @@
-package behavior.flow
+package behavior.decorator
 
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
 import radar.scene.CatParticle
 
+/**
+ * Repeats the child node [repeatCount] times or until it fails.
+ *
+ * @property child the child node to repeat
+ * @property repeatCount the number of times to repeat the child node
+ */
 class RepeaterNode(
-    private val child: BehaviorNode,
-    private val repeatCount: Int = Int.MAX_VALUE,
-) : BehaviorNode() {
+    override val child: BehaviorNode,
+    private val repeatCount: Int,
+) : Decorator() {
     private var counter = 0
 
     override fun tick(cat: CatParticle): BehaviorStatus {

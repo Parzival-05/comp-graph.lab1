@@ -2,10 +2,9 @@ package radar.scene.behavior
 
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
-import behavior.flow.RepeaterNode
-import behavior.flow.SelectorNode
-import behavior.flow.SequenceNode
-import behavior.leaf.ActionNode
+import behavior.action
+import behavior.select
+import behavior.sequence
 import radar.generators.SeekTargetOffsetGenerator
 import radar.scene.CatParticle
 import radar.scene.SceneConfig
@@ -21,18 +20,18 @@ class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(ca
     val moveTo = { target: CatParticle -> SeekTargetOffsetGenerator<CatParticle>(target.coordinates, 1.0) }
 
     val moveToClosestCat =
-        ActionNode { cat ->
+        action { cat ->
             // todo: better condition
             val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
+            if (closestCat == null) return@action BehaviorStatus.FAILURE
             val offset = moveTo(closestCat).generate(cat)
             offset.move(cat.coordinates)
             BehaviorStatus.SUCCESS
         }
     val tryToPossess =
-        ActionNode { cat ->
+        action { cat ->
             val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
+            if (closestCat == null) return@action BehaviorStatus.FAILURE
             if (SceneConfig.metricFunction(cat.coordinates, closestCat.coordinates) < SceneConfig.fightDist) {
                 BehaviorStatus.SUCCESS
             } else {
@@ -40,10 +39,10 @@ class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(ca
             }
         }
     val possess =
-        ActionNode { cat ->
+        action { cat ->
             // todo: эх вот бы сюда СТЕЙТ МОНАДУ
             val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
+            if (closestCat == null) return@action BehaviorStatus.FAILURE
             closestCat.setCatRole(CatRole.POSSESSED)
             BehaviorStatus.SUCCESS
         }
@@ -53,25 +52,19 @@ class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(ca
 
     override fun createBehaviorTree(): BehaviorNode {
         val behavior =
-            SelectorNode(
-                listOf(
-                    SequenceNode(
-                        listOf(
-                            RepeaterNode(
-                                SequenceNode(
-                                    listOf(
-                                        moveToClosestCat,
-                                        tryToPossess,
-                                    ),
-                                ),
-                                20,
-                            ),
-                            possess,
-                        ),
-                    ),
-                    moveRandomList,
-                ),
-            )
+            select {
+                +sequence {
+                    +behavior.repeat(20) {
+                        sequence {
+                            +moveToClosestCat
+                            +tryToPossess
+                        }
+                    }
+                    +possess
+                }
+                +moveRandomList
+            }
+
         return behavior
     }
 }

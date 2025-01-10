@@ -1,7 +1,7 @@
 package radar.scene.behavior
 
 import behavior.BehaviorNode
-import behavior.flow.SequenceNode
+import behavior.sequence
 import radar.scene.CatParticle
 
 /**
@@ -13,10 +13,8 @@ class PossessedBehaviorManager(private val cat: CatParticle) : CatBehaviorManage
     override val behaviorTree: BehaviorNode = createBehaviorTree()
 
     override fun createBehaviorTree(): BehaviorNode {
-        return SequenceNode(
-            listOf(
-                moveRandomList,
-            ),
-        )
+        return sequence {
+            +moveRandomList
+        }
     }
 }
