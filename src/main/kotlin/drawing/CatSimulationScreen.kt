@@ -42,9 +42,9 @@ fun updateScene(
     LaunchedEffect(Unit) {
         while (true) {
             if (state.value == UIStates.UPDATE_DATA) {
-                catScene.particles.forEach { cat ->
-                    cat.previousCoordinates = cat.coordinates.copy() // Сохраняем предыдущие координаты
-                }
+//                catScene.particles.forEach { cat ->
+//                    cat.previousCoordinates = cat.coordinates.copy() // Сохраняем предыдущие координаты
+//                }
                 onSceneUpdated(catScene.particles.map { it }.toTypedArray()) // Передача нового списка
                 state.value = UIStates.DRAWING
             }
@@ -102,19 +102,19 @@ fun drawScene(
                         println("Progress: $progress, new previousCoordinates: ${cat.previousCoordinates}")
                     }
                     updateFlag.value = !updateFlag.value
-                    delay(16) // ~16 мс для 60 FPS
+                    delay(10) // ~16 мс для 60 FPS
                 }
             }
 
             Canvas(modifier = Modifier.fillMaxSize()) {
                 updateFlag.value // Реакция на изменение флага
-                if (updateFlag.value) {
-                    drawRect(
-                        color = Color.Red,
-                        size = Size(100.dp.toPx(), 100.dp.toPx()),
-                        topLeft = Offset(100.dp.toPx(), 100.dp.toPx())
-                    )
-                }
+//                if (updateFlag.value) {
+//                    drawRect(
+//                        color = Color.Red,
+//                        size = Size(100.dp.toPx(), 100.dp.toPx()),
+//                        topLeft = Offset(100.dp.toPx(), 100.dp.toPx())
+//                    )
+//                }
                     cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
                     val catRadius = config.catRadius
