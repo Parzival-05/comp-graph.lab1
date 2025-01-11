@@ -5,6 +5,7 @@ import CatSimulation.Companion.MIN_PARTICLE_COUNT
 import radar.metrics.euclidean
 import radar.metrics.greatCircle
 import radar.metrics.manhattan
+import java.util.Properties
 
 /** Enum representing the types of metrics used for distance calculations. */
 enum class MetricType { EUCLIDEAN, MANHATTAN, GREAT_CIRCLE }
@@ -46,10 +47,10 @@ object SceneConfig {
         }
 
     /** The radius used to draw cats. */
-    var catRadius = 1
+    var catRadius = 20
 
     /** The time interval (in milliseconds) between scene updates. */
-    var tau = 500L
+    var tau = 16L
 
     /** Indicates if the simulation is paused. */
     var isOnPause = false
@@ -59,4 +60,26 @@ object SceneConfig {
         set(value) {
             field = value.coerceIn(MIN_PARTICLE_COUNT, MAX_PARTICLE_COUNT)
         }
+
+    fun loadConfig(fileName: String) {
+        val properties = Properties()
+        val inputStream =
+            this::class.java.classLoader.getResourceAsStream(fileName)
+                ?: throw IllegalArgumentException("Properties file '$fileName' not found in resources.")
+        properties.load(inputStream)
+
+        maxParticleSpeed = properties.getProperty("maxParticleSpeed")?.toDoubleOrNull() ?: maxParticleSpeed
+        metric =
+            try {
+                MetricType.valueOf(properties.getProperty("metric") ?: metric.name)
+            } catch (e: IllegalArgumentException) {
+                metric
+            }
+        fightDist = properties.getProperty("fightDist")?.toIntOrNull() ?: fightDist
+        hissDist = properties.getProperty("hissDist")?.toIntOrNull() ?: hissDist
+        catRadius = properties.getProperty("catRadius")?.toIntOrNull() ?: catRadius
+        tau = properties.getProperty("tau")?.toLongOrNull() ?: tau
+        isOnPause = properties.getProperty("isOnPause")?.toBoolean() ?: isOnPause
+        particleCount = properties.getProperty("particleCount")?.toIntOrNull() ?: particleCount
+    }
 }

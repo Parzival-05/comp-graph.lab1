@@ -24,9 +24,6 @@ abstract class BaseScene<
      */
 
     open fun updateScene() =
-    // this.particles.forEach { particle ->
-    //     particle.tick()
-        // }
         findAndReactCollisions()
 
     /** Detects all collisions in the scene and reacts to them appropriately. */

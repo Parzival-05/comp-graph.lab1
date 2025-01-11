@@ -8,7 +8,7 @@ import behavior.leaf.ConditionNode
 import behavior.leaf.SleepNode
 import radar.scene.CatParticle
 
-/**
+/*
  * DSL
  */
 
@@ -25,9 +25,12 @@ fun condition(condition: (CatParticle) -> Boolean) = ConditionNode(condition)
 /**
  * @see behavior.decorator.RepeaterNode
  */
-fun repeat(repeatCount: Int = Int.MAX_VALUE, action: () -> BehaviorNode) = RepeaterNode(
+fun repeat(
+    repeatCount: Int = Int.MAX_VALUE,
+    action: () -> BehaviorNode,
+) = RepeaterNode(
     action(),
-    repeatCount
+    repeatCount,
 )
 
 /**
@@ -45,7 +48,10 @@ fun sequence(build: SequenceNode.() -> Unit) = initNode(SequenceNode(), build)
  */
 fun sleep(sleepTime: Int) = SleepNode(sleepTime)
 
-internal fun <T : BehaviorNode> initNode(node: T, init: T.() -> Unit): T {
+internal fun <T : BehaviorNode> initNode(
+    node: T,
+    init: T.() -> Unit,
+): T {
     node.init()
     return node
 }
