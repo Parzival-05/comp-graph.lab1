@@ -20,7 +20,9 @@ import kotlin.random.Random
  *
  * @param cat The cat particle
  */
-abstract class CatBehaviorManager(private val cat: CatParticle) {
+abstract class CatBehaviorManager(
+    private val cat: CatParticle,
+) {
     private val randomMovement = MovementGeneratorFactory(generators = RANDOM_GENERATORS).createRandomGenerator()
 
     val shouldHiss =
@@ -47,7 +49,8 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
                 cat.nearbyCats.find { otherCat ->
                     val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
                     // todo: this is too much
-                    distance < SceneConfig.fightDist && otherCat.state != CatStates.SLEEPING &&
+                    distance < SceneConfig.fightDist &&
+                        otherCat.state != CatStates.SLEEPING &&
                         otherCat.state != CatStates.DEAD
                 }
             if (closestCat == null) return@action BehaviorStatus.FAILURE

@@ -291,6 +291,4 @@ fun sceneSettingsMenu(
     })
 }
 
-private fun Double.roundTo(decimals: Int = 1): Double {
-    return "%.${decimals}f".format(this).toDouble()
-}
+private fun Double.roundTo(decimals: Int = 1): Double = "%.${decimals}f".format(this).toDouble()

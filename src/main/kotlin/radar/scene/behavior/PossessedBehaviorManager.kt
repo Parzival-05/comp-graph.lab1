@@ -9,12 +9,13 @@ import radar.scene.CatParticle
  *
  * @param cat The possessed cat.
  */
-class PossessedBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(cat) {
+class PossessedBehaviorManager(
+    private val cat: CatParticle,
+) : CatBehaviorManager(cat) {
     override val behaviorTree: BehaviorNode = createBehaviorTree()
 
-    override fun createBehaviorTree(): BehaviorNode {
-        return sequence {
+    override fun createBehaviorTree(): BehaviorNode =
+        sequence {
             +moveRandomList
         }
-    }
 }

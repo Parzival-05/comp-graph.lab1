@@ -17,7 +17,9 @@ import kotlin.random.Random
  *
  * @param cat The cat particle.
  */
-class SimpleBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(cat) {
+class SimpleBehaviorManager(
+    private val cat: CatParticle,
+) : CatBehaviorManager(cat) {
     val shouldSleep =
         condition { _ ->
             val sleepProbability = 10e-4

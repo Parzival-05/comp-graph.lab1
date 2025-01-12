@@ -87,8 +87,10 @@ fun drawScene(
                     val catRadius = config.catRadius
                     val catOffset =
                         Offset(
-                            cat.coordinates.x.dp.toPx(),
-                            cat.coordinates.y.dp.toPx(),
+                            cat.coordinates.x.dp
+                                .toPx(),
+                            cat.coordinates.y.dp
+                                .toPx(),
                         )
 
                     when {
@@ -101,6 +103,7 @@ fun drawScene(
                                 radius = catRadius.toFloat(),
                             )
                         }
+
                         cat.state == CatStates.DEAD -> {
                             // Мертвые коты отображаются как кресты
                             val lineLength = catRadius * 2.0f
@@ -121,7 +124,9 @@ fun drawScene(
                                 end = bottomLeft,
                                 strokeWidth = 4f,
                             )
-                        } else -> {
+                        }
+
+                        else -> {
                             drawCircle(
                                 // todo: so lazy rn
                                 color = if (cat.role != CatRole.POSSESSED) currentColor else Color.Green,

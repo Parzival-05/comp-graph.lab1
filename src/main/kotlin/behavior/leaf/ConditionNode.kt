@@ -10,8 +10,8 @@ import radar.scene.CatParticle
  *
  * @param condition function that accepts [CatParticle] and returns boolean.
  */
-class ConditionNode(private val condition: (CatParticle) -> Boolean) : BehaviorNode {
-    override fun tick(cat: CatParticle): BehaviorStatus {
-        return if (condition(cat)) BehaviorStatus.SUCCESS else BehaviorStatus.FAILURE
-    }
+class ConditionNode(
+    private val condition: (CatParticle) -> Boolean,
+) : BehaviorNode {
+    override fun tick(cat: CatParticle): BehaviorStatus = if (condition(cat)) BehaviorStatus.SUCCESS else BehaviorStatus.FAILURE
 }

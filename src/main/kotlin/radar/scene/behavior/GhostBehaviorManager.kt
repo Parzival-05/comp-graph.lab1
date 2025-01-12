@@ -15,7 +15,9 @@ import radar.scene.behavior.gang.CatRole
  *
  * @param cat The ghost cat.
  */
-class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(cat) {
+class GhostBehaviorManager(
+    private val cat: CatParticle,
+) : CatBehaviorManager(cat) {
     // todo: part of speed bug probably
     val moveTo = { target: CatParticle -> SeekTargetOffsetGenerator<CatParticle>(target.coordinates, 1.0) }
 

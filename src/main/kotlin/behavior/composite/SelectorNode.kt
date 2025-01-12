@@ -9,7 +9,9 @@ import radar.scene.CatParticle
  *
  * @param children children nodes.
  */
-class SelectorNode(override val children: MutableList<BehaviorNode> = mutableListOf()) : Composite() {
+class SelectorNode(
+    override val children: MutableList<BehaviorNode> = mutableListOf(),
+) : Composite() {
     private var currentIndex = 0
 
     override fun tick(cat: CatParticle): BehaviorStatus {

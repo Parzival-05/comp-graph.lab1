@@ -13,11 +13,10 @@ object BehaviorManagerFactory {
     fun create(
         role: CatRole,
         cat: CatParticle,
-    ): CatBehaviorManager {
-        return when (role) {
+    ): CatBehaviorManager =
+        when (role) {
             CatRole.DEFAULT -> SimpleBehaviorManager(cat)
             CatRole.GHOST -> GhostBehaviorManager(cat)
             CatRole.POSSESSED -> PossessedBehaviorManager(cat)
         }
-    }
 }

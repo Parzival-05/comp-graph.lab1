@@ -16,11 +16,10 @@ class ConditionDecoratorNode(
     private val trueBranch: BehaviorNode,
     private val falseBranch: BehaviorNode,
 ) : BehaviorNode {
-    override fun tick(cat: CatParticle): BehaviorStatus {
-        return if (condition(cat)) {
+    override fun tick(cat: CatParticle): BehaviorStatus =
+        if (condition(cat)) {
             trueBranch.tick(cat)
         } else {
             falseBranch.tick(cat)
         }
-    }
 }

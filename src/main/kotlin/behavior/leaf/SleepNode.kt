@@ -10,7 +10,9 @@ import radar.scene.CatParticle
  *
  * @param sleepTime amount of ticks to sleep.
  */
-class SleepNode(val sleepTime: Int) : BehaviorNode {
+class SleepNode(
+    val sleepTime: Int,
+) : BehaviorNode {
     private val repeaterNode = RepeaterNode(ActionNode.success, sleepTime)
 
     override fun tick(cat: CatParticle): BehaviorStatus = repeaterNode.tick(cat)

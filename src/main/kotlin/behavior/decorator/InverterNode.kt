@@ -9,12 +9,13 @@ import radar.scene.CatParticle
  *
  * @property child the child node which behaviour is modified by the decorator
  */
-class InverterNode(override val child: BehaviorNode) : Decorator() {
-    override fun tick(cat: CatParticle): BehaviorStatus {
-        return when (child.tick(cat)) {
+class InverterNode(
+    override val child: BehaviorNode,
+) : Decorator() {
+    override fun tick(cat: CatParticle): BehaviorStatus =
+        when (child.tick(cat)) {
             BehaviorStatus.SUCCESS -> BehaviorStatus.FAILURE
             BehaviorStatus.FAILURE -> BehaviorStatus.SUCCESS
             BehaviorStatus.RUNNING -> BehaviorStatus.RUNNING
         }
-    }
 }
