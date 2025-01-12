@@ -25,7 +25,7 @@ fun condition(condition: (CatParticle) -> Boolean) = ConditionNode(condition)
 /**
  * @see behavior.decorator.RepeaterNode
  */
-fun repeat(
+inline fun repeat(
     repeatCount: Int = Int.MAX_VALUE,
     action: () -> BehaviorNode,
 ) = RepeaterNode(

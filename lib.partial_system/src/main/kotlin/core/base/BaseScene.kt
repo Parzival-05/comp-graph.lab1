@@ -23,8 +23,7 @@ abstract class BaseScene<
      * Updates the entire scene.
      */
 
-    open fun updateScene() =
-        findAndReactCollisions()
+    open fun updateScene() = findAndReactCollisions()
 
     /** Detects all collisions in the scene and reacts to them appropriately. */
     open fun findAndReactCollisions() {
