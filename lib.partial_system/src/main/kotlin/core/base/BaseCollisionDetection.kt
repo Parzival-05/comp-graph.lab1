@@ -15,7 +15,7 @@ interface BaseCollisionDetection<
     T : BasePoint<O>,
     O : BaseOffset<T>,
     C : BaseCollision<P, T, O>,
-> {
+    > {
     /**
      * Finds all collisions within the given scene.
      *

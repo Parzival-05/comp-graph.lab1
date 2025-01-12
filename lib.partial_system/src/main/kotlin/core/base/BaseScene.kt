@@ -16,7 +16,7 @@ abstract class BaseScene<
     T : BasePoint<O>,
     O : BaseOffset<T>,
     C : BaseCollision<P, T, O>,
->(
+    >(
     open var particles: ArrayList<P>,
 ) {
     /**
