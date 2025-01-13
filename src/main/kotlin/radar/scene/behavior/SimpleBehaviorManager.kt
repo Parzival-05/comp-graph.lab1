@@ -1,5 +1,7 @@
 package radar.scene.behavior
 
+import CatSimulation.Companion.DEATH_TIME
+import CatSimulation.Companion.SLEEP_TIME
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
 import behavior.action
@@ -45,7 +47,7 @@ class SimpleBehaviorManager(
                     +sequence {
                         +shouldSleep
                         +setStateToSleeping
-                        +sleep(100)
+                        +sleep(SLEEP_TIME)
                     }
                 }
             }
@@ -61,7 +63,11 @@ class SimpleBehaviorManager(
         return ConditionDecoratorNode(
             condition = { cat -> cat.state != CatStates.DEAD },
             trueBranch = behavior,
-            falseBranch = becomeGhost,
+            falseBranch =
+                sequence {
+                    +sleep(DEATH_TIME)
+                    +becomeGhost
+                },
         )
     }
 }

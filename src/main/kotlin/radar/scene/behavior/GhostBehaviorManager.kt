@@ -7,6 +7,7 @@ import behavior.select
 import behavior.sequence
 import radar.generators.SeekTargetOffsetGenerator
 import radar.scene.CatParticle
+import radar.scene.CatStates
 import radar.scene.SceneConfig
 import radar.scene.behavior.gang.CatRole
 
@@ -24,7 +25,12 @@ class GhostBehaviorManager(
     val moveToClosestCat =
         action { cat ->
             // todo: better condition
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
+            val closestCat =
+                cat.nearbyCats.find { otherCat ->
+                    otherCat.role == CatRole.DEFAULT &&
+                        otherCat.state !=
+                        CatStates.DEAD
+                }
             if (closestCat == null) return@action BehaviorStatus.FAILURE
             val offset = moveTo(closestCat).generate(cat)
             offset.move(cat.coordinates)
@@ -32,7 +38,12 @@ class GhostBehaviorManager(
         }
     val tryToPossess =
         action { cat ->
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
+            val closestCat =
+                cat.nearbyCats.find { otherCat ->
+                    otherCat.role == CatRole.DEFAULT &&
+                        otherCat.state !=
+                        CatStates.DEAD
+                }
             if (closestCat == null) return@action BehaviorStatus.FAILURE
             if (SceneConfig.metricFunction(cat.coordinates, closestCat.coordinates) < SceneConfig.fightDist) {
                 BehaviorStatus.SUCCESS
@@ -43,7 +54,12 @@ class GhostBehaviorManager(
     val possess =
         action { cat ->
             // todo: эх вот бы сюда СТЕЙТ МОНАДУ
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.role == CatRole.DEFAULT }
+            val closestCat =
+                cat.nearbyCats.find { otherCat ->
+                    otherCat.role == CatRole.DEFAULT &&
+                        otherCat.state !=
+                        CatStates.DEAD
+                }
             if (closestCat == null) return@action BehaviorStatus.FAILURE
             closestCat.setCatRole(CatRole.POSSESSED)
             BehaviorStatus.SUCCESS

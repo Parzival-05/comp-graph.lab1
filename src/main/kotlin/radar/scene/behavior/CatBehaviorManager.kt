@@ -89,6 +89,7 @@ abstract class CatBehaviorManager(
 
     val setRoleToGhost =
         action { cat ->
+            cat.setCatState(CatStates.CALM)
             cat.setCatRole(CatRole.GHOST)
             BehaviorStatus.SUCCESS
         }

@@ -128,7 +128,7 @@ fun drawScene(
 
                         else -> {
                             drawCircle(
-                                color = getColor(cat),
+                                color = currentColor,
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )
