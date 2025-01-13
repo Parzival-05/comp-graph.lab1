@@ -174,7 +174,6 @@ fun drawScene(
     }
 }
 
-// todo: docs
 @Composable
 fun drawStatistics(
     timeModeling: Long,

@@ -49,9 +49,6 @@ class GhostBehaviorManager(
             BehaviorStatus.SUCCESS
         }
 
-    // TODO: THE ORDER MATTERS !!!!
-    override val behaviorTree: BehaviorNode = createBehaviorTree()
-
     override fun createBehaviorTree(): BehaviorNode {
         val behavior =
             select {

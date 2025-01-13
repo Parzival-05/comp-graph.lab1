@@ -32,8 +32,6 @@ class SimpleBehaviorManager(
             BehaviorStatus.SUCCESS
         }
 
-    override val behaviorTree: BehaviorNode = createBehaviorTree()
-
     override fun createBehaviorTree(): BehaviorNode {
         val behavior =
             sequence {

@@ -12,8 +12,6 @@ import radar.scene.CatParticle
 class PossessedBehaviorManager(
     private val cat: CatParticle,
 ) : CatBehaviorManager(cat) {
-    override val behaviorTree: BehaviorNode = createBehaviorTree()
-
     override fun createBehaviorTree(): BehaviorNode =
         sequence {
             +moveRandomList

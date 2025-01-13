@@ -94,7 +94,7 @@ abstract class CatBehaviorManager(
         }
 
     // Behavior tree for the cat
-    protected abstract val behaviorTree: BehaviorNode
+    private val behaviorTree: BehaviorNode by lazy { createBehaviorTree() }
 
     /**
      * Executes the behavior tree for the cat.
