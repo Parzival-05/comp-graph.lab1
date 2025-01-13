@@ -149,7 +149,6 @@ fun drawScene(
                                 cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
                             )
 
-                            // todo: scene config !!!
                             val hpPercentage = cat.hp / 100f
                             val filledWidth = barWidth * hpPercentage
                             val color =

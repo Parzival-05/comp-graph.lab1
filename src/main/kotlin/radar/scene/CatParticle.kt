@@ -1,5 +1,6 @@
 package radar.scene
 
+import CatSimulation
 import core.base.BaseParticle
 import radar.logging.logStateChange
 import radar.scene.behavior.BehaviorManagerFactory
@@ -19,7 +20,8 @@ data class CatParticle(
     /** Unique identifier for the [CatParticle]. */
     val id = count++
 
-    var hp = 100
+    /** Health points for the [CatParticle] before his state changes to [CatStates.DEAD]. */
+    var hp = CatSimulation.HEALTH_POINTS_DEFAULT
 
     /** Nearby cats that this cat is aware of. */
     var nearbyCats: MutableList<CatParticle> = mutableListOf()
