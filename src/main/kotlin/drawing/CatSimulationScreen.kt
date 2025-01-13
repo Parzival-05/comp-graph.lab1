@@ -83,7 +83,7 @@ fun drawScene(
             }
             Canvas(modifier = Modifier.fillMaxSize()) {
                 cats.forEach { cat ->
-                    val currentColor = getColorForState(cat.state)
+                    val currentColor = getColor(cat)
                     val catRadius = config.catRadius
                     val catOffset =
                         Offset(
@@ -98,7 +98,7 @@ fun drawScene(
                             // Призраки рисуются как прозрачные кружки
                             drawCircle(
                                 // Полупрозрачный красный
-                                color = Color(0x80ff2120),
+                                color = currentColor,
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )
@@ -128,8 +128,7 @@ fun drawScene(
 
                         else -> {
                             drawCircle(
-                                // todo: so lazy rn
-                                color = if (cat.role != CatRole.POSSESSED) currentColor else Color.Green,
+                                color = getColor(cat),
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )

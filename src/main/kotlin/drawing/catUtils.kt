@@ -2,8 +2,10 @@ package drawing
 
 import CatSimulation
 import androidx.compose.ui.graphics.Color
+import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.Point2D
+import radar.scene.behavior.gang.CatRole
 import kotlin.math.abs
 
 /**
@@ -19,6 +21,13 @@ fun getColorForState(state: CatStates): Color =
         CatStates.FIGHT -> Color.Black
         CatStates.SLEEPING -> Color.Blue
         CatStates.DEAD -> Color.Red
+    }
+
+fun getColor(cat: CatParticle): Color =
+    when (cat.role) {
+        CatRole.DEFAULT -> getColorForState(cat.state)
+        CatRole.POSSESSED -> Color.Green
+        CatRole.GHOST -> Color(0x80ff2120)
     }
 
 fun wrapPosition(position: Point2D): Point2D {
