@@ -7,7 +7,7 @@ import behavior.condition
 import drawing.wrapPosition
 import radar.generators.MovementGeneratorFactory
 import radar.generators.RANDOM_GENERATORS
-import radar.logging.logInteraction
+import radar.logging.InteractionLogger.logInteraction
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig

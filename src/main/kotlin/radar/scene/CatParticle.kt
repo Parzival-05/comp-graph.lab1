@@ -2,7 +2,7 @@ package radar.scene
 
 import CatSimulation
 import core.base.BaseParticle
-import radar.logging.logStateChange
+import radar.logging.InteractionLogger.logStateChange
 import radar.scene.behavior.BehaviorManagerFactory
 import radar.scene.behavior.gang.CatRole
 
