@@ -76,7 +76,6 @@ abstract class CatBehaviorManager(
             val offset = randomMovement.generate(cat)
             offset.move(cat.coordinates)
 
-            // todo: move out of here
             cat.coordinates = wrapPosition(cat.coordinates)
             BehaviorStatus.SUCCESS
         }
