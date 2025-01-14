@@ -20,31 +20,27 @@ class GhostBehaviorManager(
     private val cat: CatParticle,
 ) : CatBehaviorManager(cat) {
     val moveTo = { target: CatParticle -> SeekTargetOffsetGenerator<CatParticle>(target.coordinates) }
+    var catToPossess: CatParticle? = null
+
+    private fun canPossess(cat: CatParticle) =
+        cat.role == CatRole.DEFAULT &&
+            cat.state !=
+            CatStates.DEAD
 
     val moveToClosestCat =
         action { cat ->
-            // todo: better condition
-            val closestCat =
-                cat.nearbyCats.find { otherCat ->
-                    otherCat.role == CatRole.DEFAULT &&
-                        otherCat.state !=
-                        CatStates.DEAD
-                }
-            if (closestCat == null) return@action BehaviorStatus.FAILURE
-            val offset = moveTo(closestCat).generate(cat)
+            catToPossess = cat.nearbyCats.find(::canPossess)
+            if (catToPossess == null) return@action BehaviorStatus.FAILURE
+            val offset = moveTo(catToPossess!!).generate(cat)
             offset.move(cat.coordinates)
             BehaviorStatus.SUCCESS
         }
+
     val tryToPossess =
         action { cat ->
-            val closestCat =
-                cat.nearbyCats.find { otherCat ->
-                    otherCat.role == CatRole.DEFAULT &&
-                        otherCat.state !=
-                        CatStates.DEAD
-                }
-            if (closestCat == null) return@action BehaviorStatus.FAILURE
-            if (SceneConfig.metricFunction(cat.coordinates, closestCat.coordinates) < SceneConfig.fightDist) {
+            if (SceneConfig.metricFunction(cat.coordinates, catToPossess!!.coordinates) < SceneConfig.fightDist &&
+                canPossess(catToPossess!!)
+            ) {
                 BehaviorStatus.SUCCESS
             } else {
                 BehaviorStatus.FAILURE
@@ -52,15 +48,8 @@ class GhostBehaviorManager(
         }
     val possess =
         action { cat ->
-            // todo: эх вот бы сюда СТЕЙТ МОНАДУ
-            val closestCat =
-                cat.nearbyCats.find { otherCat ->
-                    otherCat.role == CatRole.DEFAULT &&
-                        otherCat.state !=
-                        CatStates.DEAD
-                }
-            if (closestCat == null) return@action BehaviorStatus.FAILURE
-            closestCat.setCatRole(CatRole.POSSESSED)
+            if (!canPossess(catToPossess!!)) return@action BehaviorStatus.FAILURE
+            catToPossess!!.setCatRole(CatRole.POSSESSED)
             BehaviorStatus.SUCCESS
         }
 
