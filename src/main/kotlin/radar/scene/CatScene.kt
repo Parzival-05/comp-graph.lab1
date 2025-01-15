@@ -36,6 +36,7 @@ class CatScene(
 ) : BaseScene<CatParticle, Point2D, Offset2D, CatCollision>(particles) {
     /** Stores collisions from the last update for state resetting purposes. */
     private val lastCollisions = mutableSetOf<CatCollision>()
+    private var ticksUntilUpdate = 0
 
     companion object {
         /** Executor service for running tasks concurrently. */
@@ -55,7 +56,11 @@ class CatScene(
      *
      */
     override fun updateScene() {
-        super.updateScene()
+        if (ticksUntilUpdate == 30) {
+            super.updateScene()
+            ticksUntilUpdate = 0
+        }
+        ticksUntilUpdate++
         this.particles.forEach { particle ->
             particle.tick()
         }
