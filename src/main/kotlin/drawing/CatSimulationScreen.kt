@@ -1,15 +1,10 @@
 package drawing
 
+import CatSimulation.Companion.FPS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
-import CatSimulation.Companion.FPS
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -26,8 +21,6 @@ import drawing.menu.drawDraggableMenu
 import kotlinx.coroutines.delay
 import radar.scene.*
 import radar.scene.behavior.gang.CatRole
-import radar.scene.CatParticle
-import radar.scene.SceneConfig
 
 /**
  * Updates the scene by checking the current UI state and passing updated particle data to the UI.
@@ -83,7 +76,7 @@ fun drawScene(
                 }
             }
             LaunchedEffect(cats) {
-                val steps = ( SceneConfig.tau / frameDurationMs).toInt()
+                val steps = (SceneConfig.tau / frameDurationMs).toInt()
                 repeat(steps) { step ->
                     cats.forEachIndexed { index, cat ->
                         val progress = (step + 1).toDouble() / steps
@@ -101,14 +94,14 @@ fun drawScene(
             }
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                    cats.forEach { cat ->
+                cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
                     val catRadius = config.catRadius
                     val catOffset =
                         Offset(
-                              cat.previousCoordinates.x.dp
+                            cat.previousCoordinates.x.dp
                                 .toPx(),
-                              cat.previousCoordinates.y.dp
+                            cat.previousCoordinates.y.dp
                                 .toPx(),
                         )
 
@@ -122,6 +115,7 @@ fun drawScene(
                                 radius = catRadius.toFloat()
                             )
                         }
+
                         cat.state == CatStates.DEAD -> {
                             // Мертвые коты отображаются как кресты
                             val lineLength = catRadius * 2.0f
@@ -183,7 +177,7 @@ fun drawScene(
 
                                 cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
 
-                            )
+                                )
                         }
                     }
                 }

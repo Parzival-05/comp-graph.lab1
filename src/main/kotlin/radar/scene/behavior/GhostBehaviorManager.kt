@@ -1,10 +1,6 @@
 package radar.scene.behavior
 
-import behavior.BehaviorNode
-import behavior.BehaviorStatus
-import behavior.action
-import behavior.select
-import behavior.sequence
+import behavior.*
 import radar.generators.SeekTargetOffsetGenerator
 import radar.scene.CatParticle
 import radar.scene.CatStates
@@ -24,8 +20,8 @@ class GhostBehaviorManager(
 
     private fun canPossess(cat: CatParticle) =
         cat.role == CatRole.DEFAULT &&
-            cat.state !=
-            CatStates.DEAD
+                cat.state !=
+                CatStates.DEAD
 
     val moveToClosestCat =
         action { cat ->
@@ -57,7 +53,7 @@ class GhostBehaviorManager(
         val behavior =
             select {
                 +sequence {
-                    +behavior.repeat(20) {
+                    +repeat(20) {
                         sequence {
                             +moveToClosestCat
                             +tryToPossess

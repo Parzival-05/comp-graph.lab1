@@ -4,12 +4,8 @@ import CollisionDetection
 import core.base.BaseCollisionDetection
 import org.tinspin.index.PointDistance
 import org.tinspin.index.kdtree.KDTree
-import radar.scene.CatCollision
-import radar.scene.CatParticle
-import radar.scene.CatScene
-import radar.scene.Offset2D
-import radar.scene.Point2D
-import java.util.Collections
+import radar.scene.*
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future

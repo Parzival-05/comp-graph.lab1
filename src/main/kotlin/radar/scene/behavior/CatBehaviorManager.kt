@@ -50,8 +50,8 @@ abstract class CatBehaviorManager(
                     val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
                     // todo: this is too much
                     distance < SceneConfig.fightDist &&
-                        otherCat.state != CatStates.SLEEPING &&
-                        otherCat.state != CatStates.DEAD
+                            otherCat.state != CatStates.SLEEPING &&
+                            otherCat.state != CatStates.DEAD
                 }
             if (closestCat == null) return@action BehaviorStatus.FAILURE
             cat.setCatState(CatStates.FIGHT)

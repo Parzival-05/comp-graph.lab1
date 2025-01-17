@@ -1,9 +1,9 @@
 package radar.scene
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import CatSimulation
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import core.base.BaseParticle
 import radar.logging.InteractionLogger.logStateChange
 import radar.scene.behavior.BehaviorManagerFactory

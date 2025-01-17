@@ -5,7 +5,7 @@ import CatSimulation.Companion.MIN_PARTICLE_COUNT
 import radar.metrics.euclidean
 import radar.metrics.greatCircle
 import radar.metrics.manhattan
-import java.util.Properties
+import java.util.*
 
 /** Enum representing the types of metrics used for distance calculations. */
 enum class MetricType { EUCLIDEAN, MANHATTAN, GREAT_CIRCLE }
