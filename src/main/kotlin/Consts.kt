@@ -19,6 +19,7 @@ class CatSimulation {
         const val MAX_HISS_DIST = 100
         const val MIN_FIGHT_DIST = 0
         const val MAX_FIGHT_DIST = 100
+        const val FPS = 60
     }
 }
 
