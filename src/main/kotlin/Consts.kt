@@ -1,4 +1,4 @@
-/** Contains constants and configurations for the [CatSimulation]. */
+/** Contains constants and configurations for the `CatSimulation`. */
 class CatSimulation {
     companion object {
         /** The width of the simulation grid. */
@@ -24,6 +24,7 @@ class CatSimulation {
         const val SLEEP_TIME = 100
         const val SLEEP_PROBABILITY = 10e-4
         const val SPEED_CHANGE = 0.1
+        const val FPS = 60
     }
 }
 
