@@ -8,22 +8,18 @@ import radar.scene.SceneConfig
 import kotlin.random.Random
 
 /**
- * Generates movement offsets for `CatParticles` based on the speed defined in the scene configuration.
- *
- * @param sceneConfig The configuration containing the maximum particle speed.
+ * Generates movement offsets for [CatParticle] based on the speed defined in the scene configuration.
  */
-class MoveGenerator(
-    private val sceneConfig: SceneConfig,
-) : BaseOffsetGenerator<CatParticle, Point2D, Offset2D> {
+class MoveGenerator : BaseOffsetGenerator<CatParticle, Point2D, Offset2D> {
     /**
-     * Generates an `Offset2D` for a given `CatParticle`.
+     * Generates an `Offset2D` for a given [CatParticle].
      *
-     * @param particle The `CatParticle` for which to generate the offset.
+     * @param particle The [CatParticle] for which to generate the offset.
      * @return An `Offset2D` representing the movement.
      */
     override fun generate(particle: CatParticle): Offset2D =
         Offset2D(
-            Random.nextDouble(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed),
-            Random.nextDouble(-sceneConfig.maxParticleSpeed, sceneConfig.maxParticleSpeed),
+            Random.nextDouble(-SceneConfig.maxParticleSpeed, SceneConfig.maxParticleSpeed),
+            Random.nextDouble(-SceneConfig.maxParticleSpeed, SceneConfig.maxParticleSpeed),
         )
 }

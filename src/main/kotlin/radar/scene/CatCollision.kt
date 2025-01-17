@@ -3,7 +3,7 @@ package radar.scene
 import core.base.BaseCollision
 
 /**
- * Represents a collision between two `CatParticles`.
+ * Represents a collision between two [CatParticle].
  *
  * @property particle1 The first particle involved in the collision.
  * @property particle2 The second particle involved in the collision.

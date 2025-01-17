@@ -1,83 +1,73 @@
 package radar.scene.behavior
 
+import CatSimulation.Companion.DEATH_TIME
+import CatSimulation.Companion.SLEEP_TIME
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
-import behavior.flow.RepeaterNode
-import behavior.flow.SelectorNode
-import behavior.flow.SequenceNode
-import behavior.leaf.ActionNode
+import behavior.action
+import behavior.condition
 import behavior.leaf.ConditionDecoratorNode
-import behavior.leaf.ConditionNode
+import behavior.select
+import behavior.sequence
+import behavior.sleep
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import kotlin.random.Random
 
-class SimpleBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(cat) {
+/**
+ * Default cat behavior manager.
+ *
+ * @param cat The cat particle.
+ */
+class SimpleBehaviorManager(
+    private val cat: CatParticle,
+) : CatBehaviorManager(cat) {
     val shouldSleep =
-        ConditionNode { _ ->
+        condition { _ ->
             val sleepProbability = 10e-4
             Random.nextDouble() < sleepProbability
         }
 
     val setStateToSleeping =
-        ActionNode { cat ->
+        action { cat ->
             cat.setCatState(CatStates.SLEEPING)
             BehaviorStatus.SUCCESS
         }
 
-    override val behaviorTree: BehaviorNode = createBehaviorTree()
-
     override fun createBehaviorTree(): BehaviorNode {
         val behavior =
-            SequenceNode(
-                listOf(
-                    SequenceNode(
-                        listOf(
-                            moveRandomList,
-                            setStateToCalm,
-                        ),
-                    ),
-                    SelectorNode(
-                        listOf(
-                            SequenceNode(
-                                listOf(
-                                    shouldFight,
-                                ),
-                            ),
-                            SequenceNode(
-                                listOf(
-                                    shouldHiss,
-                                ),
-                            ),
-                            SequenceNode(
-                                listOf(
-                                    shouldSleep,
-                                    setStateToSleeping,
-                                    // TODO: constant to scene config
-                                    RepeaterNode(ActionNode.success, 100),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            )
+            sequence {
+                +sequence {
+                    +moveRandomList
+                    +setStateToCalm
+                }
+                +select {
+                    +shouldFight
+                    +shouldHiss
+                    +sequence {
+                        +shouldSleep
+                        +setStateToSleeping
+                        +sleep(SLEEP_TIME)
+                    }
+                }
+            }
 
         val becomeGhost =
-            SequenceNode(
-                listOf(
-                    SequenceNode(
-                        listOf(
-                            shouldBecomeGhost,
-                            setRoleToGhost,
-                        ),
-                    ),
-                ),
-            )
+            sequence {
+                +sequence {
+                    +shouldBecomeGhost
+                    +setRoleToGhost
+                }
+            }
 
         return ConditionDecoratorNode(
             condition = { cat -> cat.state != CatStates.DEAD },
             trueBranch = behavior,
-            falseBranch = becomeGhost,
+            falseBranch =
+                sequence {
+                    +sleep(DEATH_TIME)
+                    +becomeGhost
+                },
         )
     }
 }

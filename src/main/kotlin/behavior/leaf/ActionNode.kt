@@ -4,7 +4,14 @@ import behavior.BehaviorNode
 import behavior.BehaviorStatus
 import radar.scene.CatParticle
 
-class ActionNode(private val action: (CatParticle) -> BehaviorStatus) : BehaviorNode() {
+/**
+ *  Base class for underlying logic of a [CatParticle].
+ *
+ *  @param action function that accepts [CatParticle] and returns [BehaviorStatus]
+ */
+class ActionNode(
+    private val action: (CatParticle) -> BehaviorStatus,
+) : BehaviorNode {
     override fun tick(cat: CatParticle): BehaviorStatus = action(cat)
 
     companion object {

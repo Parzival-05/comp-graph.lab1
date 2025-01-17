@@ -101,14 +101,17 @@ fun drawScene(
             }
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                updateFlag.value
                     cats.forEach { cat ->
                     val currentColor = getColorForState(cat.state)
                     val catRadius = config.catRadius
-                    val catOffset = Offset(
-                        cat.previousCoordinates.x.dp.toPx(),
-                        cat.previousCoordinates.y.dp.toPx()
-                    )
+                    val catOffset =
+                        Offset(
+                              cat.previousCoordinates.x.dp
+                                .toPx(),
+                              cat.previousCoordinates.y.dp
+                                .toPx(),
+                        )
+
 
                     when {
                         cat.role == CatRole.GHOST -> {
@@ -137,46 +140,49 @@ fun drawScene(
                                 color = currentColor,
                                 start = topRight,
                                 end = bottomLeft,
-                                strokeWidth = 4f
+                                strokeWidth = 4f,
                             )
-                        } else -> {
+                        }
+
+                        else -> {
                             drawCircle(
-                                // todo: so lazy rn
-                                color = if (cat.role != CatRole.POSSESSED) currentColor else Color.Green,
+                                color = currentColor,
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )
+
 
                             // HP-бар
                             val barWidth = catRadius * 2.0f
                             val barHeight = 8.dp.toPx()
                             val barOffset =
                                 Offset(
-                                x = catOffset.x - barWidth / 2,
-                                y = catOffset.y - catRadius - 16.dp.toPx(),
+                                    x = catOffset.x - barWidth / 2,
+                                    y = catOffset.y - catRadius - 16.dp.toPx(),
+                                )
+
+                            drawRoundRect(
+                                color = Color.Gray,
+                                topLeft = barOffset,
+                                size = Size(barWidth, barHeight),
+                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
                             )
 
-                        drawRoundRect(
-                            color = Color.Gray,
-                            topLeft = barOffset,
-                            size = Size(barWidth, barHeight),
-                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-                        )
-
-                        // todo: scene config !!!
-                        val hpPercentage = cat.hp / 100f
-                        val filledWidth = barWidth * hpPercentage
-                        val color =
-                            when {
-                                hpPercentage > 0.67 -> Color.Green
-                                hpPercentage > 0.33 -> Color.Yellow
-                                else -> Color.Red
-                            }
+                            val hpPercentage = cat.hp / 100f
+                            val filledWidth = barWidth * hpPercentage
+                            val color =
+                                when {
+                                    hpPercentage > 0.67 -> Color.Green
+                                    hpPercentage > 0.33 -> Color.Yellow
+                                    else -> Color.Red
+                                }
                             drawRoundRect(
                                 color = color,
                                 topLeft = barOffset,
                                 size = Size(filledWidth, barHeight),
-                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+
+                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+
                             )
                         }
                     }
@@ -188,7 +194,6 @@ fun drawScene(
     }
 }
 
-// todo: docs
 @Composable
 fun drawStatistics(
     timeModeling: Long,

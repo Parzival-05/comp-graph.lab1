@@ -2,71 +2,72 @@ package radar.scene.behavior
 
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
-import behavior.flow.RepeaterNode
-import behavior.flow.SelectorNode
-import behavior.flow.SequenceNode
-import behavior.leaf.ActionNode
+import behavior.action
+import behavior.select
+import behavior.sequence
 import radar.generators.SeekTargetOffsetGenerator
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig
 import radar.scene.behavior.gang.CatRole
 
-class GhostBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(cat) {
-    // todo: part of speed bug probably
-    val moveTo = { target: CatParticle -> SeekTargetOffsetGenerator<CatParticle>(target.coordinates, 1.0) }
+/**
+ * Cat behavior manager for ghost cats.
+ *
+ * @param cat The ghost cat.
+ */
+class GhostBehaviorManager(
+    private val cat: CatParticle,
+) : CatBehaviorManager(cat) {
+    val moveTo = { target: CatParticle -> SeekTargetOffsetGenerator<CatParticle>(target.coordinates) }
+    var catToPossess: CatParticle? = null
+
+    private fun canPossess(cat: CatParticle) =
+        cat.role == CatRole.DEFAULT &&
+            cat.state !=
+            CatStates.DEAD
 
     val moveToClosestCat =
-        ActionNode { cat ->
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.state != CatStates.DEAD }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
-            val offset = moveTo(closestCat).generate(cat)
+        action { cat ->
+            catToPossess = cat.nearbyCats.find(::canPossess)
+            if (catToPossess == null) return@action BehaviorStatus.FAILURE
+            val offset = moveTo(catToPossess!!).generate(cat)
             offset.move(cat.coordinates)
             BehaviorStatus.SUCCESS
         }
+
     val tryToPossess =
-        ActionNode { cat ->
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.state != CatStates.DEAD }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
-            if (SceneConfig.metricFunction(cat.coordinates, closestCat.coordinates) < SceneConfig.fightDist) {
+        action { cat ->
+            if (SceneConfig.metricFunction(cat.coordinates, catToPossess!!.coordinates) < SceneConfig.fightDist &&
+                canPossess(catToPossess!!)
+            ) {
                 BehaviorStatus.SUCCESS
             } else {
                 BehaviorStatus.FAILURE
             }
         }
     val possess =
-        ActionNode { cat ->
-            // todo: эх вот бы сюда СТЕЙТ МОНАДУ
-            val closestCat = cat.nearbyCats.find { otherCat -> otherCat.state != CatStates.DEAD }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
-            closestCat.setCatRole(CatRole.POSSESSED)
+        action { cat ->
+            if (!canPossess(catToPossess!!)) return@action BehaviorStatus.FAILURE
+            catToPossess!!.setCatRole(CatRole.POSSESSED)
             BehaviorStatus.SUCCESS
         }
 
-    // TODO: THE ORDER MATTERS !!!!
-    override val behaviorTree: BehaviorNode = createBehaviorTree()
-
     override fun createBehaviorTree(): BehaviorNode {
         val behavior =
-            SelectorNode(
-                listOf(
-                    SequenceNode(
-                        listOf(
-                            RepeaterNode(
-                                SequenceNode(
-                                    listOf(
-                                        moveToClosestCat,
-                                        tryToPossess,
-                                    ),
-                                ),
-                                20,
-                            ),
-                            possess,
-                        ),
-                    ),
-                    moveRandomList,
-                ),
-            )
+            select {
+                +sequence {
+                    +behavior.repeat(20) {
+                        sequence {
+                            +moveToClosestCat
+                            +tryToPossess
+                        }
+                    }
+                    +possess
+                }
+                +moveRandomList
+            }
+
         return behavior
     }
 }

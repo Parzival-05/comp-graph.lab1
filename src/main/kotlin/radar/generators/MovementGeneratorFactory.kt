@@ -7,7 +7,7 @@ import radar.scene.Offset2D
 import radar.scene.Point2D
 import kotlin.random.Random
 
-val GENERATORS =
+val RANDOM_GENERATORS =
     listOf(
         {
             LinearOffsetGenerator<CatParticle>(

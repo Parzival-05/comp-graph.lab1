@@ -2,23 +2,31 @@ package radar.scene.behavior
 
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
-import behavior.leaf.ActionNode
-import behavior.leaf.ConditionNode
+import behavior.action
+import behavior.condition
 import drawing.wrapPosition
-import radar.generators.GENERATORS
 import radar.generators.MovementGeneratorFactory
-import radar.logging.log
+import radar.generators.RANDOM_GENERATORS
+import radar.logging.InteractionLogger.logInteraction
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig
 import radar.scene.behavior.gang.CatRole
 import kotlin.random.Random
 
-abstract class CatBehaviorManager(private val cat: CatParticle) {
-    private val random = MovementGeneratorFactory(generators = GENERATORS).createRandomGenerator()
+/**
+ * Cat behavior manager implemented using behavior trees. Each action is presented as a node,
+ * e.g. moving and fighting. [CatBehaviorManager] is also responsible for cat state.
+ *
+ * @param cat The cat particle
+ */
+abstract class CatBehaviorManager(
+    private val cat: CatParticle,
+) {
+    private val randomMovement = MovementGeneratorFactory(generators = RANDOM_GENERATORS).createRandomGenerator()
 
     val shouldHiss =
-        ActionNode { cat ->
+        action { cat ->
             val closestCat =
                 cat.nearbyCats.find { otherCat ->
                     val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
@@ -29,25 +37,26 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
                         false
                     }
                 }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
-            log(cat, closestCat, CatStates.HISS)
+            if (closestCat == null) return@action BehaviorStatus.FAILURE
+            logInteraction(cat, closestCat, CatStates.HISS)
             cat.setCatState(CatStates.HISS)
             BehaviorStatus.SUCCESS
         }
 
     val shouldFight =
-        ActionNode { cat ->
+        action { cat ->
             val closestCat =
                 cat.nearbyCats.find { otherCat ->
                     val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
                     // todo: this is too much
-                    distance < SceneConfig.fightDist && otherCat.state != CatStates.SLEEPING &&
+                    distance < SceneConfig.fightDist &&
+                        otherCat.state != CatStates.SLEEPING &&
                         otherCat.state != CatStates.DEAD
                 }
-            if (closestCat == null) return@ActionNode BehaviorStatus.FAILURE
+            if (closestCat == null) return@action BehaviorStatus.FAILURE
             cat.setCatState(CatStates.FIGHT)
             cat.hp -= Random.nextInt(1, 10)
-            log(cat, closestCat, CatStates.FIGHT)
+            logInteraction(cat, closestCat, CatStates.FIGHT)
             if (cat.hp < 0) {
                 cat.setCatState(CatStates.DEAD)
                 BehaviorStatus.FAILURE
@@ -57,36 +66,35 @@ abstract class CatBehaviorManager(private val cat: CatParticle) {
         }
 
     val setStateToCalm =
-        ActionNode { cat ->
+        action { cat ->
             cat.setCatState(CatStates.CALM)
             BehaviorStatus.SUCCESS
         }
 
     val moveRandomList =
-        ActionNode { cat ->
+        action { cat ->
             cat.previousCoordinates = cat.coordinates.copy()
-            val offset = random.generate(cat)
+            val offset = randomMovement.generate(cat)
             offset.move(cat.coordinates)
 
-            // todo: move out of here
             cat.coordinates = wrapPosition(cat.coordinates)
             BehaviorStatus.SUCCESS
         }
 
     val shouldBecomeGhost =
-        ConditionNode { _ ->
+        condition { _ ->
             val ghostProbability = 10e-2
             Random.nextDouble() < ghostProbability
         }
 
     val setRoleToGhost =
-        ActionNode { cat ->
+        action { cat ->
             cat.setCatRole(CatRole.GHOST)
             BehaviorStatus.SUCCESS
         }
 
     // Behavior tree for the cat
-    protected abstract val behaviorTree: BehaviorNode
+    private val behaviorTree: BehaviorNode by lazy { createBehaviorTree() }
 
     /**
      * Executes the behavior tree for the cat.

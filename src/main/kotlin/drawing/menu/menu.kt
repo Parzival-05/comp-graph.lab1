@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import radar.logging.GlobalInteractionLog
+import radar.logging.InteractionLogger
 import radar.scene.SceneConfig
 import kotlin.math.roundToInt
 
@@ -84,7 +84,7 @@ fun drawDraggableMenu(config: SceneConfig) {
                             .background(Color(0x88000000))
                             .padding(8.dp),
                 ) {
-                    drawInteractionLog(GlobalInteractionLog)
+                    drawInteractionLog(InteractionLogger.getLogs())
                 }
             }
 

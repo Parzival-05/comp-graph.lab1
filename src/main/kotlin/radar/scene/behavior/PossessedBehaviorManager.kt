@@ -1,17 +1,19 @@
 package radar.scene.behavior
 
 import behavior.BehaviorNode
-import behavior.flow.SequenceNode
+import behavior.sequence
 import radar.scene.CatParticle
 
-class PossessedBehaviorManager(private val cat: CatParticle) : CatBehaviorManager(cat) {
-    override val behaviorTree: BehaviorNode = createBehaviorTree()
-
-    override fun createBehaviorTree(): BehaviorNode {
-        return SequenceNode(
-            listOf(
-                moveRandomList,
-            ),
-        )
-    }
+/**
+ * Cat behavior manager for possessed cats.
+ *
+ * @param cat The possessed cat.
+ */
+class PossessedBehaviorManager(
+    private val cat: CatParticle,
+) : CatBehaviorManager(cat) {
+    override fun createBehaviorTree(): BehaviorNode =
+        sequence {
+            +moveRandomList
+        }
 }
