@@ -10,6 +10,7 @@ import kotlin.math.sin
 
 /**
  * Generates circular movement offsets for [BaseParticle] based on the given radius and angle.
+ *
  * @param radius The radius of the circle.
  */
 class CircularOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
@@ -17,8 +18,9 @@ class CircularOffsetGenerator<P : BaseParticle<Point2D, Offset2D>>(
     private var angle: Double = 0.0,
 ) : BaseOffsetGenerator<P, Point2D, Offset2D> {
     override fun generate(particle: P): Offset2D {
-        val angularVelocity = SceneConfig.maxParticleSpeed / 100
+        val angularVelocity = SceneConfig.maxParticleSpeed / 100.0
 
+        // Mapping polar coordinates to Cartesian coordinate
         val offsetX = radius * cos(angle)
         val offsetY = radius * sin(angle)
 
