@@ -31,9 +31,9 @@ class KDTreeCollisionDetectionTest : BaseTest() {
             listOf(
                 Arguments.of(
                     arrayListOf(
-                        CatParticle(Point2D(0.0, 0.0)),
-                        CatParticle(Point2D(1.0, 1.0)),
-                        CatParticle(Point2D(4.0, 4.0)),
+                        CatParticle(Point2D(0.0, 0.0), Point2D(0.0, 0.0)),
+                        CatParticle(Point2D(1.0, 1.0), Point2D(1.0, 1.0)),
+                        CatParticle(Point2D(4.0, 4.0), Point2D(4.0, 4.0)),
                     ),
                     1,
                     2,
@@ -45,9 +45,9 @@ class KDTreeCollisionDetectionTest : BaseTest() {
                 ),
                 Arguments.of(
                     arrayListOf(
-                        CatParticle(Point2D(0.0, 0.0)),
-                        CatParticle(Point2D(1.0, 1.0)),
-                        CatParticle(Point2D(4.0, 4.0)),
+                        CatParticle(Point2D(0.0, 0.0), Point2D(0.0, 0.0)),
+                        CatParticle(Point2D(1.0, 1.0), Point2D(1.0, 1.0)),
+                        CatParticle(Point2D(4.0, 4.0), Point2D(4.0, 4.0)),
                     ),
                     1,
                     1,
