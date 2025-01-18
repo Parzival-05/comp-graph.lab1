@@ -81,11 +81,24 @@ fun drawScene(
                     cats.forEachIndexed { index, cat ->
                         val progress = (step + 1).toDouble() / steps
 
-                        // Интерполяция с учетом текущего прогресса
-                        cat.previousCoordinates = Point2D(
-                            x = cat.previousCoordinates.x + (cat.coordinates.x - cat.previousCoordinates.x) * progress,
-                            y = cat.previousCoordinates.y + (cat.coordinates.y - cat.previousCoordinates.y) * progress
-                        )
+                        val dx = cat.coordinates.x - cat.previousCoordinates.x
+                        val dy = cat.coordinates.y - cat.previousCoordinates.y
+                        val squaredDistance = dx * dx + dy * dy
+                        val maxSpeedSquared = config.maxParticleSpeed * config.maxParticleSpeed
+
+//                        if (squaredDistance >= min(GRID_SIZE_X, GRID_SIZE_Y)) {
+//                        if ((abs(dx) > config.maxParticleSpeed) || (abs(dy) > config.maxParticleSpeed)) {
+                        if (squaredDistance >= 10 * maxSpeedSquared) {
+                            // Если расстояние слишком большое, "телепортируем" частицу
+                            cat.previousCoordinates = cat.coordinates
+                            println("${squaredDistance}/${maxSpeedSquared}")
+                        } else {
+                            // Интерполяция с учетом текущего прогресса
+                            cat.previousCoordinates = Point2D(
+                                x = cat.previousCoordinates.x + dx * progress,
+                                y = cat.previousCoordinates.y + dy * progress
+                            )
+                        }
 
                     }
                     updateFlag.value = !updateFlag.value
