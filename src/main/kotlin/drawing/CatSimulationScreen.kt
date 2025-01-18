@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import behavior.CatRole
 import classes.UIStates
 import drawing.menu.drawDraggableMenu
 import kotlinx.coroutines.delay
@@ -29,7 +30,6 @@ import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
 import radar.scene.SceneConfig
-import radar.scene.behavior.gang.CatRole
 
 /**
  * Updates the scene by checking the current UI state and passing updated particle data to the UI.

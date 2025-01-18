@@ -1,4 +1,4 @@
-package behavior
+package behavior.tree
 
 import radar.scene.CatParticle
 

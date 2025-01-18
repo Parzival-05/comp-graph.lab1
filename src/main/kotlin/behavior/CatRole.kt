@@ -1,4 +1,4 @@
-package radar.scene.behavior.gang
+package behavior
 
 enum class CatRole {
     DEFAULT,

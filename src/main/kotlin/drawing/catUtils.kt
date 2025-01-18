@@ -2,10 +2,10 @@ package drawing
 
 import CatSimulation
 import androidx.compose.ui.graphics.Color
+import behavior.CatRole
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.Point2D
-import radar.scene.behavior.gang.CatRole
 import kotlin.math.abs
 
 /**

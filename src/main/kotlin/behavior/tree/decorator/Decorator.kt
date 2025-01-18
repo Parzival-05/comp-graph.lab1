@@ -1,7 +1,7 @@
-package behavior.decorator
+package behavior.tree.decorator
 
-import behavior.BehaviorNode
-import behavior.BehaviourTreeDslMarker
+import behavior.tree.BehaviorNode
+import behavior.tree.BehaviourTreeDslMarker
 
 /**
  * Abstract node class for decorator design pattern.

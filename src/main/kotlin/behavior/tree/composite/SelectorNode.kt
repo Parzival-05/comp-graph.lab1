@@ -1,7 +1,7 @@
-package behavior.composite
+package behavior.tree.composite
 
-import behavior.BehaviorNode
-import behavior.BehaviorStatus
+import behavior.tree.BehaviorNode
+import behavior.tree.BehaviorStatus
 import radar.scene.CatParticle
 
 /**

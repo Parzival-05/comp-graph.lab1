@@ -1,9 +1,10 @@
-package radar.scene.behavior
+package behavior.managers
 
-import behavior.BehaviorNode
-import behavior.BehaviorStatus
-import behavior.action
-import behavior.condition
+import behavior.CatRole
+import behavior.tree.BehaviorNode
+import behavior.tree.BehaviorStatus
+import behavior.tree.action
+import behavior.tree.condition
 import drawing.wrapPosition
 import radar.generators.MovementGeneratorFactory
 import radar.generators.RANDOM_GENERATORS
@@ -11,7 +12,6 @@ import radar.logging.InteractionLogger.logInteraction
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig
-import radar.scene.behavior.gang.CatRole
 import kotlin.random.Random
 
 /**

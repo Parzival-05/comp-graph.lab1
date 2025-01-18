@@ -1,15 +1,15 @@
-package radar.scene.behavior
+package behavior.managers
 
-import behavior.BehaviorNode
-import behavior.BehaviorStatus
-import behavior.action
-import behavior.select
-import behavior.sequence
+import behavior.CatRole
+import behavior.tree.BehaviorNode
+import behavior.tree.BehaviorStatus
+import behavior.tree.action
+import behavior.tree.select
+import behavior.tree.sequence
 import radar.generators.SeekTargetOffsetGenerator
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import radar.scene.SceneConfig
-import radar.scene.behavior.gang.CatRole
 
 /**
  * Cat behavior manager for ghost cats.
@@ -57,7 +57,7 @@ class GhostBehaviorManager(
         val behavior =
             select {
                 +sequence {
-                    +behavior.repeat(20) {
+                    +behavior.tree.repeat(20) {
                         sequence {
                             +moveToClosestCat
                             +tryToPossess

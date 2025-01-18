@@ -1,7 +1,7 @@
-package behavior.leaf
+package behavior.tree.leaf
 
-import behavior.BehaviorNode
-import behavior.BehaviorStatus
+import behavior.tree.BehaviorNode
+import behavior.tree.BehaviorStatus
 import radar.scene.CatParticle
 
 /**

@@ -1,10 +1,10 @@
 package radar.scene
 
 import CatSimulation
+import behavior.CatRole
+import behavior.managers.BehaviorManagerFactory
 import core.base.BaseParticle
 import radar.logging.InteractionLogger.logStateChange
-import radar.scene.behavior.BehaviorManagerFactory
-import radar.scene.behavior.gang.CatRole
 
 /**
  * Represents a cat in the simulation with specific coordinates and state.

@@ -1,7 +1,7 @@
-package radar.scene.behavior
+package behavior.managers
 
+import behavior.CatRole
 import radar.scene.CatParticle
-import radar.scene.behavior.gang.CatRole
 
 /**
  * Factory class for creating [CatBehaviorManager] instances based on the given [CatRole].

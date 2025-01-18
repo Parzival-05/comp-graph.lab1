@@ -11,6 +11,7 @@ import CatSimulation.Companion.MIN_FIGHT_DIST
 import CatSimulation.Companion.MIN_HISS_DIST
 import CatSimulation.Companion.MIN_PARTICLE_COUNT
 import CatSimulation.Companion.MIN_TAU
+import CatSimulation.Companion.SPEED_CHANGE
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -196,7 +197,7 @@ fun sceneSettingsMenu(
             Row {
                 Button(onClick = {
                     config.maxParticleSpeed =
-                        (config.maxParticleSpeed - 0.1)
+                        (config.maxParticleSpeed - SPEED_CHANGE)
                             .coerceAtLeast(MIN_CAT_SPEED.toDouble())
                             .roundTo()
                 }, modifier = minusMarginModifier) {
@@ -204,7 +205,7 @@ fun sceneSettingsMenu(
                 }
                 Button(onClick = {
                     config.maxParticleSpeed =
-                        (config.maxParticleSpeed + 0.1)
+                        (config.maxParticleSpeed + SPEED_CHANGE)
                             .coerceAtMost(MAX_CAT_SPEED.toDouble())
                             .roundTo()
                 }, modifier = plusMarginModifier) {

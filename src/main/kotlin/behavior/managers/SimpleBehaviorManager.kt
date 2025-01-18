@@ -1,16 +1,16 @@
-package radar.scene.behavior
+package behavior.managers
 
 import CatSimulation.Companion.DEATH_TIME
 import CatSimulation.Companion.SLEEP_PROBABILITY
 import CatSimulation.Companion.SLEEP_TIME
-import behavior.BehaviorNode
-import behavior.BehaviorStatus
-import behavior.action
-import behavior.condition
-import behavior.leaf.ConditionDecoratorNode
-import behavior.select
-import behavior.sequence
-import behavior.sleep
+import behavior.tree.BehaviorNode
+import behavior.tree.BehaviorStatus
+import behavior.tree.action
+import behavior.tree.condition
+import behavior.tree.leaf.ConditionDecoratorNode
+import behavior.tree.select
+import behavior.tree.sequence
+import behavior.tree.sleep
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import kotlin.random.Random

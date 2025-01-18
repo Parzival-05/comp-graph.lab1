@@ -1,11 +1,11 @@
-package behavior
+package behavior.tree
 
-import behavior.composite.SelectorNode
-import behavior.composite.SequenceNode
-import behavior.decorator.RepeaterNode
-import behavior.leaf.ActionNode
-import behavior.leaf.ConditionNode
-import behavior.leaf.SleepNode
+import behavior.tree.composite.SelectorNode
+import behavior.tree.composite.SequenceNode
+import behavior.tree.decorator.RepeaterNode
+import behavior.tree.leaf.ActionNode
+import behavior.tree.leaf.ConditionNode
+import behavior.tree.leaf.SleepNode
 import radar.scene.CatParticle
 
 /*

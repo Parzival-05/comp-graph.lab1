@@ -1,7 +1,7 @@
-package radar.scene.behavior
+package behavior.managers
 
-import behavior.BehaviorNode
-import behavior.sequence
+import behavior.tree.BehaviorNode
+import behavior.tree.sequence
 import radar.scene.CatParticle
 
 /**

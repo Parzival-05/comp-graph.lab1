@@ -1,7 +1,7 @@
-package behavior.composite
+package behavior.tree.composite
 
-import behavior.BehaviorNode
-import behavior.BehaviourTreeDslMarker
+import behavior.tree.BehaviorNode
+import behavior.tree.BehaviourTreeDslMarker
 
 /**
  * Abstract node class for a composing different nodes.
