@@ -1,13 +1,19 @@
 package drawing
 
-import CatSimulation.Companion.FPS
-import CatSimulation.Companion.GRID_SIZE_X
-import CatSimulation.Companion.GRID_SIZE_Y
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -17,9 +23,16 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import classes.UIStates
+import CatSimulation.Companion.FPS
+import CatSimulation.Companion.GRID_SIZE_X
+import CatSimulation.Companion.GRID_SIZE_Y
 import drawing.menu.drawDraggableMenu
 import kotlinx.coroutines.delay
-import radar.scene.*
+import radar.scene.CatParticle
+import radar.scene.CatScene
+import radar.scene.CatStates
+import radar.scene.SceneConfig
+import radar.scene.Point2D
 import radar.scene.behavior.gang.CatRole
 
 /**
@@ -94,12 +107,12 @@ fun drawScene(
                             println("${squaredDistance}/${maxSpeedSquared}")
                         } else {
                             // Интерполяция с учетом текущего прогресса
-                            cat.previousCoordinates = Point2D(
-                                x = cat.previousCoordinates.x + dx * progress,
-                                y = cat.previousCoordinates.y + dy * progress
-                            )
+                            cat.previousCoordinates =
+                                Point2D(
+                                    x = cat.previousCoordinates.x + dx * progress,
+                                    y = cat.previousCoordinates.y + dy * progress,
+                                )
                         }
-
                     }
                     updateFlag.value = !updateFlag.value
                     delay(frameDurationMs.toLong())
@@ -118,14 +131,13 @@ fun drawScene(
                                 .toPx(),
                         )
 
-
                     when {
                         cat.role == CatRole.GHOST -> {
                             // Призраки рисуются как прозрачные кружки
                             drawCircle(
                                 color = Color(0x80ff2120), // Полупрозрачный красный
                                 center = catOffset,
-                                radius = catRadius.toFloat()
+                                radius = catRadius.toFloat(),
                             )
                         }
 
@@ -157,8 +169,6 @@ fun drawScene(
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )
-
-
                             // HP-бар
                             val barWidth = catRadius * 2.0f
                             val barHeight = 8.dp.toPx()
@@ -187,9 +197,7 @@ fun drawScene(
                                 color = color,
                                 topLeft = barOffset,
                                 size = Size(filledWidth, barHeight),
-
                                 cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-
                                 )
                         }
                     }

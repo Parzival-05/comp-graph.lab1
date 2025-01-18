@@ -19,9 +19,7 @@ class GhostBehaviorManager(
     var catToPossess: CatParticle? = null
 
     private fun canPossess(cat: CatParticle) =
-        cat.role == CatRole.DEFAULT &&
-                cat.state !=
-                CatStates.DEAD
+        cat.role == CatRole.DEFAULT && cat.state != CatStates.DEAD
 
     val moveToClosestCat =
         action { cat ->

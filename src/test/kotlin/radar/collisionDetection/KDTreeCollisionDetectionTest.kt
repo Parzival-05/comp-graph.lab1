@@ -8,7 +8,14 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import radar.generators.CatGenerator
-import radar.scene.*
+import radar.scene.CatCollision
+import radar.scene.CatEmitter
+import radar.scene.CatParticle
+import radar.scene.CatScene
+import radar.scene.MetricType
+import radar.scene.Offset2D
+import radar.scene.Point2D
+import radar.scene.SceneConfig
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.random.Random
