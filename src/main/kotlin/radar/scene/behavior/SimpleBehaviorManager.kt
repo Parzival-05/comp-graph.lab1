@@ -6,10 +6,10 @@ import behavior.BehaviorNode
 import behavior.BehaviorStatus
 import behavior.action
 import behavior.condition
-import behavior.leaf.ConditionDecoratorNode
 import behavior.select
 import behavior.sequence
 import behavior.sleep
+import behavior.leaf.ConditionDecoratorNode
 import radar.scene.CatParticle
 import radar.scene.CatStates
 import kotlin.random.Random

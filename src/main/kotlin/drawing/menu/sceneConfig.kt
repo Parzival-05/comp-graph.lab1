@@ -35,6 +35,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.dp
 import radar.scene.MetricType
 import radar.scene.SceneConfig
+import java.util.Locale
 import kotlin.math.min
 
 var showTauErrorAlert by mutableStateOf(false)
@@ -291,4 +292,5 @@ fun sceneSettingsMenu(
     })
 }
 
-private fun Double.roundTo(decimals: Int = 1): Double = "%.${decimals}f".format(this).toDouble()
+
+private fun Double.roundTo(decimals: Int = 1): Double = String.format(Locale.US, "%.${decimals}f", this).toDouble()

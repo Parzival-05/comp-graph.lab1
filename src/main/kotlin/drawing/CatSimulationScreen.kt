@@ -1,7 +1,5 @@
 package drawing
 
-import CatSimulation.Companion.GRID_SIZE_X
-import CatSimulation.Companion.GRID_SIZE_Y
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +21,16 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import classes.UIStates
+import CatSimulation.Companion.FPS
+import CatSimulation.Companion.GRID_SIZE_X
+import CatSimulation.Companion.GRID_SIZE_Y
 import drawing.menu.drawDraggableMenu
 import kotlinx.coroutines.delay
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.CatStates
 import radar.scene.SceneConfig
+import radar.scene.Point2D
 import radar.scene.behavior.gang.CatRole
 
 /**
@@ -46,8 +48,8 @@ fun updateScene(
 ) {
     LaunchedEffect(Unit) {
         while (true) {
+            onSceneUpdated(catScene.particles.map { it }.toTypedArray())
             if (state.value == UIStates.UPDATE_DATA) {
-                onSceneUpdated(catScene.particles.map { it }.toTypedArray()) // Передача нового списка
                 state.value = UIStates.DRAWING
             }
             delay(3)
@@ -68,6 +70,8 @@ fun drawScene(
     state: MutableState<UIStates>,
     config: SceneConfig,
 ) {
+    val frameDurationMs = 1000 / FPS // Время одного кадра
+
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
         Box(
             modifier =
@@ -81,15 +85,45 @@ fun drawScene(
                     delay(3)
                 }
             }
+            LaunchedEffect(cats) {
+                val steps = (SceneConfig.tau / frameDurationMs).toInt()
+                repeat(steps) { step ->
+                    cats.forEachIndexed { index, cat ->
+                        val progress = (step + 1).toDouble() / steps
+
+                        val dx = cat.coordinates.x - cat.previousCoordinates.x
+                        val dy = cat.coordinates.y - cat.previousCoordinates.y
+                        val squaredDistance = dx * dx + dy * dy
+                        val maxSpeedSquared = config.maxParticleSpeed * config.maxParticleSpeed
+
+//                        if (squaredDistance >= min(GRID_SIZE_X, GRID_SIZE_Y)) {
+//                        if ((abs(dx) > config.maxParticleSpeed) || (abs(dy) > config.maxParticleSpeed)) {
+                        if (squaredDistance >= 10 * maxSpeedSquared) {
+                            // Если расстояние слишком большое, "телепортируем" частицу
+                            cat.previousCoordinates = cat.coordinates
+//                            println("${squaredDistance}/${maxSpeedSquared}")
+                        } else {
+                            // Интерполяция с учетом текущего прогресса
+                            cat.previousCoordinates =
+                                Point2D(
+                                    x = cat.previousCoordinates.x + dx * progress,
+                                    y = cat.previousCoordinates.y + dy * progress,
+                                )
+                        }
+                    }
+                    delay(frameDurationMs.toLong())
+                }
+            }
+
             Canvas(modifier = Modifier.fillMaxSize()) {
                 cats.forEach { cat ->
-                    val currentColor = getColor(cat)
+                    val currentColor = getColorForState(cat.state)
                     val catRadius = config.catRadius
                     val catOffset =
                         Offset(
-                            cat.coordinates.x.dp
+                            cat.previousCoordinates.x.dp
                                 .toPx(),
-                            cat.coordinates.y.dp
+                            cat.previousCoordinates.y.dp
                                 .toPx(),
                         )
 
@@ -97,8 +131,7 @@ fun drawScene(
                         cat.role == CatRole.GHOST -> {
                             // Призраки рисуются как прозрачные кружки
                             drawCircle(
-                                // Полупрозрачный красный
-                                color = currentColor,
+                                color = Color(0x80ff2120), // Полупрозрачный красный
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )
@@ -132,7 +165,6 @@ fun drawScene(
                                 center = catOffset,
                                 radius = catRadius.toFloat(),
                             )
-
                             // HP-бар
                             val barWidth = catRadius * 2.0f
                             val barHeight = 8.dp.toPx()

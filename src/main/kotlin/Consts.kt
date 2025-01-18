@@ -19,6 +19,7 @@ class CatSimulation {
         const val MAX_HISS_DIST = 100
         const val MIN_FIGHT_DIST = 0
         const val MAX_FIGHT_DIST = 100
+        const val FPS = 60
         const val HEALTH_POINTS_DEFAULT = 100
         const val DEATH_TIME = 50
         const val SLEEP_TIME = 100
