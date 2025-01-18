@@ -1,6 +1,7 @@
 package radar.scene.behavior
 
 import CatSimulation.Companion.DEATH_TIME
+import CatSimulation.Companion.SLEEP_PROBABILITY
 import CatSimulation.Companion.SLEEP_TIME
 import behavior.BehaviorNode
 import behavior.BehaviorStatus
@@ -22,14 +23,13 @@ import kotlin.random.Random
 class SimpleBehaviorManager(
     private val cat: CatParticle,
 ) : CatBehaviorManager(cat) {
-    val shouldSleep =
-        condition { _ ->
-            val sleepProbability = 10e-4
-            Random.nextDouble() < sleepProbability
+    private val shouldSleep =
+        condition {
+            Random.nextDouble() < SLEEP_PROBABILITY
         }
 
-    val setStateToSleeping =
-        action { cat ->
+    private val setStateToSleeping =
+        action {
             cat.setCatState(CatStates.SLEEPING)
             BehaviorStatus.SUCCESS
         }

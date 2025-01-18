@@ -25,8 +25,8 @@ abstract class CatBehaviorManager(
 ) {
     private val randomMovement = MovementGeneratorFactory(generators = RANDOM_GENERATORS).createRandomGenerator()
 
-    val shouldHiss =
-        action { cat ->
+    protected val shouldHiss =
+        action {
             val closestCat =
                 cat.nearbyCats.find { otherCat ->
                     val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
@@ -43,8 +43,8 @@ abstract class CatBehaviorManager(
             BehaviorStatus.SUCCESS
         }
 
-    val shouldFight =
-        action { cat ->
+    protected val shouldFight =
+        action {
             val closestCat =
                 cat.nearbyCats.find { otherCat ->
                     val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
@@ -65,14 +65,14 @@ abstract class CatBehaviorManager(
             }
         }
 
-    val setStateToCalm =
-        action { cat ->
+    protected val setStateToCalm =
+        action {
             cat.setCatState(CatStates.CALM)
             BehaviorStatus.SUCCESS
         }
 
-    val moveRandomList =
-        action { cat ->
+    protected val moveRandomList =
+        action {
             val offset = randomMovement.generate(cat)
             offset.move(cat.coordinates)
 
@@ -80,14 +80,14 @@ abstract class CatBehaviorManager(
             BehaviorStatus.SUCCESS
         }
 
-    val shouldBecomeGhost =
-        condition { _ ->
+    protected val shouldBecomeGhost =
+        condition {
             val ghostProbability = 10e-2
             Random.nextDouble() < ghostProbability
         }
 
-    val setRoleToGhost =
-        action { cat ->
+    protected val setRoleToGhost =
+        action {
             cat.setCatRole(CatRole.GHOST)
             BehaviorStatus.SUCCESS
         }

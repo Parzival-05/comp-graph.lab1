@@ -28,7 +28,7 @@ class GhostBehaviorManager(
             CatStates.DEAD
 
     val moveToClosestCat =
-        action { cat ->
+        action {
             catToPossess = cat.nearbyCats.find(::canPossess)
             if (catToPossess == null) return@action BehaviorStatus.FAILURE
             val offset = moveTo(catToPossess!!).generate(cat)
@@ -37,7 +37,7 @@ class GhostBehaviorManager(
         }
 
     val tryToPossess =
-        action { cat ->
+        action {
             if (SceneConfig.metricFunction(cat.coordinates, catToPossess!!.coordinates) < SceneConfig.fightDist &&
                 canPossess(catToPossess!!)
             ) {
@@ -47,7 +47,7 @@ class GhostBehaviorManager(
             }
         }
     val possess =
-        action { cat ->
+        action {
             if (!canPossess(catToPossess!!)) return@action BehaviorStatus.FAILURE
             catToPossess!!.setCatRole(CatRole.POSSESSED)
             BehaviorStatus.SUCCESS

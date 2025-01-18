@@ -22,6 +22,7 @@ class CatSimulation {
         const val HEALTH_POINTS_DEFAULT = 100
         const val DEATH_TIME = 50
         const val SLEEP_TIME = 100
+        const val SLEEP_PROBABILITY = 10e-4
     }
 }
 

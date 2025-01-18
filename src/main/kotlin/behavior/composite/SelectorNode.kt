@@ -17,13 +17,17 @@ class SelectorNode(
     override fun tick(cat: CatParticle): BehaviorStatus {
         while (currentIndex < children.size) {
             val status = children[currentIndex].tick(cat)
-            if (status == BehaviorStatus.SUCCESS) {
-                currentIndex = 0
-                return BehaviorStatus.SUCCESS
-            } else if (status == BehaviorStatus.RUNNING) {
-                return BehaviorStatus.RUNNING
-            } else {
-                currentIndex++
+            when (status) {
+                BehaviorStatus.SUCCESS -> {
+                    currentIndex = 0
+                    return BehaviorStatus.SUCCESS
+                }
+                BehaviorStatus.RUNNING -> {
+                    return BehaviorStatus.RUNNING
+                }
+                else -> {
+                    currentIndex++
+                }
             }
         }
         // All children failed
