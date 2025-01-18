@@ -18,8 +18,8 @@ fun euclidean(
     return sqrt(
         (point1.x - point2.x)
             .pow(2) +
-                (point1.y - point2.y)
-                    .pow(2),
+            (point1.y - point2.y)
+                .pow(2),
     )
     // extracting the square root in our task is redundant, and should be avoided due to inefficiency
 }

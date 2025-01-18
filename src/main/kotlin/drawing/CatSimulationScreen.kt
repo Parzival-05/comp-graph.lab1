@@ -12,8 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -82,7 +80,6 @@ fun drawScene(
                     .align(Alignment.Center)
                     .drawBehind { drawRect(Color(0xFFae99b8)) },
         ) {
-            val updateFlag = remember { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 while (state.value != UIStates.DRAWING) {
                     delay(3)
@@ -104,7 +101,7 @@ fun drawScene(
                         if (squaredDistance >= 10 * maxSpeedSquared) {
                             // Если расстояние слишком большое, "телепортируем" частицу
                             cat.previousCoordinates = cat.coordinates
-                            println("${squaredDistance}/${maxSpeedSquared}")
+//                            println("${squaredDistance}/${maxSpeedSquared}")
                         } else {
                             // Интерполяция с учетом текущего прогресса
                             cat.previousCoordinates =
@@ -114,7 +111,6 @@ fun drawScene(
                                 )
                         }
                     }
-                    updateFlag.value = !updateFlag.value
                     delay(frameDurationMs.toLong())
                 }
             }
@@ -198,7 +194,7 @@ fun drawScene(
                                 topLeft = barOffset,
                                 size = Size(filledWidth, barHeight),
                                 cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-                                )
+                            )
                         }
                     }
                 }
