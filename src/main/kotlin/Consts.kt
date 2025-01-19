@@ -1,4 +1,4 @@
-/** Contains constants and configurations for the `CatSimulation`. */
+/** Contains constants and configurations for the [CatSimulation]. */
 class CatSimulation {
     companion object {
         /** The width of the simulation grid. */
@@ -9,7 +9,7 @@ class CatSimulation {
 
         const val MIN_PARTICLE_COUNT = 100
         const val MAX_PARTICLE_COUNT = 50000
-        const val MAX_INTERACTIONS_DISPLAYED = 50
+        const val MAX_LOGS_DISPLAYED = 50
         const val MIN_TAU = 1L
         const val MIN_CAT_RADIUS = 1
         const val MAX_CAT_RADIUS = 100
@@ -19,6 +19,11 @@ class CatSimulation {
         const val MAX_HISS_DIST = 100
         const val MIN_FIGHT_DIST = 0
         const val MAX_FIGHT_DIST = 100
+        const val HEALTH_POINTS_DEFAULT = 100
+        const val DEATH_TIME = 50
+        const val SLEEP_TIME = 100
+        const val SLEEP_PROBABILITY = 10e-4
+        const val SPEED_CHANGE = 0.1
     }
 }
 

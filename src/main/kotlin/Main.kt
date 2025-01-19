@@ -7,14 +7,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import classes.UIStates
-import drawing.drawModelingTime
 import drawing.drawScene
+import drawing.drawStatistics
 import drawing.updateScene
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import radar.generators.CatGenerator
-import radar.generators.MoveGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.SceneConfig
@@ -22,14 +21,13 @@ import kotlin.time.measureTime
 
 fun main() =
     application {
-        val sceneConfig = SceneConfig()
+        SceneConfig.loadConfig("config.properties")
         val catGenerator = CatGenerator()
         val cats = ArrayList<CatParticle>()
-        for (i in 1..sceneConfig.particleCount) {
+        for (i in 1..SceneConfig.particleCount) {
             cats.add(catGenerator.generate())
         }
-        val catScene = CatScene(cats, sceneConfig)
-        val moveGenerator = MoveGenerator(sceneConfig)
+        val catScene = CatScene(cats, SceneConfig)
         val state = mutableStateOf(UIStates.MODELING)
 
         Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
@@ -37,11 +35,11 @@ fun main() =
             var timeModeling by remember { mutableStateOf(0L) }
             val cs = rememberCoroutineScope { Dispatchers.Default }
 
-            LaunchedEffect(sceneConfig.particleCount) {
-                while (cats.size < sceneConfig.particleCount) {
+            LaunchedEffect(SceneConfig.particleCount) {
+                while (cats.size < SceneConfig.particleCount) {
                     cats.add(catGenerator.generate())
                 }
-                while (cats.size > sceneConfig.particleCount) {
+                while (cats.size > SceneConfig.particleCount) {
                     cats.removeLast()
                 }
                 currentCats = cats.toTypedArray()
@@ -50,15 +48,15 @@ fun main() =
             LaunchedEffect(Unit) {
                 cs.launch {
                     while (true) {
-                        if (!sceneConfig.isOnPause) {
+                        if (!SceneConfig.isOnPause) {
                             if (state.value == UIStates.MODELING) {
-                                timeModeling = measureTime { catScene.updateScene(moveGenerator) }.inWholeMilliseconds
+                                timeModeling = measureTime(catScene::updateScene).inWholeMilliseconds
                                 state.value = UIStates.UPDATE_DATA
                             }
-                            if (timeModeling < sceneConfig.tau) {
+                            if (timeModeling < SceneConfig.tau) {
                                 val sleepTimeMSBatch = 5L
                                 var totalSleepTime = timeModeling - 3
-                                while (totalSleepTime < sceneConfig.tau) {
+                                while (totalSleepTime < SceneConfig.tau) {
                                     delay(sleepTimeMSBatch)
                                     totalSleepTime += sleepTimeMSBatch
                                 }
@@ -72,6 +70,6 @@ fun main() =
                 currentCats = updatedCats
             }
             drawScene(currentCats, state, catScene.sceneConfig)
-            drawModelingTime(timeModeling)
+            drawStatistics(timeModeling, catScene.particles)
         }
     }
