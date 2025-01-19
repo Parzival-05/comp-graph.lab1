@@ -27,30 +27,38 @@ class GhostBehaviorManager(
             cat.state !=
             CatStates.DEAD
 
-    val moveToClosestCat =
+    private val moveToClosestCat =
         action {
             catToPossess = cat.nearbyCats.find(::canPossess)
-            if (catToPossess == null) return@action BehaviorStatus.FAILURE
-            val offset = moveTo(catToPossess!!).generate(cat)
-            offset.move(cat.coordinates)
-            BehaviorStatus.SUCCESS
+            catToPossess?.let { catToPossess ->
+                val offset = moveTo(catToPossess).generate(cat)
+                offset.move(cat.coordinates)
+                return@action BehaviorStatus.SUCCESS
+            }
+            return@action BehaviorStatus.FAILURE
         }
 
-    val tryToPossess =
+    private val tryToPossess =
         action {
-            if (SceneConfig.metricFunction(cat.coordinates, catToPossess!!.coordinates) < SceneConfig.fightDist &&
-                canPossess(catToPossess!!)
-            ) {
-                BehaviorStatus.SUCCESS
-            } else {
-                BehaviorStatus.FAILURE
+            catToPossess?.let { targetCat ->
+                if (SceneConfig.metricFunction(cat.coordinates, targetCat.coordinates) < SceneConfig.fightDist &&
+                    canPossess(targetCat)
+                ) {
+                    return@action BehaviorStatus.SUCCESS
+                }
             }
+            BehaviorStatus.FAILURE
         }
-    val possess =
+
+    private val possess =
         action {
-            if (!canPossess(catToPossess!!)) return@action BehaviorStatus.FAILURE
-            catToPossess!!.setCatRole(CatRole.POSSESSED)
-            BehaviorStatus.SUCCESS
+            catToPossess?.let { targetCat ->
+                if (canPossess(targetCat)) {
+                    targetCat.setCatRole(CatRole.POSSESSED)
+                    return@action BehaviorStatus.SUCCESS
+                }
+            }
+            BehaviorStatus.FAILURE
         }
 
     override fun createBehaviorTree(): BehaviorNode {
