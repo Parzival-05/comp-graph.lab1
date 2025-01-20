@@ -10,6 +10,7 @@ import radar.generators.RANDOM_GENERATORS
 import radar.logging.InteractionLogger.logInteraction
 import radar.scene.CatParticle
 import radar.scene.CatStates
+import radar.scene.Offset2D
 import radar.scene.SceneConfig
 import radar.scene.behavior.gang.CatRole
 import kotlin.random.Random
@@ -50,8 +51,8 @@ abstract class CatBehaviorManager(
                     val distance = SceneConfig.metricFunction(cat.coordinates, otherCat.coordinates)
                     // todo: this is too much
                     distance < SceneConfig.fightDist &&
-                            otherCat.state != CatStates.SLEEPING &&
-                            otherCat.state != CatStates.DEAD
+                        otherCat.state != CatStates.SLEEPING &&
+                        otherCat.state != CatStates.DEAD
                 }
             if (closestCat == null) return@action BehaviorStatus.FAILURE
             cat.setCatState(CatStates.FIGHT)
@@ -73,8 +74,8 @@ abstract class CatBehaviorManager(
 
     val moveRandomList =
         action { cat ->
-            cat.previousCoordinates = cat.coordinates.copy()
-            val offset = randomMovement.generate(cat)
+            var offset = randomMovement.generate(cat)
+            offset = Offset2D(offset.x / 2, offset.y / 2)
             offset.move(cat.coordinates)
 
             cat.coordinates = wrapPosition(cat.coordinates)

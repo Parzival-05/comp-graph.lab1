@@ -2,7 +2,6 @@ package radar.scene
 
 import CatSimulation
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import core.base.BaseParticle
 import radar.logging.InteractionLogger.logStateChange
@@ -17,7 +16,6 @@ import radar.scene.behavior.gang.CatRole
  */
 data class CatParticle(
     override var coordinates: Point2D,
-    var previousCoordinates: Point2D,
     var state: CatStates = CatStates.CALM,
     var role: CatRole = CatRole.DEFAULT,
 ) : BaseParticle<Point2D, Offset2D>() {
@@ -26,9 +24,6 @@ data class CatParticle(
 
     /** Health points for the [CatParticle] before his state changes to [CatStates.DEAD]. */
     var hp = CatSimulation.HEALTH_POINTS_DEFAULT
-
-    // Реактивное отслеживаемое текущее положение
-    var currentCoordinates by mutableStateOf(coordinates)
 
     /** Nearby cats that this cat is aware of. */
     var nearbyCats: MutableList<CatParticle> = mutableListOf()

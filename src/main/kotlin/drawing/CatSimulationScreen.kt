@@ -1,16 +1,13 @@
 package drawing
 
+import CatParticleForDraw
+import CatSimulation.Companion.GRID_SIZE_X
+import CatSimulation.Companion.GRID_SIZE_Y
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,42 +17,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import classes.UIStates
-import CatSimulation.Companion.FPS
-import CatSimulation.Companion.GRID_SIZE_X
-import CatSimulation.Companion.GRID_SIZE_Y
-import drawing.menu.drawDraggableMenu
-import kotlinx.coroutines.delay
 import radar.scene.CatParticle
-import radar.scene.CatScene
 import radar.scene.CatStates
 import radar.scene.SceneConfig
-import radar.scene.Point2D
 import radar.scene.behavior.gang.CatRole
-
-/**
- * Updates the scene by checking the current UI state and passing updated particle data to the UI.
- *
- * @param catScene The current scene containing all cat particles.
- * @param state A mutable state representing the current UI state.
- * @param onSceneUpdated A callback function to receive the updated array of CatParticles.
- */
-@Composable
-fun updateScene(
-    catScene: CatScene,
-    state: MutableState<UIStates>,
-    onSceneUpdated: (Array<CatParticle>) -> Unit,
-) {
-    LaunchedEffect(Unit) {
-        while (true) {
-            onSceneUpdated(catScene.particles.map { it }.toTypedArray())
-            if (state.value == UIStates.UPDATE_DATA) {
-                state.value = UIStates.DRAWING
-            }
-            delay(3)
-        }
-    }
-}
+import kotlin.time.measureTime
 
 /**
  * Draws the scene by rendering cat particles, adjusting UI state accordingly.
@@ -66,12 +32,10 @@ fun updateScene(
  */
 @Composable
 fun drawScene(
-    cats: Array<CatParticle>,
-    state: MutableState<UIStates>,
+    cats: ArrayList<CatParticleForDraw>,
     config: SceneConfig,
+    timeDrawing: MutableState<Long>,
 ) {
-    val frameDurationMs = 1000 / FPS // Время одного кадра
-
     Box(modifier = Modifier.fillMaxSize().drawBehind { drawRect(Color(0xFFae99b8)) }) {
         Box(
             modifier =
@@ -80,127 +44,94 @@ fun drawScene(
                     .align(Alignment.Center)
                     .drawBehind { drawRect(Color(0xFFae99b8)) },
         ) {
-            LaunchedEffect(Unit) {
-                while (state.value != UIStates.DRAWING) {
-                    delay(3)
-                }
-            }
-            LaunchedEffect(cats) {
-                val steps = (SceneConfig.tau / frameDurationMs).toInt()
-                repeat(steps) { step ->
-                    cats.forEachIndexed { index, cat ->
-                        val progress = (step + 1).toDouble() / steps
-
-                        val dx = cat.coordinates.x - cat.previousCoordinates.x
-                        val dy = cat.coordinates.y - cat.previousCoordinates.y
-                        val squaredDistance = dx * dx + dy * dy
-                        val maxSpeedSquared = config.maxParticleSpeed * config.maxParticleSpeed
-
-//                        if (squaredDistance >= min(GRID_SIZE_X, GRID_SIZE_Y)) {
-//                        if ((abs(dx) > config.maxParticleSpeed) || (abs(dy) > config.maxParticleSpeed)) {
-                        if (squaredDistance >= 10 * maxSpeedSquared) {
-                            // Если расстояние слишком большое, "телепортируем" частицу
-                            cat.previousCoordinates = cat.coordinates
-//                            println("${squaredDistance}/${maxSpeedSquared}")
-                        } else {
-                            // Интерполяция с учетом текущего прогресса
-                            cat.previousCoordinates =
-                                Point2D(
-                                    x = cat.previousCoordinates.x + dx * progress,
-                                    y = cat.previousCoordinates.y + dy * progress,
-                                )
-                        }
-                    }
-                    delay(frameDurationMs.toLong())
-                }
-            }
-
             Canvas(modifier = Modifier.fillMaxSize()) {
-                cats.forEach { cat ->
-                    val currentColor = getColorForState(cat.state)
-                    val catRadius = config.catRadius
-                    val catOffset =
-                        Offset(
-                            cat.previousCoordinates.x.dp
-                                .toPx(),
-                            cat.previousCoordinates.y.dp
-                                .toPx(),
-                        )
-
-                    when {
-                        cat.role == CatRole.GHOST -> {
-                            // Призраки рисуются как прозрачные кружки
-                            drawCircle(
-                                color = Color(0x80ff2120), // Полупрозрачный красный
-                                center = catOffset,
-                                radius = catRadius.toFloat(),
-                            )
-                        }
-
-                        cat.state == CatStates.DEAD -> {
-                            // Мертвые коты отображаются как кресты
-                            val lineLength = catRadius * 2.0f
-                            val topLeft = Offset(catOffset.x - lineLength / 2, catOffset.y - lineLength / 2)
-                            val topRight = Offset(catOffset.x + lineLength / 2, catOffset.y - lineLength / 2)
-                            val bottomLeft = Offset(catOffset.x - lineLength / 2, catOffset.y + lineLength / 2)
-                            val bottomRight = Offset(catOffset.x + lineLength / 2, catOffset.y + lineLength / 2)
-
-                            drawLine(
-                                color = currentColor,
-                                start = topLeft,
-                                end = bottomRight,
-                                strokeWidth = 4f,
-                            )
-                            drawLine(
-                                color = currentColor,
-                                start = topRight,
-                                end = bottomLeft,
-                                strokeWidth = 4f,
-                            )
-                        }
-
-                        else -> {
-                            drawCircle(
-                                color = currentColor,
-                                center = catOffset,
-                                radius = catRadius.toFloat(),
-                            )
-                            // HP-бар
-                            val barWidth = catRadius * 2.0f
-                            val barHeight = 8.dp.toPx()
-                            val barOffset =
+                timeDrawing.value =
+                    measureTime {
+                        cats.forEach { catParticleForDraw ->
+                            val cat = catParticleForDraw.cat
+                            val currentColor = getColorForState(cat.state)
+                            val catRadius = config.catRadius
+                            val catOffset =
                                 Offset(
-                                    x = catOffset.x - barWidth / 2,
-                                    y = catOffset.y - catRadius - 16.dp.toPx(),
+                                    catParticleForDraw.from.x.dp
+                                        .toPx(),
+                                    catParticleForDraw.from.y.dp
+                                        .toPx(),
                                 )
-
-                            drawRoundRect(
-                                color = Color.Gray,
-                                topLeft = barOffset,
-                                size = Size(barWidth, barHeight),
-                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-                            )
-
-                            val hpPercentage = cat.hp / 100f
-                            val filledWidth = barWidth * hpPercentage
-                            val color =
-                                when {
-                                    hpPercentage > 0.67 -> Color.Green
-                                    hpPercentage > 0.33 -> Color.Yellow
-                                    else -> Color.Red
+                            when {
+                                cat.role == CatRole.GHOST -> {
+                                    // Призраки рисуются как прозрачные кружки
+                                    drawCircle(
+                                        color = Color(0x80ff2120), // Полупрозрачный красный
+                                        center = catOffset,
+                                        radius = catRadius.toFloat(),
+                                    )
                                 }
-                            drawRoundRect(
-                                color = color,
-                                topLeft = barOffset,
-                                size = Size(filledWidth, barHeight),
-                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-                            )
+
+                                cat.state == CatStates.DEAD -> {
+                                    // Мертвые коты отображаются как кресты
+                                    val lineLength = catRadius * 2.0f
+                                    val topLeft = Offset(catOffset.x - lineLength / 2, catOffset.y - lineLength / 2)
+                                    val topRight = Offset(catOffset.x + lineLength / 2, catOffset.y - lineLength / 2)
+                                    val bottomLeft = Offset(catOffset.x - lineLength / 2, catOffset.y + lineLength / 2)
+                                    val bottomRight = Offset(catOffset.x + lineLength / 2, catOffset.y + lineLength / 2)
+
+                                    drawLine(
+                                        color = currentColor,
+                                        start = topLeft,
+                                        end = bottomRight,
+                                        strokeWidth = 4f,
+                                    )
+                                    drawLine(
+                                        color = currentColor,
+                                        start = topRight,
+                                        end = bottomLeft,
+                                        strokeWidth = 4f,
+                                    )
+                                }
+
+                                else -> {
+                                    drawCircle(
+                                        color = currentColor,
+                                        center = catOffset,
+                                        radius = catRadius.toFloat(),
+                                    )
+
+                                    // HP-бар
+                                    val barWidth = catRadius * 2.0f
+                                    val barHeight = 2.dp.toPx()
+                                    val barOffset =
+                                        Offset(
+                                            x = catOffset.x - barWidth / 2,
+                                            y = catOffset.y - catRadius - 16.dp.toPx(),
+                                        )
+
+                                    drawRoundRect(
+                                        color = Color.Gray,
+                                        topLeft = barOffset,
+                                        size = Size(barWidth, barHeight),
+                                        cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                    )
+
+                                    val hpPercentage = cat.hp / 100f
+                                    val filledWidth = barWidth * hpPercentage
+                                    val color =
+                                        when {
+                                            hpPercentage > 0.67 -> Color.Green
+                                            hpPercentage > 0.33 -> Color.Yellow
+                                            else -> Color.Red
+                                        }
+                                    drawRoundRect(
+                                        color = color,
+                                        topLeft = barOffset,
+                                        size = Size(filledWidth, barHeight),
+                                        cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                    )
+                                }
+                            }
                         }
-                    }
-                }
+                    }.inWholeMilliseconds
             }
-            state.value = UIStates.MODELING
-            drawDraggableMenu(config = config)
         }
     }
 }
@@ -208,19 +139,29 @@ fun drawScene(
 @Composable
 fun drawStatistics(
     timeModeling: Long,
+    timeUpdating: Long,
+    timeDrawing: Long,
+    step: Long,
     cats: ArrayList<CatParticle>,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomStart,
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            horizontalAlignment = Alignment.End,
         ) {
-            println(timeModeling)
             Text(
                 text = "Modeling time: $timeModeling",
+                style = MaterialTheme.typography.body1,
+            )
+            Text(
+                text = "Updating time: $timeUpdating",
+                style = MaterialTheme.typography.body1,
+            )
+            Text(
+                text = "Drawing time: $timeDrawing",
                 style = MaterialTheme.typography.body1,
             )
         }
