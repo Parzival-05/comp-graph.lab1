@@ -1,6 +1,4 @@
 import CatSimulation.Companion.FPS
-import CatSimulation.Companion.GRID_SIZE_X
-import CatSimulation.Companion.GRID_SIZE_Y
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import classes.ModelingStates
+import classes.TaskThread
 import classes.UIStates
+import drawing.CatParticleForDraw
 import drawing.drawScene
 import drawing.drawStatistics
 import drawing.menu.drawDraggableMenu
@@ -19,80 +19,9 @@ import kotlinx.coroutines.launch
 import radar.generators.CatGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
-import radar.scene.Point2D
 import radar.scene.SceneConfig
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import kotlin.math.floor
 import kotlin.time.measureTime
-
-class TaskThread {
-    private val taskQueue: BlockingQueue<Runnable> = LinkedBlockingQueue()
-    private val executor: ExecutorService = Executors.newSingleThreadExecutor()
-    private val thread: Thread =
-        Thread {
-            while (true) {
-                try {
-                    taskQueue.poll(1, TimeUnit.SECONDS)?.run()
-                } catch (e: InterruptedException) {
-                    Thread.currentThread().interrupt()
-                }
-            }
-        }
-
-    init {
-        thread.start()
-    }
-
-    fun submitTask(task: Runnable): CompletableFuture<Void> {
-        val future = CompletableFuture<Void>()
-        val runnable =
-            Runnable {
-                try {
-                    task.run()
-                    future.complete(null)
-                } catch (e: Exception) {
-                    future.completeExceptionally(e)
-                }
-            }
-        taskQueue.put(runnable)
-        return future
-    }
-
-    fun shutdown() {
-        thread.interrupt()
-        executor.shutdown()
-    }
-}
-
-data class CatParticleForDraw(
-    val cat: CatParticle,
-    var from: Point2D,
-    var to: Point2D,
-) {
-    fun nextStep(progress: Double) {
-        from.x += (to.x - from.x) * progress
-        from.y += (to.y - from.y) * progress
-    }
-
-    fun updateGoal() {
-        val newCoords = cat.coordinates.copy()
-
-        if (kotlin.math.abs(newCoords.x - to.x) > GRID_SIZE_X / 2) {
-            from.x = newCoords.x // Мгновенный переход
-        }
-
-        if (kotlin.math.abs(newCoords.y - to.y) > GRID_SIZE_Y / 2) {
-            from.y = newCoords.y // Мгновенный переход
-        }
-
-        to = newCoords
-    }
-}
 
 fun main() =
     application {
@@ -122,7 +51,7 @@ fun main() =
         val state = mutableStateOf(UIStates.READY_TO_DRAW)
         val modelingState = mutableStateOf(ModelingStates.FINISHED)
 
-        val frameDurationMs = floor(1000.toDouble() / FPS).toInt() // Время одного кадра
+        val frameDurationMs = floor(1000.toDouble() / FPS).toInt()
 
         fun calculateStepsCount() = SceneConfig.tau / frameDurationMs
         var steps = calculateStepsCount()
@@ -200,6 +129,6 @@ fun main() =
             }
             drawScene(catsToDraw, catScene.sceneConfig, timeDrawing)
             drawDraggableMenu(catScene.sceneConfig)
-            drawStatistics(timeModeling, timeUpdating, timeDrawing.value, step.value, catScene.particles)
+            drawStatistics(timeModeling, timeUpdating, timeDrawing.value, catScene.particles)
         }
     }

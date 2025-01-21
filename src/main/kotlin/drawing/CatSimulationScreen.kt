@@ -1,6 +1,5 @@
 package drawing
 
-import CatParticleForDraw
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
 import androidx.compose.foundation.Canvas
@@ -65,7 +64,6 @@ fun drawScene(
                                 )
                             when {
                                 cat.role == CatRole.GHOST -> {
-                                    // Призраки рисуются как прозрачные кружки
                                     drawCircle(
                                         color = Color(0x80ff2120),
                                         center = catOffset,
@@ -74,7 +72,6 @@ fun drawScene(
                                 }
 
                                 cat.state == CatStates.DEAD -> {
-                                    // Мертвые коты отображаются как кресты
                                     val lineLength = catRadius * 2.0f
                                     val topLeft = Offset(catOffset.x - lineLength / 2, catOffset.y - lineLength / 2)
                                     val topRight = Offset(catOffset.x + lineLength / 2, catOffset.y - lineLength / 2)
@@ -146,7 +143,6 @@ fun drawStatistics(
     timeModeling: Long,
     timeUpdating: Long,
     timeDrawing: Long,
-    step: Long,
     cats: ArrayList<CatParticle>,
 ) {
     Box(
