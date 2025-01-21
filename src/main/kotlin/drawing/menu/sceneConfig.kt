@@ -292,5 +292,4 @@ fun sceneSettingsMenu(
     })
 }
 
-
 private fun Double.roundTo(decimals: Int = 1): Double = String.format(Locale.US, "%.${decimals}f", this).toDouble()

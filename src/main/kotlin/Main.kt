@@ -1,11 +1,11 @@
 import CatSimulation.Companion.FPS
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -21,7 +21,12 @@ import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.Point2D
 import radar.scene.SceneConfig
-import java.util.concurrent.*
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 import kotlin.math.floor
 import kotlin.time.measureTime
 
@@ -131,7 +136,8 @@ fun main() =
 
             LaunchedEffect(SceneConfig.particleCount, state.value, needToUpdateConfig.value) {
                 if (state.value != UIStates.DRAWING_IS_FINISHED) {
-                    needToUpdateConfig.value = !needToUpdateConfig.value // wait for ending of modeling TODO: is there a better way?
+                    needToUpdateConfig.value =
+                        !needToUpdateConfig.value // wait for ending of modeling TODO: is there a better way?
                 }
                 while (cats.size < SceneConfig.particleCount) {
                     addCat(catGenerator.generate())
