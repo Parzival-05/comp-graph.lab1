@@ -1,9 +1,8 @@
 package drawing
 
-import CatSimulation.Companion.GRID_SIZE_X
-import CatSimulation.Companion.GRID_SIZE_Y
 import radar.scene.CatParticle
 import radar.scene.Point2D
+import radar.scene.SceneConfig
 
 data class CatParticleForDraw(
     val cat: CatParticle,
@@ -11,21 +10,24 @@ data class CatParticleForDraw(
     var to: Point2D,
 ) {
     fun nextStep(progress: Double) {
-        from.x += (to.x - from.x) * progress
-        from.y += (to.y - from.y) * progress
+        val dX = to.x - from.x
+        val dY = to.y - from.y
+
+
+        val squaredDistance = dX * dX + dY * dY
+        val maxSpeedSquared = SceneConfig.maxParticleSpeed * SceneConfig.maxParticleSpeed
+
+        if (squaredDistance >= 100 * maxSpeedSquared) {
+            from.x = to.x
+            from.y = to.y
+            println("$squaredDistance, ${100 * maxSpeedSquared}")
+        } else {
+            from.x += (to.x - from.x) * progress
+            from.y += (to.y - from.y) * progress
+        }
     }
 
     fun updateGoal() {
-        val newCoords = cat.coordinates.copy()
-
-        if (kotlin.math.abs(newCoords.x - to.x) > GRID_SIZE_X / 2) {
-            from.x = newCoords.x // Мгновенный переход
-        }
-
-        if (kotlin.math.abs(newCoords.y - to.y) > GRID_SIZE_Y / 2) {
-            from.y = newCoords.y // Мгновенный переход
-        }
-
-        to = newCoords
+        to = cat.coordinates.copy()
     }
 }
