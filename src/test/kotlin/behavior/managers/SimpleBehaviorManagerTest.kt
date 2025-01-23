@@ -2,6 +2,8 @@ package behavior.managers
 
 import CatSimulation
 import CatSimulation.Companion.DEATH_TIME
+import CatSimulation.Companion.GRID_SIZE_X
+import CatSimulation.Companion.GRID_SIZE_Y
 import CatSimulation.Companion.SLEEP_TIME
 import behavior.CatRole
 import core.base.generators.BaseOffsetGenerator
@@ -101,5 +103,23 @@ class SimpleBehaviorManagerTest {
         every { Random.nextDouble() } returns 1.0
         manager.tick()
         assertEquals(CatStates.CALM, cat.state)
+    }
+
+    @Test
+    fun `cat is outside of canvas bottom right and respawns on the border top left`() {
+        val cat = CatParticle(coordinates = Point2D(GRID_SIZE_X + 1, GRID_SIZE_Y + 1))
+        val manager = SimpleBehaviorManager(cat)
+        manager.tick()
+        assertEquals(1.0, cat.coordinates.x)
+        assertEquals(1.0, cat.coordinates.y)
+    }
+
+    @Test
+    fun `cat is outside of canvas top left and respawns on the border bottom right`() {
+        val cat = CatParticle(coordinates = Point2D(-1.0, -1.0))
+        val manager = SimpleBehaviorManager(cat)
+        manager.tick()
+        assertEquals(GRID_SIZE_X - 1, cat.coordinates.x)
+        assertEquals(GRID_SIZE_Y - 1, cat.coordinates.y)
     }
 }
