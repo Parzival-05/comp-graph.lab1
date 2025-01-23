@@ -1,19 +1,37 @@
 package classes
 
 @Suppress("ktlint:standard:no-consecutive-comments")
-/** Represents the different UI states during the simulation. */
+/**
+ * Represents the different UI states during the simulation.
+ */
 enum class UIStates {
-    /** TODO: rewrite it The state where the simulation is being modeled and computed. */
+    /**
+     * The state where the simulation has been initialized and is ready for visualization.
+     */
     READY_TO_DRAW,
 
-    /** TODO: rewrite it The state indicating that the data within the scene needs to be updated. */
+    /**
+     * The state indicating that the rendering process is complete and the UI reflects the final output.
+     */
     DRAWING_IS_FINISHED,
 
-    /** TODO: rewrite it or remove The state where the updated data is being drawn onto the UI. */
+    /**
+     * The state where the system is actively rendering the updated data onto the UI.
+     */
     DRAWING,
 }
 
+/**
+ * Represents the different modeling states during the simulation lifecycle.
+ */
 enum class ModelingStates {
+    /**
+     * The state where the system is performing modeling and calculations.
+     */
     MODELING,
+
+    /**
+     * The state indicating that all modeling computations are complete.
+     */
     FINISHED,
 }

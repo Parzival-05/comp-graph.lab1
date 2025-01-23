@@ -2,14 +2,11 @@ package classes
 
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
 class TaskThread {
     private val taskQueue: BlockingQueue<Runnable> = LinkedBlockingQueue()
-    private val executor: ExecutorService = Executors.newSingleThreadExecutor()
     private val thread: Thread =
         Thread {
             while (true) {
@@ -38,10 +35,5 @@ class TaskThread {
             }
         taskQueue.put(runnable)
         return future
-    }
-
-    fun shutdown() {
-        thread.interrupt()
-        executor.shutdown()
     }
 }

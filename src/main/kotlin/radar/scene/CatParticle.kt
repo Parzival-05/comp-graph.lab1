@@ -1,8 +1,6 @@
 package radar.scene
 
 import CatSimulation
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import behavior.CatRole
 import behavior.managers.BehaviorManagerFactory
 import core.base.BaseParticle
