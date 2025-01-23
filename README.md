@@ -30,13 +30,15 @@
 5. [x] Плавная и красивая отрисовка.
 6. [x] Коты имеют сложную систему перемещений.
 
+Больше деталей указано в [gdd.md](gdd.md).
+
 ## Демонстрация
 
 | Визуализация                                                                                            |
 |---------------------------------------------------------------------------------------------------------|
-| **PARTICLE_COUNT = 50, TAU = 100, MAX_PARTICLE_SPEED=**                                                 |
-| <img src="./images/50_100L.gif" width="700" alt="Simulation with PARTICLE_COUNT 50 and TAU 100L">       |
-| **PARTICLE_COUNT = 50000, TAU = 500, MAX_PARTICLE_SPEED=**                                              |
+| **PARTICLE_COUNT = 100, TAU = 16, MAX_PARTICLE_SPEED=1,5**                                              |
+| <img src="./images/100_16L.gif" width="700" alt="Simulation with PARTICLE_COUNT 50 and TAU 100L">       |
+| **PARTICLE_COUNT = 50000, TAU = 500, MAX_PARTICLE_SPEED=1,5**                                           |
 | <img src="./images/50000_500L.gif" width="700" alt="Simulation with PARTICLE_COUNT 50000 and TAU 500L"> |
 
 ## Task distribution
