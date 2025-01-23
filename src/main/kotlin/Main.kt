@@ -129,6 +129,6 @@ fun main() =
             }
             drawScene(catsToDraw, catScene.sceneConfig, timeDrawing)
             drawDraggableMenu(catScene.sceneConfig)
-            drawStatistics(timeModeling, timeUpdating, timeDrawing.value, catScene.particles)
+            drawStatistics(timeModeling, timeUpdating, timeDrawing.value, step.value, catScene.particles)
         }
     }

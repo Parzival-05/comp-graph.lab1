@@ -143,6 +143,7 @@ fun drawStatistics(
     timeModeling: Long,
     timeUpdating: Long,
     timeDrawing: Long,
+    step: Long,
     cats: ArrayList<CatParticle>,
 ) {
     Box(
