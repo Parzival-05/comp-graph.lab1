@@ -57,6 +57,7 @@ fun main() =
         var steps = calculateStepsCount()
         val step = mutableStateOf(0L)
         val scope = rememberCoroutineScope()
+        val coroutineTimeoutTime = 1L
         Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
             var timeModeling by remember { mutableStateOf(0L) }
             var timeUpdating by remember { mutableStateOf(0L) }
@@ -96,7 +97,7 @@ fun main() =
                             modelingState.value = ModelingStates.FINISHED
                         }
                     }
-                    delay(1)
+                    delay(coroutineTimeoutTime)
                 }
             }
             var totalProgress = 0.0
@@ -124,7 +125,7 @@ fun main() =
                             }
                         }
                     }
-                    delay(1)
+                    delay(coroutineTimeoutTime)
                 }
             }
             drawScene(catsToDraw, catScene.sceneConfig, timeDrawing)

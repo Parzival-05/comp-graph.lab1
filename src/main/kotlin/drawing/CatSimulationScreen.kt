@@ -28,11 +28,14 @@ import radar.scene.SceneConfig
 import kotlin.time.measureTime
 
 /**
- * Draws the scene by rendering cat particles, adjusting UI state accordingly.
+ * Draws the scene by rendering cat particles and adjusting the UI state accordingly.
  *
- * @param cats An array of CatParticles to be drawn.
- * @param state A mutable state representing the current UI state.
- * @param config The scene configuration containing visual parameters.
+ * This function visualizes cats on a grid by drawing them as circles (for "GHOST" role) or cross marks (for "DEAD" state).
+ * It also draws a health bar (HP) for each cat, which changes color based on the HP level.
+ *
+ * @param cats A list of [CatParticleForDraw] objects representing the cats to be drawn.
+ * @param config The [SceneConfig] object containing visual parameters for the scene.
+ * @param timeDrawing A mutable state [MutableState<Long>] holding the time spent on drawing.
  */
 @Composable
 fun drawScene(
@@ -53,7 +56,7 @@ fun drawScene(
                     measureTime {
                         cats.forEach { catParticleForDraw ->
                             val cat = catParticleForDraw.cat
-                            val currentColor = getColorForState(cat.state)
+                            val currentColor = getColor(cat)
                             val catRadius = config.catRadius
                             val catOffset =
                                 Offset(
@@ -65,18 +68,17 @@ fun drawScene(
                             when {
                                 cat.role == CatRole.GHOST -> {
                                     drawCircle(
-                                        color = Color(0x80ff2120),
+                                        color = currentColor,
                                         center = catOffset,
                                         radius = catRadius.toFloat(),
                                     )
                                 }
 
                                 cat.state == CatStates.DEAD -> {
-                                    val lineLength = catRadius * 2.0f
-                                    val topLeft = Offset(catOffset.x - lineLength / 2, catOffset.y - lineLength / 2)
-                                    val topRight = Offset(catOffset.x + lineLength / 2, catOffset.y - lineLength / 2)
-                                    val bottomLeft = Offset(catOffset.x - lineLength / 2, catOffset.y + lineLength / 2)
-                                    val bottomRight = Offset(catOffset.x + lineLength / 2, catOffset.y + lineLength / 2)
+                                    val topLeft = Offset(catOffset.x - catRadius, catOffset.y - catRadius)
+                                    val topRight = Offset(catOffset.x + catRadius, catOffset.y - catRadius)
+                                    val bottomLeft = Offset(catOffset.x - catRadius, catOffset.y + catRadius)
+                                    val bottomRight = Offset(catOffset.x + catRadius, catOffset.y + catRadius)
 
                                     drawLine(
                                         color = currentColor,
@@ -138,6 +140,18 @@ fun drawScene(
     }
 }
 
+/**
+ * Displays statistics for the simulation, including modeling time, update time, drawing time, and the number of cats.
+ *
+ * This function renders the time spent on modeling, updating, and drawing, along with displaying the number of cats
+ * that are alive and the number of ghosts.
+ *
+ * @param timeModeling Time spent on modeling (in milliseconds).
+ * @param timeUpdating Time spent on updating (in milliseconds).
+ * @param timeDrawing Time spent on drawing (in milliseconds).
+ * @param step The simulation step time (in milliseconds).
+ * @param cats A list of [CatParticle] objects representing the cats, used for counting the statistics.
+ */
 @Composable
 fun drawStatistics(
     timeModeling: Long,
