@@ -22,8 +22,10 @@ class CatSimulation {
         const val HEALTH_POINTS_DEFAULT = 100
         const val DEATH_TIME = 50
         const val SLEEP_TIME = 100
+        const val POSSESS_TIME = 20
         const val SLEEP_PROBABILITY = 10e-4
         const val SPEED_CHANGE = 0.1
+        const val GHOST_PROBABILITY = 10e-2
     }
 }
 

@@ -27,6 +27,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.1.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     testImplementation("net.jqwik:jqwik-kotlin:1.9.2")
+    testImplementation("io.mockk:mockk:1.13.16")
 }
 
 subprojects {

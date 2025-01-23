@@ -1,5 +1,6 @@
 package behavior.managers
 
+import CatSimulation
 import behavior.CatRole
 import behavior.tree.BehaviorNode
 import behavior.tree.BehaviorStatus
@@ -23,7 +24,7 @@ import kotlin.random.Random
 abstract class CatBehaviorManager(
     private val cat: CatParticle,
 ) {
-    private val randomMovement = MovementGeneratorFactory(generators = RANDOM_GENERATORS).createRandomGenerator()
+    private val randomMovement = MovementGeneratorFactory.createRandomGenerator(RANDOM_GENERATORS)
 
     protected val shouldHiss =
         action {
@@ -82,8 +83,7 @@ abstract class CatBehaviorManager(
 
     protected val shouldBecomeGhost =
         condition {
-            val ghostProbability = 10e-2
-            Random.nextDouble() < ghostProbability
+            Random.nextDouble() < CatSimulation.GHOST_PROBABILITY
         }
 
     protected val setRoleToGhost =

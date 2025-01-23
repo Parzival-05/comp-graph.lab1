@@ -1,5 +1,6 @@
 package behavior.managers
 
+import CatSimulation.Companion.POSSESS_TIME
 import behavior.CatRole
 import behavior.tree.BehaviorNode
 import behavior.tree.BehaviorStatus
@@ -19,8 +20,8 @@ import radar.scene.SceneConfig
 class GhostBehaviorManager(
     private val cat: CatParticle,
 ) : CatBehaviorManager(cat) {
-    val moveTo = { target: CatParticle -> SeekTargetOffsetGenerator<CatParticle>(target.coordinates) }
-    var catToPossess: CatParticle? = null
+    private val moveTo = { target: CatParticle -> SeekTargetOffsetGenerator<CatParticle>(target.coordinates) }
+    private var catToPossess: CatParticle? = null
 
     private fun canPossess(cat: CatParticle) =
         cat.role == CatRole.DEFAULT &&
@@ -65,7 +66,7 @@ class GhostBehaviorManager(
         val behavior =
             select {
                 +sequence {
-                    +behavior.tree.repeat(20) {
+                    +behavior.tree.repeat(POSSESS_TIME) {
                         sequence {
                             +moveToClosestCat
                             +tryToPossess

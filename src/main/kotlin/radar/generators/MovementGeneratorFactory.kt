@@ -1,6 +1,5 @@
 package radar.generators
 
-import core.base.BaseParticle
 import core.base.generators.BaseOffsetGenerator
 import radar.scene.CatParticle
 import radar.scene.Offset2D
@@ -31,13 +30,13 @@ val RANDOM_GENERATORS =
         },
     )
 
-class MovementGeneratorFactory<P : BaseParticle<Point2D, Offset2D>>(
-    private val generators: List<() -> BaseOffsetGenerator<P, Point2D, Offset2D>>,
-) {
+object MovementGeneratorFactory {
     /**
      * Randomly selects a movement generator and creates a new instance.
      */
-    fun createRandomGenerator(): BaseOffsetGenerator<P, Point2D, Offset2D> {
+    fun createRandomGenerator(
+        generators: List<() -> BaseOffsetGenerator<CatParticle, Point2D, Offset2D>>,
+    ): BaseOffsetGenerator<CatParticle, Point2D, Offset2D> {
         val randomFactory = generators.random()
         return randomFactory()
     }
