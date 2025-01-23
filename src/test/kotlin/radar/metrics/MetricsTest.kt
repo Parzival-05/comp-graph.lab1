@@ -9,6 +9,7 @@ import radar.scene.Point2D
 import kotlin.math.abs
 import kotlin.reflect.KFunction2
 
+@Suppress("ktlint:standard:function-naming")
 class MetricsTest {
     @Provide
     fun points(): Arbitrary<Point2D> =
