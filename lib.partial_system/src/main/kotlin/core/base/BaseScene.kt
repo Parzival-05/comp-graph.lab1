@@ -1,7 +1,5 @@
 package core.base
 
-import core.base.generators.BaseOffsetGenerator
-
 /**
  * Abstract base class representing the overall simulation or "scene"
  * containing particles.
@@ -10,8 +8,6 @@ import core.base.generators.BaseOffsetGenerator
  * @param T The type of points representing particle positions.
  * @param O The type of offsets applied during movements of particles.
  * @param C The type of collisions detected and handled within the scene.
- * @param OG The type of offset generator used to create offsets for moving
- *     particles.
  * @property particles The list of particles currently present in the
  *     scene.
  */
@@ -20,40 +16,19 @@ abstract class BaseScene<
     T : BasePoint<O>,
     O : BaseOffset<T>,
     C : BaseCollision<P, T, O>,
-    OG : BaseOffsetGenerator<P, T, O>,
     >(
     open var particles: ArrayList<P>,
 ) {
     /**
-     * Updates the entire scene by processing movement, detecting collisions,
-     * and reacting to those collisions.
-     *
-     * @param offsetGenerator The offset generator used to calculate particle
-     *     movements.
+     * Updates the entire scene.
      */
-    open fun updateScene(offsetGenerator: OG) {
-        this.move(offsetGenerator)
-        findAndReactCollisions()
-    }
+
+    open fun updateScene() = findAndReactCollisions()
 
     /** Detects all collisions in the scene and reacts to them appropriately. */
     open fun findAndReactCollisions() {
         val collisions = this.findCollisions()
         this.reactCollisions(collisions)
-    }
-
-    /**
-     * Moves all particles in the scene using calculated offsets.
-     *
-     * @param offsetGenerator The offset generator used to compute movements
-     *     for particles.
-     */
-    open fun move(offsetGenerator: OG) {
-        this.particles.forEach {
-            val offset = offsetGenerator.generate(it)
-            offset.move(it.coordinates)
-        }
-        particles.removeIf { !it.isInScene() }
     }
 
     /**

@@ -1,13 +1,12 @@
 package radar.collisionDetection
 
+import CollisionDetection
 import core.base.BaseCollisionDetection
 import org.tinspin.index.PointDistance
 import org.tinspin.index.kdtree.KDTree
-import radar.generators.MoveGenerator
 import radar.scene.CatCollision
 import radar.scene.CatParticle
 import radar.scene.CatScene
-import radar.scene.CatStates
 import radar.scene.Offset2D
 import radar.scene.Point2D
 import java.util.Collections
@@ -18,22 +17,49 @@ import kotlin.math.max
 
 const val DIMS = 2
 
+/**
+ * A collision detection class using KD-Tree to efficiently find collisions in a scene of particles.
+ *
+ * @property workerPool: [ExecutorService] - The thread pool used for parallel collision handling.
+ * @property threadPoolSize: [Int] - The size of the thread pool.
+ */
 class KDTreeCollisionDetection(
     private val workerPool: ExecutorService,
     private val threadPoolSize: Int,
-) : BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision, MoveGenerator> {
+) : BaseCollisionDetection<CatScene, CatParticle, Point2D, Offset2D, CatCollision> {
     private val kValues: MutableSet<Int> = Collections.newSetFromMap(ConcurrentHashMap())
+
+    /**
+     * Calculates the batch size used for querying nearest neighbors in the KD-Tree.
+     * If no k-values have been collected, it defaults to a predefined batch size.
+     *
+     * @return [Int] - The calculated batch size.
+     */
     private val batchSize: Int
         get() =
-            if (kValues.size == 0) {
+            if (kValues.isEmpty()) {
                 CollisionDetection.batchSize
             } else {
                 kValues.sum() / kValues.size + 1
             }
 
+    /**
+     * Finds collisions among the particles in the given scene using a KD-Tree for efficient nearest neighbor search.
+     *
+     * @param scene: [CatScene] - The scene containing particles to check for collisions.
+     * @return [Array<CatCollision>] - An array of detected collisions.
+     *
+     * The algorithm:
+     * 1. Builds a KD-tree from the current coordinates of the particles
+     * 2. Processes particles in chunks in parallel using a thread pool
+     * 3. For each particle, it searches for the nearest neighbors in batches until it goes beyond the hissDist radius
+     * 4. Uses a synchronized set to track processed particle pairs
+     *
+     */
     override fun findCollisions(scene: CatScene): Array<CatCollision> {
         val cats = scene.particles
         val kdTree = KDTree.create<CatParticle>(DIMS)
+        // Insert all particles into the KD-Tree
         for (cat in cats) {
             val coordinates = cat.coordinates
             kdTree.insert(doubleArrayOf(coordinates.x, coordinates.y), cat)
@@ -49,6 +75,7 @@ class KDTreeCollisionDetection(
         val handledCats = Collections.newSetFromMap(ConcurrentHashMap<Set<Int>, Boolean>())
         val chunkedCats = cats.chunked(max(cats.size / threadPoolSize, 1))
         val jobs = mutableListOf<Future<*>>()
+
         for (chunkCat in chunkedCats) {
             val job =
                 workerPool.submit {
@@ -68,6 +95,7 @@ class KDTreeCollisionDetection(
                                     1 + batch,
                                     pd,
                                 )
+                            // Skipping the first (batch - current batchSize) elements cause these are checked
                             for (i in 1..1 + (batch - currentBatchSize)) {
                                 if (nearestCats.hasNext()) {
                                     nearestCats.next()
@@ -99,13 +127,10 @@ class KDTreeCollisionDetection(
                                             }
                                         }
                                     if (!isHandled) {
-                                        val state = scene.calcNewState(dist)
-                                        if (state != CatStates.CALM) {
-                                            val collision = CatCollision(cat, catNeighbour, dist, state)
-                                            collisions.add(collision)
-                                        } else {
-                                            break
-                                        }
+                                        val collision = CatCollision(cat, catNeighbour, dist)
+                                        collisions.add(collision)
+                                    } else {
+                                        break
                                     }
                                 }
                             }
@@ -114,9 +139,13 @@ class KDTreeCollisionDetection(
                 }
             jobs.add(job)
         }
+
+        // Wait for all tasks to complete
         for (job in jobs) {
             job.get()
         }
+
+        // Update the global batch size based on the current calculations
         CollisionDetection.batchSize = batchSize
         return collisions.toTypedArray()
     }

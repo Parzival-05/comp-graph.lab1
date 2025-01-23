@@ -11,6 +11,7 @@ import CatSimulation.Companion.MIN_FIGHT_DIST
 import CatSimulation.Companion.MIN_HISS_DIST
 import CatSimulation.Companion.MIN_PARTICLE_COUNT
 import CatSimulation.Companion.MIN_TAU
+import CatSimulation.Companion.SPEED_CHANGE
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.dp
+import radar.scene.MetricType
 import radar.scene.SceneConfig
 import kotlin.math.min
 
@@ -194,22 +196,26 @@ fun sceneSettingsMenu(
             Text(text = "Max Particle Speed: ${config.maxParticleSpeed}")
             Row {
                 Button(onClick = {
-                    if (config.maxParticleSpeed > MIN_CAT_SPEED) {
-                        config.maxParticleSpeed--
-                    }
+                    config.maxParticleSpeed =
+                        (config.maxParticleSpeed - SPEED_CHANGE)
+                            .coerceAtLeast(MIN_CAT_SPEED.toDouble())
+                            .roundTo()
                 }, modifier = minusMarginModifier) {
                     Text("-")
                 }
                 Button(onClick = {
-                    if (config.maxParticleSpeed < MAX_CAT_SPEED) {
-                        config.maxParticleSpeed++
-                    }
+                    config.maxParticleSpeed =
+                        (config.maxParticleSpeed + SPEED_CHANGE)
+                            .coerceAtMost(MAX_CAT_SPEED.toDouble())
+                            .roundTo()
                 }, modifier = plusMarginModifier) {
                     Text("+")
                 }
                 Slider(
                     value = config.maxParticleSpeed.toFloat(),
-                    onValueChange = { config.maxParticleSpeed = it.toDouble() },
+                    onValueChange = {
+                        config.maxParticleSpeed = it.toDouble().roundTo()
+                    },
                     valueRange = MIN_CAT_SPEED.toFloat()..MAX_CAT_SPEED.toFloat(),
                     modifier = Modifier.padding(vertical = 8.dp),
                 )
@@ -268,7 +274,7 @@ fun sceneSettingsMenu(
                     Text("Select Metric Type")
                 }
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    SceneConfig.Companion.MetricType.entries.forEach { metricType ->
+                    MetricType.entries.forEach { metricType ->
                         DropdownMenuItem(onClick = {
                             config.metric = metricType
                             expanded = false
@@ -285,3 +291,5 @@ fun sceneSettingsMenu(
         }
     })
 }
+
+private fun Double.roundTo(decimals: Int = 1): Double = "%.${decimals}f".format(this).toDouble()

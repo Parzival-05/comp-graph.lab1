@@ -1,7 +1,5 @@
 package core.base
 
-import core.base.generators.BaseOffsetGenerator
-
 /**
  * Interface defining a general collision detection system for a simulation scene.
  *
@@ -10,15 +8,13 @@ import core.base.generators.BaseOffsetGenerator
  * @param T The type of point representing positions within the scene.
  * @param O The type of offset used to move points, extending.
  * @param C The type of collisions detected and handled within the scene, extending.
- * @param OG The type of offset generator used to create offsets for moving particles.
  */
 interface BaseCollisionDetection<
-    S : BaseScene<P, T, O, C, OG>,
+    S : BaseScene<P, T, O, C>,
     P : BaseParticle<T, O>,
     T : BasePoint<O>,
     O : BaseOffset<T>,
     C : BaseCollision<P, T, O>,
-    OG : BaseOffsetGenerator<P, T, O>,
     > {
     /**
      * Finds all collisions within the given scene.

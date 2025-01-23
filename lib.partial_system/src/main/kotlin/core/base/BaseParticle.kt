@@ -42,6 +42,11 @@ abstract class BaseParticle<T : BasePoint<O>, O : BaseOffset<T>> {
     open lateinit var coordinates: T
 
     /**
+     * Updates the state of the particle.
+     */
+    abstract fun tick()
+
+    /**
      * Checks whether the particle is still part of the scene by querying its
      * position.
      *

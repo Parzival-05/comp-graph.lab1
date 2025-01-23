@@ -7,11 +7,11 @@ import radar.generators.CatGenerator
 import kotlin.random.Random
 
 /**
- * Emits `CatParticles` into the scene, typically used to add new particles
+ * Emits [CatParticle] into the scene, typically used to add new particles
  * over time.
  *
  * @param particleGenerator The generator used to create new
- *     `CatParticles`.
+ *     [CatParticle].
  */
 open class CatEmitter(
     private val particleGenerator: CatGenerator,

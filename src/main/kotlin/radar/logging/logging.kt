@@ -1,18 +1,40 @@
 package radar.logging
 
-import CatSimulation.Companion.MAX_INTERACTIONS_DISPLAYED
-import radar.scene.CatCollision
+import CatSimulation.Companion.MAX_LOGS_DISPLAYED
 import radar.scene.CatInteraction
+import radar.scene.CatParticle
+import radar.scene.CatStateChange
+import radar.scene.CatStates
 import java.sql.Timestamp
+import java.time.Clock
 
-val GlobalInteractionLog = mutableListOf<CatInteraction>()
+object InteractionLogger {
+    private val log = mutableListOf<Loggable>()
 
-fun logging(collision: CatCollision) {
-    val time = Timestamp(System.currentTimeMillis())
-    val cat1Id = collision.particle1.id
-    val cat2Id = collision.particle2.id
-    GlobalInteractionLog.add(CatInteraction(time, cat1Id, cat2Id, collision.catState))
-    if (GlobalInteractionLog.size > MAX_INTERACTIONS_DISPLAYED) {
-        GlobalInteractionLog.removeAt(0)
+    private fun addLogEntry(entry: Loggable) {
+        log.add(entry)
+        if (log.size > MAX_LOGS_DISPLAYED) {
+            log.removeFirst()
+        }
     }
+
+    fun logInteraction(
+        cat1: CatParticle,
+        cat2: CatParticle,
+        state: CatStates,
+        clock: Clock = Clock.systemUTC(),
+    ) {
+        val time = Timestamp(clock.millis())
+        addLogEntry(CatInteraction(time, cat1.id, cat2.id, state))
+    }
+
+    fun logStateChange(
+        cat: CatParticle,
+        clock: Clock = Clock.systemUTC(),
+    ) {
+        val time = Timestamp(clock.millis())
+        addLogEntry(CatStateChange(time, cat.id, cat.state))
+    }
+
+    fun getLogs(): List<Loggable> = log.toList()
 }
