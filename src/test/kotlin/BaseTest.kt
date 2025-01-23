@@ -1,10 +1,14 @@
 import org.junit.jupiter.api.BeforeEach
+import radar.scene.CatParticle
 import radar.scene.Point2D
 import radar.scene.SceneConfig
 import kotlin.math.abs
 import kotlin.test.assertTrue
 
 abstract class BaseTest {
+    protected val particlePosition = Point2D(10.0, 10.0)
+    protected val particle = CatParticle(particlePosition)
+
     @BeforeEach
     fun setUp() {
         SceneConfig.loadConfig("test_config.properties")
