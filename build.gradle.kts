@@ -45,7 +45,7 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs =
             listOf(
                 "-Xnullability-annotations=@org.jspecify.annotations:strict",
-                "-Xemit-jvm-type-annotations", // Enable annotations on type variables
+                "-Xemit-jvm-type-annotations",
             )
         apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
         languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
