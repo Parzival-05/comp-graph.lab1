@@ -9,6 +9,8 @@ import radar.generators.CatGenerator
 import radar.scene.SceneConfig.particleCount
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
+import kotlin.math.max
 
 /**
  * Manages the simulation scene, including particles, their interactions,
@@ -79,12 +81,26 @@ class CatScene(
     public override fun findCollisions(): Array<CatCollision> = collisionDetection.findCollisions(this)
 
     override fun reactCollisions(collisions: Array<CatCollision>) {
-        particles.forEach { it.nearbyCats.clear() }
-
-        for (collision in collisions) {
-            collision.particle1.nearbyCats += collision.particle2
-            collision.particle2.nearbyCats += collision.particle1
-            lastCollisions.add(collision)
+        particles.forEach { it.nearbyCats = mutableListOf() }
+        val chunkedCollisions = collisions.map { it }.chunked(max(collisions.size / THREAD_COUNT, 1))
+        val jobs = mutableListOf<Future<*>>()
+        for (chunk in chunkedCollisions) {
+            jobs.add(
+                workerPool.submit {
+                    for (collision in chunk) {
+                        synchronized(collision.particle1.nearbyCats) {
+                            collision.particle1.nearbyCats += collision.particle2
+                        }
+                        synchronized(collision.particle2.nearbyCats) {
+                            collision.particle2.nearbyCats += collision.particle1
+                        }
+                        synchronized(lastCollisions) {
+                            lastCollisions.add(collision)
+                        }
+                    }
+                },
+            )
         }
+        jobs.forEach { it.get() }
     }
 }

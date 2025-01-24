@@ -49,7 +49,7 @@ fun main() =
         catsToDraw.forEach { it.updateGoal() }
 
         val state = mutableStateOf(UIStates.READY_TO_DRAW)
-        val modelingState = mutableStateOf(ModelingStates.FINISHED)
+        var modelingState = ModelingStates.FINISHED
 
         val frameDurationMs = floor(1000.toDouble() / FPS).toInt()
 
@@ -60,15 +60,12 @@ fun main() =
         val coroutineTimeoutTime = 1L
         Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
             var timeModeling by remember { mutableStateOf(0L) }
+            var totalTimeModeling = 0L
             var timeUpdating by remember { mutableStateOf(0L) }
             val timeDrawing = mutableStateOf(0L)
             val needToUpdateConfig = mutableStateOf(false)
 
-            LaunchedEffect(SceneConfig.particleCount, state.value, needToUpdateConfig.value) {
-                if (state.value != UIStates.DRAWING_IS_FINISHED) {
-                    needToUpdateConfig.value =
-                        !needToUpdateConfig.value // wait for ending of modeling TODO: is there a better way?
-                }
+            LaunchedEffect(SceneConfig.particleCount, state.value) {
                 while (cats.size < SceneConfig.particleCount) {
                     addCat(catGenerator.generate())
                 }
@@ -81,20 +78,26 @@ fun main() =
                 val taskThread = TaskThread()
                 while (true) {
                     if (!SceneConfig.isOnPause) {
-                        if (state.value == UIStates.DRAWING_IS_FINISHED && modelingState.value == ModelingStates.FINISHED) {
+                        if (state.value == UIStates.DRAWING_IS_FINISHED) {
                             catsToDraw.forEach {
                                 it.updateGoal()
                             }
-                            modelingState.value = ModelingStates.MODELING
+                            totalTimeModeling = 0
+                            modelingState = ModelingStates.MODELING
                             state.value = UIStates.READY_TO_DRAW
-                            timeModeling =
-                                measureTime {
-                                    taskThread
-                                        .submitTask {
+                            taskThread
+                                .submitTask {
+                                    totalTimeModeling =
+                                        measureTime {
                                             catScene.updateScene()
-                                        }.join()
-                                }.inWholeMilliseconds
-                            modelingState.value = ModelingStates.FINISHED
+                                        }.inWholeMilliseconds
+                                    modelingState = ModelingStates.FINISHED
+                                }
+                            while (modelingState != ModelingStates.FINISHED) {
+                                delay(coroutineTimeoutTime)
+                            }
+                            timeModeling = totalTimeModeling
+                            delay(SceneConfig.tau - 1 - timeModeling)
                         }
                     }
                     delay(coroutineTimeoutTime)
