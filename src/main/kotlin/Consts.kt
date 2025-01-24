@@ -24,8 +24,13 @@ class CatSimulation {
         const val SLEEP_TIME = 100
         const val POSSESS_TIME = 20
         const val SLEEP_PROBABILITY = 10e-4
-        const val SPEED_CHANGE = 0.1
         const val GHOST_PROBABILITY = 10e-2
+        const val SPEED_CHANGE = 0.1
+        const val FPS = 60
+        const val STROKE_WIDTH = 4f
+        const val BAR_HEIGHT = 2
+        const val BAR_CORNER_RADIUS = 4
+        const val HP_BAR_OFFSET_Y = 16
     }
 }
 

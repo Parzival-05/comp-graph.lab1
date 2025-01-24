@@ -1,3 +1,4 @@
+import CatSimulation.Companion.FPS
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,70 +7,129 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import classes.ModelingStates
+import classes.TaskThread
 import classes.UIStates
+import drawing.CatParticleForDraw
 import drawing.drawScene
 import drawing.drawStatistics
-import drawing.updateScene
-import kotlinx.coroutines.Dispatchers
+import drawing.menu.drawDraggableMenu
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import radar.generators.CatGenerator
 import radar.scene.CatParticle
 import radar.scene.CatScene
 import radar.scene.SceneConfig
+import kotlin.math.floor
 import kotlin.time.measureTime
 
 fun main() =
     application {
         SceneConfig.loadConfig("config.properties")
         val catGenerator = CatGenerator()
-        val cats = ArrayList<CatParticle>()
+        val cats by remember { mutableStateOf(ArrayList<CatParticle>()) }
+        val catsToDraw: ArrayList<CatParticleForDraw> by remember { mutableStateOf(ArrayList()) }
+
+        fun addCat(catParticle: CatParticle) {
+            cats.add(catParticle)
+            val coords = catParticle.coordinates.copy()
+            catsToDraw.add(CatParticleForDraw(catParticle, coords, coords))
+        }
+
+        fun removeCat(cat: CatParticle) {
+            cats.remove(cat)
+            catsToDraw.removeIf { it.cat == cat }
+        }
+
         for (i in 1..SceneConfig.particleCount) {
-            cats.add(catGenerator.generate())
+            addCat(catGenerator.generate())
         }
         val catScene = CatScene(cats, SceneConfig)
-        val state = mutableStateOf(UIStates.MODELING)
+        catScene.updateScene()
+        catsToDraw.forEach { it.updateGoal() }
 
+        val state = mutableStateOf(UIStates.READY_TO_DRAW)
+        val modelingState = mutableStateOf(ModelingStates.FINISHED)
+
+        val frameDurationMs = floor(1000.toDouble() / FPS).toInt()
+
+        fun calculateStepsCount() = SceneConfig.tau / frameDurationMs
+        var steps = calculateStepsCount()
+        val step = mutableStateOf(0L)
+        val scope = rememberCoroutineScope()
+        val coroutineTimeoutTime = 1L
         Window(onCloseRequest = ::exitApplication, title = "Cat Lab UI") {
-            var currentCats: Array<CatParticle> by remember { mutableStateOf(emptyArray()) }
             var timeModeling by remember { mutableStateOf(0L) }
-            val cs = rememberCoroutineScope { Dispatchers.Default }
+            var timeUpdating by remember { mutableStateOf(0L) }
+            val timeDrawing = mutableStateOf(0L)
+            val needToUpdateConfig = mutableStateOf(false)
 
-            LaunchedEffect(SceneConfig.particleCount) {
+            LaunchedEffect(SceneConfig.particleCount, state.value, needToUpdateConfig.value) {
+                if (state.value != UIStates.DRAWING_IS_FINISHED) {
+                    needToUpdateConfig.value =
+                        !needToUpdateConfig.value // wait for ending of modeling TODO: is there a better way?
+                }
                 while (cats.size < SceneConfig.particleCount) {
-                    cats.add(catGenerator.generate())
+                    addCat(catGenerator.generate())
                 }
                 while (cats.size > SceneConfig.particleCount) {
-                    cats.removeLast()
+                    removeCat(cats.last())
                 }
-                currentCats = cats.toTypedArray()
             }
 
-            LaunchedEffect(Unit) {
-                cs.launch {
-                    while (true) {
-                        if (!SceneConfig.isOnPause) {
-                            if (state.value == UIStates.MODELING) {
-                                timeModeling = measureTime(catScene::updateScene).inWholeMilliseconds
-                                state.value = UIStates.UPDATE_DATA
+            scope.launch {
+                val taskThread = TaskThread()
+                while (true) {
+                    if (!SceneConfig.isOnPause) {
+                        if (state.value == UIStates.DRAWING_IS_FINISHED && modelingState.value == ModelingStates.FINISHED) {
+                            catsToDraw.forEach {
+                                it.updateGoal()
                             }
-                            if (timeModeling < SceneConfig.tau) {
-                                val sleepTimeMSBatch = 5L
-                                var totalSleepTime = timeModeling - 3
-                                while (totalSleepTime < SceneConfig.tau) {
-                                    delay(sleepTimeMSBatch)
-                                    totalSleepTime += sleepTimeMSBatch
-                                }
-                            }
+                            modelingState.value = ModelingStates.MODELING
+                            state.value = UIStates.READY_TO_DRAW
+                            timeModeling =
+                                measureTime {
+                                    taskThread
+                                        .submitTask {
+                                            catScene.updateScene()
+                                        }.join()
+                                }.inWholeMilliseconds
+                            modelingState.value = ModelingStates.FINISHED
                         }
-                        delay(3)
                     }
+                    delay(coroutineTimeoutTime)
                 }
             }
-            updateScene(catScene, state) { updatedCats ->
-                currentCats = updatedCats
+            var totalProgress = 0.0
+            var progress: Double
+            scope.launch {
+                while (true) {
+                    if (!SceneConfig.isOnPause) {
+                        if (state.value == UIStates.READY_TO_DRAW) {
+                            if (step.value < steps) {
+                                timeUpdating =
+                                    measureTime {
+                                        steps = calculateStepsCount()
+                                        progress = (1 - totalProgress) / (steps - step.value)
+                                        totalProgress += progress
+                                        catsToDraw.forEach {
+                                            it.nextStep(progress)
+                                        }
+                                        step.value += 1
+                                    }.inWholeMilliseconds
+                                delay(frameDurationMs - 1 - timeUpdating - timeDrawing.value)
+                            } else {
+                                state.value = UIStates.DRAWING_IS_FINISHED
+                                step.value = 0
+                                totalProgress = 0.0
+                            }
+                        }
+                    }
+                    delay(coroutineTimeoutTime)
+                }
             }
-            drawScene(currentCats, state, catScene.sceneConfig)
-            drawStatistics(timeModeling, catScene.particles)
+            drawScene(catsToDraw, catScene.sceneConfig, timeDrawing)
+            drawDraggableMenu(catScene.sceneConfig)
+            drawStatistics(timeModeling, timeUpdating, timeDrawing.value, step.value, catScene.particles)
         }
     }
