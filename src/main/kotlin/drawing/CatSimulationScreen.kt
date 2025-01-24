@@ -1,7 +1,11 @@
 package drawing
 
+import CatSimulation.Companion.BAR_CORNER_RADIUS
+import CatSimulation.Companion.BAR_HEIGHT
 import CatSimulation.Companion.GRID_SIZE_X
 import CatSimulation.Companion.GRID_SIZE_Y
+import CatSimulation.Companion.HP_BAR_OFFSET_Y
+import CatSimulation.Companion.STROKE_WIDTH
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +32,7 @@ import radar.scene.SceneConfig
 import kotlin.time.measureTime
 
 /**
- * Draws the scene by rendering cat particles and adjusting the UI state accordingly.
+ * Draws the scene by rendering cat particles.
  *
  * This function visualizes cats on a grid by drawing them as circles (for "GHOST" role) or cross marks (for "DEAD" state).
  * It also draws a health bar (HP) for each cat, which changes color based on the HP level.
@@ -84,13 +88,13 @@ fun drawScene(
                                         color = currentColor,
                                         start = topLeft,
                                         end = bottomRight,
-                                        strokeWidth = 4f,
+                                        strokeWidth = STROKE_WIDTH,
                                     )
                                     drawLine(
                                         color = currentColor,
                                         start = topRight,
                                         end = bottomLeft,
-                                        strokeWidth = 4f,
+                                        strokeWidth = STROKE_WIDTH,
                                     )
                                 }
 
@@ -103,18 +107,18 @@ fun drawScene(
 
                                     // HP-бар
                                     val barWidth = catRadius * 2.0f
-                                    val barHeight = 2.dp.toPx()
+                                    val barHeight = BAR_HEIGHT.dp.toPx()
                                     val barOffset =
                                         Offset(
                                             x = catOffset.x - barWidth / 2,
-                                            y = catOffset.y - catRadius - 16.dp.toPx(),
+                                            y = catOffset.y - catRadius - HP_BAR_OFFSET_Y.dp.toPx(),
                                         )
 
                                     drawRoundRect(
                                         color = Color.Gray,
                                         topLeft = barOffset,
                                         size = Size(barWidth, barHeight),
-                                        cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                        cornerRadius = CornerRadius(BAR_CORNER_RADIUS.dp.toPx(), BAR_CORNER_RADIUS.dp.toPx()),
                                     )
 
                                     val hpPercentage = cat.hp / 100f
@@ -129,7 +133,7 @@ fun drawScene(
                                         color = color,
                                         topLeft = barOffset,
                                         size = Size(filledWidth, barHeight),
-                                        cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                        cornerRadius = CornerRadius(BAR_CORNER_RADIUS.dp.toPx(), BAR_CORNER_RADIUS.dp.toPx()),
                                     )
                                 }
                             }
