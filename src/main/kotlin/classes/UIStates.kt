@@ -14,11 +14,6 @@ enum class UIStates {
      * The state indicating that the rendering process is complete and the UI reflects the final output.
      */
     DRAWING_IS_FINISHED,
-
-    /**
-     * The state where the system is actively rendering the updated data onto the UI.
-     */
-    DRAWING,
 }
 
 /**
