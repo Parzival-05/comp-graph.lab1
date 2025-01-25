@@ -133,15 +133,15 @@ fun sceneSettingsMenu(
                     Text("+")
                 }
             }
-            Slider(
-                value = config.particleCount.toFloat(),
-                onValueChange = {
-                    config.particleCount = it.toInt()
-                    particleCountTextState = config.particleCount.toString()
-                },
-                valueRange = MIN_PARTICLE_COUNT.toFloat()..MAX_PARTICLE_COUNT.toFloat(),
-                modifier = Modifier.padding(vertical = 8.dp),
-            )
+//            Slider(
+//                value = config.particleCount.toFloat(),
+//                onValueChange = {
+//                    config.particleCount = it.toInt()
+//                    particleCountTextState = config.particleCount.toString()
+//                },
+//                valueRange = MIN_PARTICLE_COUNT.toFloat()..MAX_PARTICLE_COUNT.toFloat(),
+//                modifier = Modifier.padding(vertical = 8.dp),
+//            )
             Text(text = "Cat size: ${config.catRadius}")
             Row {
                 Button(onClick = {
@@ -187,12 +187,6 @@ fun sceneSettingsMenu(
                         }
                     },
                 singleLine = true,
-            )
-            Slider(
-                value = config.tau.toFloat(),
-                onValueChange = { config.tau = it.toLong() },
-                valueRange = MIN_TAU.toFloat()..3600000f,
-                modifier = Modifier.padding(vertical = 8.dp),
             )
             Text(text = "Max Particle Speed: ${config.maxParticleSpeed}")
             Row {

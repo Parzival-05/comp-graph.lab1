@@ -180,6 +180,10 @@ fun drawStatistics(
                 text = "Drawing time: $timeDrawing",
                 style = MaterialTheme.typography.body1,
             )
+            Text(
+                text = "Step: $step",
+                style = MaterialTheme.typography.body1,
+            )
         }
         Column(
             modifier =

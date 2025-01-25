@@ -49,7 +49,7 @@ fun main() =
         catsToDraw.forEach { it.updateGoal() }
 
         val state = mutableStateOf(UIStates.READY_TO_DRAW)
-        var modelingState = ModelingStates.FINISHED
+        var modelingState: ModelingStates
 
         val frameDurationMs = floor(1000.toDouble() / FPS).toInt()
 
@@ -63,7 +63,6 @@ fun main() =
             var totalTimeModeling = 0L
             var timeUpdating by remember { mutableStateOf(0L) }
             val timeDrawing = mutableStateOf(0L)
-            val needToUpdateConfig = mutableStateOf(false)
 
             LaunchedEffect(SceneConfig.particleCount, state.value) {
                 while (cats.size < SceneConfig.particleCount) {
@@ -82,7 +81,6 @@ fun main() =
                             catsToDraw.forEach {
                                 it.updateGoal()
                             }
-                            totalTimeModeling = 0
                             modelingState = ModelingStates.MODELING
                             state.value = UIStates.READY_TO_DRAW
                             taskThread
@@ -97,7 +95,7 @@ fun main() =
                                 delay(coroutineTimeoutTime)
                             }
                             timeModeling = totalTimeModeling
-                            delay(SceneConfig.tau - 1 - timeModeling)
+                            delay(SceneConfig.tau - coroutineTimeoutTime - timeModeling)
                         }
                     }
                     delay(coroutineTimeoutTime)
